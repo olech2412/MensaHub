@@ -18,6 +18,9 @@ Die EssensGetter API ist eine SpringBoot Anwendung, die mithilfe von Maven und J
 Die API stellt verschiedene Endpunkte zur Verfügung, um auf die Daten in der Datenbank zugreifen zu können. Eine ausführliche Dokumentation der verfügbaren Endpunkte finden Sie im Code oder in der API-Dokumentation.
 Der Zugriff auf die API ist nur mit einem Zugriffstoken möglich!
 
+## Das Konzept
+![EssensGetter Softwarearchitektur](https://github.com/olech2412/EssensGetter-API/blob/master/EssensGetter%20SoftwareArchitektur.drawio.png)
+
 ## Hinweis
 
 Bitte beachten Sie, dass dies ein privates Studentenprojekt ist und die API nicht für die Öffentlichkeit zur Verfügung steht. Der Betrieb der Anwendung kann nicht garantiert werden und die Anwendung darf nicht zu kommerziellen Zwecken genutzt werden.
