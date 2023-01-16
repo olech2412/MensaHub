@@ -16,9 +16,9 @@ public class MealController {
         this.mealRepository = mealRepository;
     }
 
-    @GetMapping("/meals")
+    @GetMapping("/mealToday")
     public Iterable<Meal> getMeals() {
-        log.info("Meals were requested");
+        log.debug("Meals were requested");
         return mealRepository.findAll();
     }
 
