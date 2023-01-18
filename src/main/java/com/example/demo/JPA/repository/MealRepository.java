@@ -14,4 +14,6 @@ public interface MealRepository extends CrudRepository<Meal, Long> {
 
     List<Meal> findAllByServingDateGreaterThanEqual(LocalDate date);
 
+    Meal findByNameAndServingDateAndId(String name, LocalDate servingDate, Long id);
+
 }
