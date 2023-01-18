@@ -6,6 +6,8 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.LocalDate;
+
 @RestController
 @Log4j2
 public class MealController {
@@ -16,10 +18,10 @@ public class MealController {
         this.mealRepository = mealRepository;
     }
 
-    @GetMapping("/mealToday")
+    @GetMapping("/mealsForFritz")
     public Iterable<Meal> getMeals() {
         log.debug("Meals were requested");
-        return mealRepository.findAll();
+        return mealRepository.findAllByServingDateGreaterThanEqual(LocalDate.now().minusDays(2));
     }
 
 }
