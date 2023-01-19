@@ -28,7 +28,6 @@ public class Meal {
     private Integer responseCode;
     private Double rating = 0.0;
     private Integer votes = 0;
-
     private Integer starsTotal = 0;
 
     public Meal() {
