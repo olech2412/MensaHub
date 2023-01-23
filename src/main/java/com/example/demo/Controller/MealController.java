@@ -20,14 +20,14 @@ public class MealController {
         this.mealRepository = mealRepository;
     }
 
-    @CrossOrigin
+    @CrossOrigin(origins={"https://mensiapp.000webhostapp.com"})    
     @GetMapping("/mealsForFritz")
     public Iterable<Meal> getMeals() {
         log.debug("Meals were requested");
         return mealRepository.findAllByServingDateGreaterThanEqual(LocalDate.now().minusDays(2));
     }
 
-    @CrossOrigin
+    @CrossOrigin(origins={"https://mensiapp.000webhostapp.com"})
     @PostMapping("/mealsFromFritz")
     @Transactional
     public void saveMeal(@RequestBody Meal receivedMeal) {
