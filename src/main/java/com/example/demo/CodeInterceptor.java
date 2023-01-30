@@ -4,6 +4,7 @@ import com.example.demo.JPA.APIAccess;
 import com.example.demo.JPA.repository.APIAccessRepository;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.HandlerInterceptor;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -19,6 +20,7 @@ public class CodeInterceptor implements HandlerInterceptor {
     }
 
     @Override
+    @Transactional
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         String code = request.getParameter("code");
         log.info("Request from " + request.getRemoteAddr() + " with code " + code);

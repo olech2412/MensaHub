@@ -22,6 +22,7 @@ public class MealController {
 
     @CrossOrigin(origins={"https://mensiapp.000webhostapp.com"})    
     @GetMapping("/mealsForFritz")
+    @Transactional
     public Iterable<Meal> getMeals() {
         log.debug("Meals were requested");
         return mealRepository.findAllByServingDateGreaterThanEqual(LocalDate.now().minusDays(2));
