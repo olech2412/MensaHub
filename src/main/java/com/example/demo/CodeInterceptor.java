@@ -4,14 +4,13 @@ import com.example.demo.JPA.APIAccess;
 import com.example.demo.JPA.repository.APIAccessRepository;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Component;
-import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
-
+import org.springframework.web.servlet.HandlerInterceptor;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 @Component
 @Log4j2
-public class CodeInterceptor extends HandlerInterceptorAdapter {
+public class CodeInterceptor implements HandlerInterceptor {
 
     private final APIAccessRepository repository;
 
