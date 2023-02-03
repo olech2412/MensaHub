@@ -20,7 +20,7 @@ public class MealController {
         this.mealRepository = mealRepository;
     }
 
-    @CrossOrigin(origins={"https://mensi-mates.whosfritz.de/"})
+    @CrossOrigin(origins = {"https://mensi-mates.whosfritz.de/"})
     @GetMapping("/mealsForFritz")
     @Transactional
     public Iterable<Meal> getMeals() {
@@ -28,7 +28,7 @@ public class MealController {
         return mealRepository.findAllByServingDateGreaterThanEqual(LocalDate.now().minusDays(2));
     }
 
-    @CrossOrigin(origins={"https://mensi-mates.whosfritz.de/"})
+    @CrossOrigin(origins = {"https://mensi-mates.whosfritz.de/"})
     @PostMapping("/mealsFromFritz")
     @Transactional
     public void saveMeal(@RequestBody Meal receivedMeal) {
@@ -37,12 +37,12 @@ public class MealController {
         if (mealFromDB != null) {
             mealFromDB.setVotes(mealFromDB.getVotes() + 1);
             mealFromDB.setStarsTotal((int) (mealFromDB.getStarsTotal() + receivedMeal.getRating()));
-            Double calculatedRating =Double.valueOf(mealFromDB.getStarsTotal())/Double.valueOf(mealFromDB.getVotes());
+            Double calculatedRating = Double.valueOf(mealFromDB.getStarsTotal()) / Double.valueOf(mealFromDB.getVotes());
             DecimalFormat df = new DecimalFormat("#.#");
             df.setRoundingMode(RoundingMode.FLOOR);
             mealFromDB.setRating(Double.parseDouble(df.format(calculatedRating).replaceFirst(",", ".")));
             mealRepository.save(mealFromDB);
-        }else {
+        } else {
             log.error("Meal was not found in DB");
         }
     }

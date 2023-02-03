@@ -1,4 +1,4 @@
-package com.example.demo.JPA;
+package com.example.demo.JPA.entities;
 
 import lombok.Getter;
 import lombok.Setter;

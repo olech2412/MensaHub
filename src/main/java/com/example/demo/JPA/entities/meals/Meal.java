@@ -1,4 +1,4 @@
-package com.example.demo.JPA;
+package com.example.demo.JPA.entities.meals;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -9,17 +9,16 @@ import java.time.LocalDate;
 
 @Getter
 @Setter
-@Entity
 @EqualsAndHashCode
-@Table(name = "meals")
-public class Meal {
+@MappedSuperclass
+public abstract class Meal {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @EqualsAndHashCode.Exclude
     @Column(name = "id", nullable = false)
-    private Long id;
-    private String name;
+    protected Long id;
+    protected String name;
     private String description;
     private String price;
     private String category;
@@ -46,6 +45,6 @@ public class Meal {
 
     @Override
     public String toString() {
-        return "Meal: " + "name=" + name + ", description=" + description + ", price=" + price + ", category=" + category + ", servingDate=" + servingDate +", rating=" + rating + ", votes=" + votes + ", starsTotal=" + starsTotal;
+        return "Meal: " + "name=" + name + ", description=" + description + ", price=" + price + ", category=" + category + ", servingDate=" + servingDate + ", rating=" + rating + ", votes=" + votes + ", starsTotal=" + starsTotal + ", votes=" + votes;
     }
 }

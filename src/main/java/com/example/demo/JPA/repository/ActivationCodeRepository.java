@@ -1,6 +1,6 @@
 package com.example.demo.JPA.repository;
 
-import com.example.demo.JPA.ActivationCode;
+import com.example.demo.JPA.entities.ActivationCode;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
