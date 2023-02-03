@@ -1,6 +1,6 @@
 package com.example.demo;
 
-import com.example.demo.JPA.APIAccess;
+import com.example.demo.JPA.entities.APIAccess;
 import com.example.demo.JPA.repository.APIAccessRepository;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Component;
