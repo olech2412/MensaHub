@@ -1,6 +1,7 @@
 package com.example.demo.Controller.SupportOldDataModel;
 
 import com.example.demo.JPA.entities.meals.Meal;
+import com.example.demo.JPA.entities.meals.Meals_Schoenauer_Str;
 import com.example.demo.JPA.entities.mensen.Mensa_Schoenauer_Str;
 import com.example.demo.JPA.services.meals.Meals_Mensa_Schoenauer_StrService;
 import com.example.demo.JPA.services.mensen.Mensa_Schoenauer_StrService;
@@ -44,9 +45,9 @@ public class MealController{
 
     @CrossOrigin(origins = {"https://mensi-mates.whosfritz.de/"})
     @PostMapping("/mealsFromFritz")
-    public void saveMeal(@RequestBody Meal receivedMeal) {
+    public void saveMeal(@RequestBody Meals_Schoenauer_Str receivedMeal) {
         log.info("Meal received: " + receivedMeal);
-        Meal mealFromDB = meals_mensa_schoenauer_strService.findByNameAndServingDateAndId(receivedMeal.getName(), receivedMeal.getServingDate(), receivedMeal.getId()).get(0);
+        Meals_Schoenauer_Str mealFromDB = (Meals_Schoenauer_Str) meals_mensa_schoenauer_strService.findByNameAndServingDateAndId(receivedMeal.getName(), receivedMeal.getServingDate(), receivedMeal.getId()).get(0);
         if (mealFromDB != null) {
             mealFromDB.setVotes(mealFromDB.getVotes() + 1);
             mealFromDB.setStarsTotal((int) (mealFromDB.getStarsTotal() + receivedMeal.getRating()));
