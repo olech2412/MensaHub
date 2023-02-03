@@ -102,5 +102,16 @@ public class Meals_Menseria_am_Botanischen_GartenServices extends Meals_Mensa_Se
         log.warn("Meal deleted: " + meal.getName() + " from " + mensa.getName());
     }
 
+    /**
+     * @param name
+     * @param servingDate
+     * @param id
+     * @return
+     */
+    @Override
+    public List<? extends Meal> findByNameAndServingDateAndId(String name, LocalDate servingDate, Long id) {
+        return meals_menseria_am_botanischen_gartenRepository.findByNameAndServingDateAndId(name, servingDate, id);
+    }
+
 }
 

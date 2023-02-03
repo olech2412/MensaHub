@@ -2,6 +2,7 @@ package com.example.demo.JPA.services.meals;
 
 
 import com.example.demo.JPA.entities.meals.Meal;
+import com.example.demo.JPA.entities.meals.Meals_Cafeteria_Dittrichring;
 import com.example.demo.JPA.entities.mensen.Mensa;
 import com.example.demo.JPA.services.Abstract_Service;
 import org.springframework.stereotype.Service;
@@ -23,4 +24,5 @@ public abstract class Meals_Mensa_Service extends Abstract_Service {
 
     public abstract void delete(Meal meal, Mensa mensa);
 
+    public abstract List<? extends Meal> findByNameAndServingDateAndId(String name, LocalDate servingDate, Long id);
 }

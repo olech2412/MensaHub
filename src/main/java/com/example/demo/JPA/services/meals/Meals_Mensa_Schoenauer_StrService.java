@@ -100,5 +100,16 @@ public class Meals_Mensa_Schoenauer_StrService extends Meals_Mensa_Service {
         meals_schoenauer_strRepository.delete(meals_schoenauer_str);
         log.warn("Meal deleted: " + meal.getName() + " from " + mensa.getName());
     }
+
+    /**
+     * @param name
+     * @param servingDate
+     * @param id
+     * @return
+     */
+    @Override
+    public List<? extends Meal> findByNameAndServingDateAndId(String name, LocalDate servingDate, Long id) {
+        return meals_schoenauer_strRepository.findByNameAndServingDateAndId(name, servingDate, id);
+    }
 }
 

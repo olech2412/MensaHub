@@ -102,5 +102,16 @@ public class Meals_Mensa_am_ParkService extends Meals_Mensa_Service {
         log.warn("Meal deleted: " + meal.getName() + " from " + mensa.getName());
     }
 
+    /**
+     * @param name
+     * @param servingDate
+     * @param id
+     * @return
+     */
+    @Override
+    public List<? extends Meal> findByNameAndServingDateAndId(String name, LocalDate servingDate, Long id) {
+        return meals_mensa_am_parkRepository.findByNameAndServingDateAndId(name, servingDate, id);
+    }
+
 }
 

@@ -12,4 +12,6 @@ public interface Meals_Cafeteria_DittrichringRepository extends CrudRepository<M
 
     List<Meals_Cafeteria_Dittrichring> findAllMealsByServingDate(LocalDate servingDate);
 
+    List<Meals_Cafeteria_Dittrichring> findByNameAndServingDateAndId(String name, LocalDate servingDate, Long id);
+
 }

@@ -103,6 +103,17 @@ public class Meals_Cafeteria_DittrichringService extends Meals_Mensa_Service {
         log.warn("Meal deleted: " + meal.getName() + " from " + mensa.getName());
     }
 
+    /**
+     * @param name
+     * @param servingDate
+     * @param id
+     * @return
+     */
+    @Override
+    public List<? extends Meal> findByNameAndServingDateAndId(String name, LocalDate servingDate, Long id) {
+        return meals_cafeteria_dittrichringRepository.findByNameAndServingDateAndId(name, servingDate, id);
+    }
+
 
 }
 

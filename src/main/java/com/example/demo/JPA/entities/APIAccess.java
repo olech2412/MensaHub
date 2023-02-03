@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "api_access")
@@ -18,10 +19,19 @@ public class APIAccess {
     private String token;
 
     public String description;
-
     public Long calls;
 
     public String email;
+
+    public Boolean enabled;
+
+    public Long maxCalls;
+
+    public Boolean canRead;
+
+    public Boolean canWrite;
+
+    public LocalDateTime lastCall;
 
     public APIAccess() {
     }
