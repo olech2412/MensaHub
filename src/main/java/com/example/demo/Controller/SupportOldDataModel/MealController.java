@@ -1,4 +1,4 @@
-package com.example.demo.Controller;
+package com.example.demo.Controller.SupportOldDataModel;
 
 import com.example.demo.JPA.entities.meals.Meal;
 import com.example.demo.JPA.entities.mensen.Mensa_Schoenauer_Str;
@@ -13,7 +13,16 @@ import java.time.LocalDate;
 
 @RestController
 @Log4j2
+@Deprecated
 public class MealController{
+    /**
+     * This controller is only used to support the old data model.
+     * It is not used anymore and will be removed in the future.
+     * TODO: Remove this controller if final migration to new data model is done. That includes MensiMates App <EGR> and EssensGetter2.0
+     * MensiMates App: https://github.com/whosFritz/Mensa-App
+     * EssensGetter2.0: https://github.com/olech2412/EssensGetter-2.0
+     * <EGR>: https://github.com/olech2412/EGR
+     */
 
     private final Meals_Mensa_Schoenauer_StrService meals_mensa_schoenauer_strService;
 
