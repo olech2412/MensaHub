@@ -1,6 +1,7 @@
 package com.example.demo.JPA.entities.meals;
 
 import com.example.demo.JPA.entities.mensen.Mensa_am_Medizincampus;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -17,6 +18,7 @@ public class Meals_Mensa_am_Medizincampus extends Meal {
 
     @ManyToOne
     @JoinColumn(name = "mensa_am_medizincampus_id", nullable = false)
+    @JsonIgnore
     private Mensa_am_Medizincampus mensa_am_medizincampus;
 
     public Meals_Mensa_am_Medizincampus() {
