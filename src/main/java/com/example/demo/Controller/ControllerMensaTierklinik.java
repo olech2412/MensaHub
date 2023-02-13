@@ -38,9 +38,9 @@ public class ControllerMensaTierklinik {
 
     @CrossOrigin(origins = {"https://mensi-mates.whosfritz.de/"})
     @PostMapping("/mealsFromFritz/mensa_tierklinik")
-    public void saveMeal(@RequestBody Meals_Schoenauer_Str receivedMeal) {
+    public void saveMeal(@RequestBody Meals_Mensa_Tierklinik receivedMeal) {
         log.info("Meal received: " + receivedMeal);
-        Meals_Schoenauer_Str mealFromDB = (Meals_Schoenauer_Str) meals_mensa_tierklinikService.findByNameAndServingDateAndId(receivedMeal.getName(), receivedMeal.getServingDate(), receivedMeal.getId()).get(0);
+        Meals_Mensa_Tierklinik mealFromDB = (Meals_Mensa_Tierklinik) meals_mensa_tierklinikService.findByNameAndServingDateAndId(receivedMeal.getName(), receivedMeal.getServingDate(), receivedMeal.getId()).get(0);
         if (mealFromDB != null) {
             mealFromDB.setVotes(mealFromDB.getVotes() + 1);
             mealFromDB.setStarsTotal((int) (mealFromDB.getStarsTotal() + receivedMeal.getRating()));

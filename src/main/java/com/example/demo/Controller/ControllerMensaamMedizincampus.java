@@ -3,6 +3,7 @@ package com.example.demo.Controller;
 import com.example.demo.JPA.entities.meals.Meal;
 import com.example.demo.JPA.entities.meals.Meals_Mensa_am_Medizincampus;
 import com.example.demo.JPA.entities.meals.Meals_Schoenauer_Str;
+import com.example.demo.JPA.entities.mensen.Mensa_am_Medizincampus;
 import com.example.demo.JPA.services.meals.Meals_Mensa_AcademicaService;
 import com.example.demo.JPA.services.meals.Meals_Mensa_am_MedizincampusService;
 import com.example.demo.JPA.services.mensen.Mensa_AcademicaService;
@@ -38,9 +39,9 @@ public class ControllerMensaamMedizincampus {
 
     @CrossOrigin(origins = {"https://mensi-mates.whosfritz.de/"})
     @PostMapping("/mealsFromFritz/mensa_am_medizincampus")
-    public void saveMeal(@RequestBody Meals_Schoenauer_Str receivedMeal) {
+    public void saveMeal(@RequestBody Meals_Mensa_am_Medizincampus receivedMeal) {
         log.info("Meal received: " + receivedMeal);
-        Meals_Schoenauer_Str mealFromDB = (Meals_Schoenauer_Str) meals_mensa_am_medizincampusService.findByNameAndServingDateAndId(receivedMeal.getName(), receivedMeal.getServingDate(), receivedMeal.getId()).get(0);
+        Meals_Mensa_am_Medizincampus mealFromDB = (Meals_Mensa_am_Medizincampus) meals_mensa_am_medizincampusService.findByNameAndServingDateAndId(receivedMeal.getName(), receivedMeal.getServingDate(), receivedMeal.getId()).get(0);
         if (mealFromDB != null) {
             mealFromDB.setVotes(mealFromDB.getVotes() + 1);
             mealFromDB.setStarsTotal((int) (mealFromDB.getStarsTotal() + receivedMeal.getRating()));
