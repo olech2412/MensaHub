@@ -1,6 +1,5 @@
 package com.example.demo.JPA.repository.meals;
 
-import com.example.demo.JPA.entities.meals.Meals_Cafeteria_Dittrichring;
 import com.example.demo.JPA.entities.meals.Meals_Schoenauer_Str;
 import org.springframework.data.repository.CrudRepository;
 

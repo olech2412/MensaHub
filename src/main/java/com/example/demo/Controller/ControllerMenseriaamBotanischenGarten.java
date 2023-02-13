@@ -2,9 +2,7 @@ package com.example.demo.Controller;
 
 import com.example.demo.JPA.entities.meals.Meal;
 import com.example.demo.JPA.entities.meals.Meals_Schoenauer_Str;
-import com.example.demo.JPA.services.meals.Meals_Mensa_AcademicaService;
 import com.example.demo.JPA.services.meals.Meals_Menseria_am_Botanischen_GartenServices;
-import com.example.demo.JPA.services.mensen.Mensa_AcademicaService;
 import com.example.demo.JPA.services.mensen.Menseria_am_Botanischen_GartenService;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.web.bind.annotation.*;

@@ -2,7 +2,6 @@ package com.example.demo.Controller.SupportOldDataModel;
 
 import com.example.demo.JPA.entities.meals.Meal;
 import com.example.demo.JPA.entities.meals.Meals_Schoenauer_Str;
-import com.example.demo.JPA.entities.mensen.Mensa_Schoenauer_Str;
 import com.example.demo.JPA.services.meals.Meals_Mensa_Schoenauer_StrService;
 import com.example.demo.JPA.services.mensen.Mensa_Schoenauer_StrService;
 import lombok.extern.log4j.Log4j2;

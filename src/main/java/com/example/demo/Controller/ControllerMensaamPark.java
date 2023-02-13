@@ -1,10 +1,9 @@
 package com.example.demo.Controller;
 
 import com.example.demo.JPA.entities.meals.Meal;
+import com.example.demo.JPA.entities.meals.Meals_Mensa_am_Park;
 import com.example.demo.JPA.entities.meals.Meals_Schoenauer_Str;
-import com.example.demo.JPA.services.meals.Meals_Mensa_AcademicaService;
 import com.example.demo.JPA.services.meals.Meals_Mensa_am_ParkService;
-import com.example.demo.JPA.services.mensen.Mensa_AcademicaService;
 import com.example.demo.JPA.services.mensen.Mensa_am_ParkService;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.web.bind.annotation.*;
@@ -37,9 +36,9 @@ public class ControllerMensaamPark {
 
     @CrossOrigin(origins = {"https://mensi-mates.whosfritz.de/"})
     @PostMapping("/mealsFromFritz/mensa_am_park")
-    public void saveMeal(@RequestBody Meals_Schoenauer_Str receivedMeal) {
+    public void saveMeal(@RequestBody Meals_Mensa_am_Park receivedMeal) {
         log.info("Meal received: " + receivedMeal);
-        Meals_Schoenauer_Str mealFromDB = (Meals_Schoenauer_Str) meals_mensa_am_parkService.findByNameAndServingDateAndId(receivedMeal.getName(), receivedMeal.getServingDate(), receivedMeal.getId()).get(0);
+        Meals_Mensa_am_Park mealFromDB = (Meals_Mensa_am_Park) meals_mensa_am_parkService.findByNameAndServingDateAndId(receivedMeal.getName(), receivedMeal.getServingDate(), receivedMeal.getId()).get(0);
         if (mealFromDB != null) {
             mealFromDB.setVotes(mealFromDB.getVotes() + 1);
             mealFromDB.setStarsTotal((int) (mealFromDB.getStarsTotal() + receivedMeal.getRating()));
