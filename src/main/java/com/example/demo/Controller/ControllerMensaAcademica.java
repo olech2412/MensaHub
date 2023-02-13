@@ -43,9 +43,9 @@ public class ControllerMensaAcademica {
 
     @CrossOrigin(origins = {"https://mensi-mates.whosfritz.de/"})
     @PostMapping("/mealsFromFritz/mensa_academica")
-    public void saveMeal(@RequestBody Meals_Schoenauer_Str receivedMeal) {
+    public void saveMeal(@RequestBody Meals_Mensa_Academica receivedMeal) {
         log.info("Meal received: " + receivedMeal);
-        Meals_Schoenauer_Str mealFromDB = (Meals_Schoenauer_Str) meals_mensa_academicaService.findByNameAndServingDateAndId(receivedMeal.getName(), receivedMeal.getServingDate(), receivedMeal.getId()).get(0);
+        Meals_Mensa_Academica mealFromDB = (Meals_Mensa_Academica) meals_mensa_academicaService.findByNameAndServingDateAndId(receivedMeal.getName(), receivedMeal.getServingDate(), receivedMeal.getId()).get(0);
         if (mealFromDB != null) {
             mealFromDB.setVotes(mealFromDB.getVotes() + 1);
             mealFromDB.setStarsTotal((int) (mealFromDB.getStarsTotal() + receivedMeal.getRating()));
