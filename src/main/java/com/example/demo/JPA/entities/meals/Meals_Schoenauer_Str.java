@@ -14,7 +14,7 @@ import javax.persistence.Table;
 @Getter
 @Entity
 @Table(name = "meals_schoenauer_str")
-public class Meals_Mensa_am_Park extends Meal {
+public class Meals_Schoenauer_Str extends Meal {
 
     @ManyToOne
     @JoinColumn(name = "mensa_schoenauer_str_id", nullable = false)
