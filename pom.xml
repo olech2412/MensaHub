@@ -9,7 +9,7 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.example</groupId>
-	<artifactId>demo</artifactId>
+	<artifactId>essensGetterAPI</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>EssensGetter API</name>
 	<description>API die Daten des EssensGetter für weitere Programmierprojekte bereitstellt</description>
