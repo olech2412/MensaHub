@@ -1,0 +1,156 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > ControllerMensaamElsterbecken</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.essensGetter.api.Controller</a>
+</div>
+
+<h1>Coverage Summary for Class: ControllerMensaamElsterbecken (com.essensGetter.api.Controller)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">ControllerMensaamElsterbecken</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    50%
+  </span>
+  <span class="absValue">
+    (2/4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    22.2%
+  </span>
+  <span class="absValue">
+    (4/18)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.essensGetter.api.Controller;
+&nbsp;
+&nbsp;import com.essensGetter.api.JPA.entities.meals.Meal;
+&nbsp;import com.essensGetter.api.JPA.entities.meals.Meals_Mensa_am_Elsterbecken;
+&nbsp;import com.essensGetter.api.JPA.services.meals.Meals_Mensa_am_ElsterbeckenService;
+&nbsp;import com.essensGetter.api.JPA.services.mensen.Mensa_am_ElsterbeckenService;
+&nbsp;import lombok.extern.log4j.Log4j2;
+&nbsp;import org.springframework.web.bind.annotation.*;
+&nbsp;
+&nbsp;import java.math.RoundingMode;
+&nbsp;import java.text.DecimalFormat;
+&nbsp;import java.time.LocalDate;
+&nbsp;
+&nbsp;@RestController
+<b class="fc">&nbsp;@Log4j2</b>
+&nbsp;public class ControllerMensaamElsterbecken {
+&nbsp;
+&nbsp;    private final Meals_Mensa_am_ElsterbeckenService meals_mensa_am_elsterbeckenService;
+&nbsp;
+&nbsp;    private final Mensa_am_ElsterbeckenService mensa_am_elsterbeckenService;
+&nbsp;
+&nbsp;
+&nbsp;
+<b class="fc">&nbsp;    public ControllerMensaamElsterbecken(Meals_Mensa_am_ElsterbeckenService meals_mensa_am_elsterbeckenService, Mensa_am_ElsterbeckenService mensa_am_elsterbeckenService) {</b>
+<b class="fc">&nbsp;        this.meals_mensa_am_elsterbeckenService = meals_mensa_am_elsterbeckenService;</b>
+<b class="fc">&nbsp;        this.mensa_am_elsterbeckenService = mensa_am_elsterbeckenService;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @CrossOrigin(origins = {&quot;https://mensi-mates.whosfritz.de/&quot;})
+&nbsp;    @GetMapping(&quot;/mealsForFritz/mensa_am_elsterbecken&quot;)
+&nbsp;    public Iterable&lt;? extends Meal&gt; getMeals() {
+<b class="nc">&nbsp;        log.debug(&quot;Meals were requested&quot;);</b>
+<b class="nc">&nbsp;        return meals_mensa_am_elsterbeckenService.findAllMealsByServingDateGreaterThanEqual(LocalDate.now().minusDays(2));</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @CrossOrigin(origins = {&quot;https://mensi-mates.whosfritz.de/&quot;})
+&nbsp;    @PostMapping(&quot;/mealsFromFritz/mensa_am_elsterbecken&quot;)
+&nbsp;    public void saveMeal(@RequestBody Meals_Mensa_am_Elsterbecken receivedMeal) {
+<b class="nc">&nbsp;        log.info(&quot;Meal received: &quot; + receivedMeal);</b>
+<b class="nc">&nbsp;        Meals_Mensa_am_Elsterbecken mealFromDB = (Meals_Mensa_am_Elsterbecken) meals_mensa_am_elsterbeckenService.findByNameAndServingDateAndId(receivedMeal.getName(), receivedMeal.getServingDate(), receivedMeal.getId()).get(0);</b>
+<b class="nc">&nbsp;        if (mealFromDB != null) {</b>
+<b class="nc">&nbsp;            mealFromDB.setVotes(mealFromDB.getVotes() + 1);</b>
+<b class="nc">&nbsp;            mealFromDB.setStarsTotal((int) (mealFromDB.getStarsTotal() + receivedMeal.getRating()));</b>
+<b class="nc">&nbsp;            Double calculatedRating = Double.valueOf(mealFromDB.getStarsTotal()) / Double.valueOf(mealFromDB.getVotes());</b>
+<b class="nc">&nbsp;            DecimalFormat df = new DecimalFormat(&quot;#.#&quot;);</b>
+<b class="nc">&nbsp;            df.setRoundingMode(RoundingMode.FLOOR);</b>
+<b class="nc">&nbsp;            mealFromDB.setRating(Double.parseDouble(df.format(calculatedRating).replaceFirst(&quot;,&quot;, &quot;.&quot;)));</b>
+<b class="nc">&nbsp;            meals_mensa_am_elsterbeckenService.save(mealFromDB, mensa_am_elsterbeckenService.getMensa());</b>
+<b class="nc">&nbsp;        } else {</b>
+<b class="nc">&nbsp;            log.error(&quot;Meal was not found in DB&quot;);</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-05-23 15:45</div>
+</div>
+</body>
+</html>

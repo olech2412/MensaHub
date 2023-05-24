@@ -1,0 +1,147 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > Mensa_PeterssteinwegService</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.essensGetter.api.JPA.services.mensen</a>
+</div>
+
+<h1>Coverage Summary for Class: Mensa_PeterssteinwegService (com.essensGetter.api.JPA.services.mensen)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">Mensa_PeterssteinwegService</td>
+<td class="coverageStat">
+  <span class="percent">
+    33.3%
+  </span>
+  <span class="absValue">
+    (1/3)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    25%
+  </span>
+  <span class="absValue">
+    (1/4)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">Mensa_PeterssteinwegService$$EnhancerBySpringCGLIB$$e992c488</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    33.3%
+  </span>
+  <span class="absValue">
+    (1/3)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    25%
+  </span>
+  <span class="absValue">
+    (1/4)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.essensGetter.api.JPA.services.mensen;
+&nbsp;
+&nbsp;import com.essensGetter.api.JPA.entities.mensen.Mensa;
+&nbsp;import com.essensGetter.api.JPA.entities.mensen.Mensa_Peterssteinweg;
+&nbsp;import com.essensGetter.api.JPA.repository.mensen.Mensa_PeterssteinwegRepository;
+&nbsp;import org.springframework.beans.factory.annotation.Autowired;
+&nbsp;import org.springframework.stereotype.Service;
+&nbsp;
+&nbsp;import java.util.List;
+&nbsp;
+&nbsp;@Service
+<b class="fc">&nbsp;public class Mensa_PeterssteinwegService extends Mensa_Service {</b>
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    Mensa_PeterssteinwegRepository mensa_peterssteinwegRepository;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * @return Mensa Peterssteinweg as Iterable
+&nbsp;     */
+&nbsp;    @Override
+&nbsp;    public Iterable&lt;? extends Mensa&gt; findAll() {
+<b class="nc">&nbsp;        return mensa_peterssteinwegRepository.findAll();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * @return Mensa Peterssteinweg
+&nbsp;     */
+&nbsp;    @Override
+&nbsp;    public Mensa_Peterssteinweg getMensa() {
+<b class="nc">&nbsp;        List&lt;Mensa_Peterssteinweg&gt; mensa_peterssteinwegList = (List&lt;Mensa_Peterssteinweg&gt;) mensa_peterssteinwegRepository.findAll();</b>
+<b class="nc">&nbsp;        return mensa_peterssteinwegList.get(0);</b>
+&nbsp;    }
+&nbsp;}
+&nbsp;
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-05-23 15:45</div>
+</div>
+</body>
+</html>

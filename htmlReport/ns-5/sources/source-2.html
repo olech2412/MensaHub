@@ -1,0 +1,153 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > Meal</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.essensGetter.api.JPA.entities.meals</a>
+</div>
+
+<h1>Coverage Summary for Class: Meal (com.essensGetter.api.JPA.entities.meals)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">Meal</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    83.3%
+  </span>
+  <span class="absValue">
+    (10/12)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    56.5%
+  </span>
+  <span class="absValue">
+    (13/23)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.essensGetter.api.JPA.entities.meals;
+&nbsp;
+&nbsp;import lombok.EqualsAndHashCode;
+&nbsp;import lombok.Getter;
+&nbsp;import lombok.Setter;
+&nbsp;
+&nbsp;import javax.persistence.*;
+&nbsp;import java.time.LocalDate;
+&nbsp;
+&nbsp;@Getter
+<b class="fc">&nbsp;@Setter</b>
+<b class="nc">&nbsp;@EqualsAndHashCode</b>
+&nbsp;@MappedSuperclass
+&nbsp;public abstract class Meal {
+&nbsp;
+&nbsp;    @Id
+&nbsp;    @GeneratedValue(strategy = GenerationType.AUTO)
+&nbsp;    @EqualsAndHashCode.Exclude
+&nbsp;    @Column(name = &quot;id&quot;, nullable = false)
+<b class="fc">&nbsp;    protected Long id;</b>
+<b class="fc">&nbsp;    protected String name;</b>
+<b class="fc">&nbsp;    private String description;</b>
+<b class="fc">&nbsp;    private String price;</b>
+<b class="fc">&nbsp;    private String category;</b>
+<b class="fc">&nbsp;    private LocalDate servingDate;</b>
+&nbsp;
+<b class="fc">&nbsp;    private Integer responseCode;</b>
+<b class="fc">&nbsp;    private Double rating = 0.0;</b>
+<b class="fc">&nbsp;    private Integer votes = 0;</b>
+<b class="fc">&nbsp;    private Integer starsTotal = 0;</b>
+&nbsp;
+<b class="fc">&nbsp;    public Meal() {</b>
+&nbsp;    }
+&nbsp;
+<b class="nc">&nbsp;    public Meal(String name, String description, String price, String category, LocalDate servingDate) {</b>
+<b class="nc">&nbsp;        this.name = name;</b>
+<b class="nc">&nbsp;        this.description = description;</b>
+<b class="nc">&nbsp;        this.price = price;</b>
+<b class="nc">&nbsp;        this.category = category;</b>
+<b class="nc">&nbsp;        this.servingDate = servingDate;</b>
+<b class="nc">&nbsp;        this.rating = 0.0;</b>
+<b class="nc">&nbsp;        this.votes = 0;</b>
+<b class="nc">&nbsp;        this.starsTotal = 0;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    public String toString() {
+<b class="fc">&nbsp;        return &quot;Meal: &quot; + &quot;name=&quot; + name + &quot;, description=&quot; + description + &quot;, price=&quot; + price + &quot;, category=&quot; + category + &quot;, servingDate=&quot; + servingDate + &quot;, rating=&quot; + rating + &quot;, votes=&quot; + votes + &quot;, starsTotal=&quot; + starsTotal + &quot;, votes=&quot; + votes;</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-05-23 15:45</div>
+</div>
+</body>
+</html>

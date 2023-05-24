@@ -1,0 +1,184 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > CodeInterceptor</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.essensGetter.api</a>
+</div>
+
+<h1>Coverage Summary for Class: CodeInterceptor (com.essensGetter.api)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">CodeInterceptor</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (3/3)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    60%
+  </span>
+  <span class="absValue">
+    (18/30)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">CodeInterceptor$$EnhancerBySpringCGLIB$$973d98a8</td>
+  </tr>
+  <tr>
+    <td class="name">CodeInterceptor$$EnhancerBySpringCGLIB$$973d98a8$$FastClassBySpringCGLIB$$618c040b</td>
+  </tr>
+  <tr>
+    <td class="name">CodeInterceptor$$FastClassBySpringCGLIB$$f2150093</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (3/3)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    60%
+  </span>
+  <span class="absValue">
+    (18/30)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.essensGetter.api;
+&nbsp;
+&nbsp;import com.essensGetter.api.JPA.entities.APIAccess;
+&nbsp;import com.essensGetter.api.JPA.repository.APIAccessRepository;
+&nbsp;import lombok.extern.log4j.Log4j2;
+&nbsp;import org.springframework.stereotype.Component;
+&nbsp;import org.springframework.transaction.annotation.Transactional;
+&nbsp;import org.springframework.web.servlet.HandlerInterceptor;
+&nbsp;
+&nbsp;import javax.servlet.http.HttpServletRequest;
+&nbsp;import javax.servlet.http.HttpServletResponse;
+&nbsp;import java.time.LocalDateTime;
+&nbsp;
+&nbsp;@Component
+<b class="fc">&nbsp;@Log4j2</b>
+&nbsp;public class CodeInterceptor implements HandlerInterceptor {
+&nbsp;
+&nbsp;    private final APIAccessRepository repository;
+&nbsp;
+<b class="fc">&nbsp;    public CodeInterceptor(APIAccessRepository repository) {</b>
+<b class="fc">&nbsp;        this.repository = repository;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @Override
+&nbsp;    @Transactional
+&nbsp;    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+<b class="fc">&nbsp;        String code = request.getParameter(&quot;code&quot;);</b>
+<b class="fc">&nbsp;        APIAccess apiAccess = repository.findAPIAccessByToken(code);</b>
+<b class="fc">&nbsp;        log.info(&quot;Request from &quot; + request.getRemoteAddr() + &quot; with code &quot; + code);</b>
+<b class="fc">&nbsp;        if (apiAccess == null) {</b>
+<b class="fc">&nbsp;            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, &quot;Invalid code&quot;);</b>
+<b class="fc">&nbsp;            log.warn(&quot;Invalid code &quot; + code);</b>
+<b class="fc">&nbsp;            return false;</b>
+&nbsp;        }
+&nbsp;
+<b class="fc">&nbsp;        if(apiAccess.getCalls() &gt;= apiAccess.getMaxCalls()){</b>
+<b class="nc">&nbsp;            response.sendError(HttpServletResponse.SC_FORBIDDEN, &quot;Max calls reached, please contact the administrator&quot;);</b>
+<b class="nc">&nbsp;            log.warn(&quot;User &quot; + apiAccess.getEmail() + &quot; has reached the max calls and tried to access the API&quot;);</b>
+<b class="nc">&nbsp;            return false;</b>
+&nbsp;        }
+&nbsp;
+<b class="fc">&nbsp;        if(!apiAccess.getEnabled()){</b>
+<b class="nc">&nbsp;            response.sendError(HttpServletResponse.SC_FORBIDDEN, &quot;This code is disabled, please contact the administrator&quot;);</b>
+<b class="nc">&nbsp;            log.warn(&quot;User &quot; + apiAccess.getEmail() + &quot; tried to access the API with a disabled code&quot;);</b>
+<b class="nc">&nbsp;            return false;</b>
+&nbsp;        }
+&nbsp;
+<b class="fc">&nbsp;        if(request.getMethod().equals(&quot;GET&quot;) &amp;&amp; !apiAccess.getCanRead()){</b>
+<b class="nc">&nbsp;            response.sendError(HttpServletResponse.SC_FORBIDDEN, &quot;You are not allowed to perform this action&quot;);</b>
+<b class="nc">&nbsp;            log.warn(&quot;User &quot; + apiAccess.getEmail() + &quot; tried to access the API with a code that is not allowed to read&quot;);</b>
+<b class="nc">&nbsp;            return false;</b>
+&nbsp;        }
+&nbsp;
+<b class="fc">&nbsp;        if(request.getMethod().equals(&quot;POST&quot;) &amp;&amp; !apiAccess.getCanWrite()){</b>
+<b class="nc">&nbsp;            response.sendError(HttpServletResponse.SC_FORBIDDEN, &quot;You are not allowed to perform this action&quot;);</b>
+<b class="nc">&nbsp;            log.warn(&quot;User &quot; + apiAccess.getEmail() + &quot; tried to access the API with a code that is not allowed to write&quot;);</b>
+<b class="nc">&nbsp;            return false;</b>
+&nbsp;        }
+&nbsp;
+<b class="fc">&nbsp;        apiAccess.calls++; // Increment the number of calls</b>
+<b class="fc">&nbsp;        apiAccess.setLastCall(LocalDateTime.now());</b>
+<b class="fc">&nbsp;        repository.save(apiAccess);</b>
+<b class="fc">&nbsp;        return true;</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-05-23 15:45</div>
+</div>
+</body>
+</html>

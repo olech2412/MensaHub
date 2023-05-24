@@ -1,0 +1,229 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > Meals_Mensa_TierklinikService</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.essensGetter.api.JPA.services.meals</a>
+</div>
+
+<h1>Coverage Summary for Class: Meals_Mensa_TierklinikService (com.essensGetter.api.JPA.services.meals)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">Meals_Mensa_TierklinikService</td>
+<td class="coverageStat">
+  <span class="percent">
+    25%
+  </span>
+  <span class="absValue">
+    (2/8)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    4.9%
+  </span>
+  <span class="absValue">
+    (2/41)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">Meals_Mensa_TierklinikService$$EnhancerBySpringCGLIB$$e53420f0</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    25%
+  </span>
+  <span class="absValue">
+    (2/8)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    4.9%
+  </span>
+  <span class="absValue">
+    (2/41)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.essensGetter.api.JPA.services.meals;
+&nbsp;
+&nbsp;import com.essensGetter.api.JPA.entities.meals.Meal;
+&nbsp;import com.essensGetter.api.JPA.entities.meals.Meals_Mensa_Tierklinik;
+&nbsp;import com.essensGetter.api.JPA.entities.mensen.Mensa;
+&nbsp;import com.essensGetter.api.JPA.entities.mensen.Mensa_Tierklinik;
+&nbsp;import com.essensGetter.api.JPA.repository.meals.Meals_Mensa_TierklinikRepository;
+&nbsp;import lombok.extern.log4j.Log4j2;
+&nbsp;import org.springframework.beans.factory.annotation.Autowired;
+&nbsp;import org.springframework.stereotype.Service;
+&nbsp;
+&nbsp;import java.time.LocalDate;
+&nbsp;import java.util.List;
+&nbsp;
+&nbsp;@Service
+<b class="fc">&nbsp;@Log4j2</b>
+<b class="fc">&nbsp;public class Meals_Mensa_TierklinikService extends Meals_Mensa_Service {</b>
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    Meals_Mensa_TierklinikRepository meals_mensa_tierklinikRepository;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * @return Meals Mensa Tierklinik
+&nbsp;     */
+&nbsp;    @Override
+&nbsp;    public Iterable&lt;Meals_Mensa_Tierklinik&gt; findAll() {
+<b class="nc">&nbsp;        return meals_mensa_tierklinikRepository.findAll();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * @param servingDate
+&nbsp;     * @return All meals by serving date greater than or equal to serving date from Mensa Tierklinik
+&nbsp;     */
+&nbsp;    @Override
+&nbsp;    public List&lt;Meals_Mensa_Tierklinik&gt; findAllMealsByServingDateGreaterThanEqual(LocalDate servingDate) {
+<b class="nc">&nbsp;        return meals_mensa_tierklinikRepository.findAllMealsByServingDateGreaterThanEqual(servingDate);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * @param servingDate
+&nbsp;     * @return All meals by serving date from Mensa Tierklinik
+&nbsp;     */
+&nbsp;    @Override
+&nbsp;    public List&lt;Meals_Mensa_Tierklinik&gt; findAllMealsByServingDate(LocalDate servingDate) {
+<b class="nc">&nbsp;        return meals_mensa_tierklinikRepository.findAllMealsByServingDate(servingDate);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * @param meal
+&nbsp;     * @param mensa
+&nbsp;     */
+&nbsp;    @Override
+&nbsp;    public void save(Meal meal, Mensa mensa) {
+<b class="nc">&nbsp;        Meals_Mensa_Tierklinik meals_mensa_tierklinik = new Meals_Mensa_Tierklinik();</b>
+<b class="nc">&nbsp;        meals_mensa_tierklinik.setId(meal.getId());</b>
+<b class="nc">&nbsp;        meals_mensa_tierklinik.setName(meal.getName());</b>
+<b class="nc">&nbsp;        meals_mensa_tierklinik.setCategory(meal.getCategory());</b>
+<b class="nc">&nbsp;        meals_mensa_tierklinik.setPrice(meal.getPrice());</b>
+<b class="nc">&nbsp;        meals_mensa_tierklinik.setServingDate(meal.getServingDate());</b>
+<b class="nc">&nbsp;        meals_mensa_tierklinik.setDescription(meal.getDescription());</b>
+<b class="nc">&nbsp;        meals_mensa_tierklinik.setRating(meal.getRating());</b>
+<b class="nc">&nbsp;        meals_mensa_tierklinik.setVotes(meal.getVotes());</b>
+<b class="nc">&nbsp;        meals_mensa_tierklinik.setStarsTotal(meal.getStarsTotal());</b>
+<b class="nc">&nbsp;        meals_mensa_tierklinik.setResponseCode(meal.getResponseCode());</b>
+&nbsp;
+<b class="nc">&nbsp;        Mensa_Tierklinik mensa_tierklinik = new Mensa_Tierklinik();</b>
+<b class="nc">&nbsp;        mensa_tierklinik.setId(mensa.getId());</b>
+<b class="nc">&nbsp;        mensa_tierklinik.setName(mensa.getName());</b>
+<b class="nc">&nbsp;        mensa_tierklinik.setApiUrl(mensa.getApiUrl());</b>
+&nbsp;
+<b class="nc">&nbsp;        meals_mensa_tierklinik.setMensa_tierklinik(mensa_tierklinik);</b>
+&nbsp;
+<b class="nc">&nbsp;        meals_mensa_tierklinikRepository.save(meals_mensa_tierklinik);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * @param meal
+&nbsp;     * @param mensa
+&nbsp;     */
+&nbsp;    @Override
+&nbsp;    public void delete(Meal meal, Mensa mensa) {
+<b class="nc">&nbsp;        Meals_Mensa_Tierklinik meals_mensa_tierklinik = new Meals_Mensa_Tierklinik();</b>
+<b class="nc">&nbsp;        meals_mensa_tierklinik.setId(meal.getId());</b>
+<b class="nc">&nbsp;        meals_mensa_tierklinik.setName(meal.getName());</b>
+<b class="nc">&nbsp;        meals_mensa_tierklinik.setCategory(meal.getCategory());</b>
+<b class="nc">&nbsp;        meals_mensa_tierklinik.setPrice(meal.getPrice());</b>
+<b class="nc">&nbsp;        meals_mensa_tierklinik.setServingDate(meal.getServingDate());</b>
+<b class="nc">&nbsp;        meals_mensa_tierklinik.setDescription(meal.getDescription());</b>
+<b class="nc">&nbsp;        meals_mensa_tierklinik.setRating(meal.getRating());</b>
+<b class="nc">&nbsp;        meals_mensa_tierklinik.setVotes(meal.getVotes());</b>
+<b class="nc">&nbsp;        meals_mensa_tierklinik.setStarsTotal(meal.getStarsTotal());</b>
+<b class="nc">&nbsp;        meals_mensa_tierklinik.setResponseCode(meal.getResponseCode());</b>
+&nbsp;
+<b class="nc">&nbsp;        Mensa_Tierklinik mensa_tierklinik = new Mensa_Tierklinik();</b>
+<b class="nc">&nbsp;        mensa_tierklinik.setId(mensa.getId());</b>
+<b class="nc">&nbsp;        mensa_tierklinik.setName(mensa.getName());</b>
+<b class="nc">&nbsp;        mensa_tierklinik.setApiUrl(mensa.getApiUrl());</b>
+&nbsp;
+<b class="nc">&nbsp;        meals_mensa_tierklinik.setMensa_tierklinik(mensa_tierklinik);</b>
+&nbsp;
+<b class="nc">&nbsp;        meals_mensa_tierklinikRepository.delete(meals_mensa_tierklinik);</b>
+<b class="nc">&nbsp;        log.warn(&quot;Meal deleted: &quot; + meal.getName() + &quot; from &quot; + mensa.getName());</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * @param name
+&nbsp;     * @param servingDate
+&nbsp;     * @param id
+&nbsp;     * @return
+&nbsp;     */
+&nbsp;    @Override
+&nbsp;    public List&lt;? extends Meal&gt; findByNameAndServingDateAndId(String name, LocalDate servingDate, Long id) {
+<b class="nc">&nbsp;        return meals_mensa_tierklinikRepository.findByNameAndServingDateAndId(name, servingDate, id);</b>
+&nbsp;    }
+&nbsp;}
+&nbsp;
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-05-23 15:45</div>
+</div>
+</body>
+</html>
