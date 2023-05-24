@@ -1,11 +1,9 @@
-package com.essensGetter.api.ControllerTest;
+package com.essensGetter.api.APINavigation.ControllerTest;
 
 import com.essensGetter.api.JPA.entities.meals.Meals_Cafeteria_Dittrichring;
 import com.essensGetter.api.JPA.entities.meals.Meals_Mensa_Academica;
-import com.essensGetter.api.JPA.entities.meals.Meals_Mensa_am_Park;
 import com.essensGetter.api.JPA.services.meals.Meals_Cafeteria_DittrichringService;
 import com.essensGetter.api.JPA.services.meals.Meals_Mensa_AcademicaService;
-import com.essensGetter.api.JPA.services.meals.Meals_Mensa_am_ParkService;
 import net.bytebuddy.utility.RandomString;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -30,7 +28,7 @@ import static org.hamcrest.Matchers.hasItems;
 
 @SpringBootTest
 @AutoConfigureMockMvc
-public class MensaamParkControllerTest {
+public class MensaAcademicaControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -51,39 +49,39 @@ public class MensaamParkControllerTest {
             "    }";
 
     @Autowired
-    Meals_Mensa_am_ParkService mealsMensaAmParkService;
+    Meals_Mensa_AcademicaService meals_mensa_academicaService;
 
     @Test
     public void contextLoads() {
         assertThat(mockMvc).isNotNull();
-        assertThat(mealsMensaAmParkService).isNotNull();
+        assertThat(meals_mensa_academicaService).isNotNull();
     }
 
     @Test
     public void controllerShouldReturnMealData() throws Exception {
-        this.mockMvc.perform(MockMvcRequestBuilders.get("/mealsForFritz/mensa_am_park?code=8PLUv50emD7jBakyy9U4").contentType(MediaType.APPLICATION_JSON)).andDo(print())
+        this.mockMvc.perform(MockMvcRequestBuilders.get("/mealsForFritz/mensa_academica?code=8PLUv50emD7jBakyy9U4").contentType(MediaType.APPLICATION_JSON)).andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasItems()));
     }
 
     @Test
     public void controllerShouldBeAccessedOnlyWithAuthCode() throws Exception {
-        this.mockMvc.perform(MockMvcRequestBuilders.get("/mealsForFritz/mensa_am_park")).andDo(print()).andExpect(status().is(401));
+        this.mockMvc.perform(MockMvcRequestBuilders.get("/mealsForFritz/mensa_academica")).andDo(print()).andExpect(status().is(401));
     }
 
     @Test
     public void controllerShouldBeAccessedOnlyWithValidAuthCode() throws Exception {
-        this.mockMvc.perform(MockMvcRequestBuilders.get("/mealsForFritz/mensa_am_park?code=" + RandomString.make(20))).andDo(print()).andExpect(status().is(401));
+        this.mockMvc.perform(MockMvcRequestBuilders.get("/mealsForFritz/mensa_academica?code=" + RandomString.make(20))).andDo(print()).andExpect(status().is(401));
     }
 
     @Test
     public void controllerShouldReceivePostData() throws Exception {
-        Meals_Mensa_am_Park testMealBeforePost = (Meals_Mensa_am_Park) mealsMensaAmParkService.findByNameAndServingDateAndId("Testname", LocalDate.parse("2001-01-01"), 1L).get(0);
-        this.mockMvc.perform(post("/mealsFromFritz/mensa_am_park?code=8PLUv50emD7jBakyy9U4").contentType(MediaType.APPLICATION_JSON).content(jsonData))
+        Meals_Mensa_Academica testMealBeforePost = (Meals_Mensa_Academica) meals_mensa_academicaService.findByNameAndServingDateAndId("Testname", LocalDate.parse("2001-01-01"), 1L).get(0);
+        this.mockMvc.perform(post("/mealsFromFritz/mensa_academica?code=8PLUv50emD7jBakyy9U4").contentType(MediaType.APPLICATION_JSON).content(jsonData))
                 .andDo(print())
                 .andExpect(status()
                 .isOk()).andReturn();
-        Meals_Mensa_am_Park testMealAfterPost = (Meals_Mensa_am_Park) mealsMensaAmParkService.findByNameAndServingDateAndId("Testname", LocalDate.parse("2001-01-01"), 1L).get(0);
+        Meals_Mensa_Academica testMealAfterPost = (Meals_Mensa_Academica) meals_mensa_academicaService.findByNameAndServingDateAndId("Testname", LocalDate.parse("2001-01-01"), 1L).get(0);
 
         Assertions.assertTrue(testMealBeforePost.getVotes() < testMealAfterPost.getVotes());
         Assertions.assertEquals(1, testMealAfterPost.getVotes() - testMealBeforePost.getVotes());

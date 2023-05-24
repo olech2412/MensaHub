@@ -26,15 +26,13 @@ public class ControllerSchoenauerStr {
         this.mensa_schoenauer_strService = mensa_schoenauer_strService;
     }
 
-    @CrossOrigin(origins = {"https://mensi-mates.whosfritz.de/"})
-    @GetMapping("/mealsForFritz/mensa_schoenauer_str")
+    @GetMapping("/getMeals/mensa_schoenauer_str")
     public Iterable<? extends Meal> getMeals() {
         log.debug("Meals were requested");
         return meals_mensa_schoenauer_strService.findAllMealsByServingDateGreaterThanEqual(LocalDate.now().minusDays(2));
     }
 
-    @CrossOrigin(origins = {"https://mensi-mates.whosfritz.de/"})
-    @PostMapping("/mealsFromFritz/mensa_schoenauer_str")
+    @PostMapping("/sendRating/mensa_schoenauer_str")
     public void saveMeal(@RequestBody Meals_Schoenauer_Str receivedMeal) {
         log.info("Meal received: " + receivedMeal);
         Meals_Schoenauer_Str mealFromDB = (Meals_Schoenauer_Str) meals_mensa_schoenauer_strService.findByNameAndServingDateAndId(receivedMeal.getName(), receivedMeal.getServingDate(), receivedMeal.getId()).get(0);

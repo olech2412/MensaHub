@@ -26,13 +26,13 @@ public class ControllerCafeteriaDittrichring {
         this.cafeteria_dittrichringService = cafeteria_dittrichringService;
     }
 
-    @GetMapping("/mealsForFritz/cafeteria_dittrichring")
+    @GetMapping("getMeals/cafeteria_dittrichring")
     public Iterable<? extends Meal> getMeals() {
         log.debug("Meals were requested");
         return meals_cafeteria_dittrichringService.findAllMealsByServingDateGreaterThanEqual(LocalDate.now().minusDays(2));
     }
 
-    @PostMapping("/mealsFromFritz/cafeteria_dittrichring")
+    @PostMapping("/sendRating/cafeteria_dittrichring")
     public void saveMeal(@RequestBody Meals_Cafeteria_Dittrichring receivedMeal) {
         log.info("Meal received: " + receivedMeal);
         Meals_Cafeteria_Dittrichring mealFromDB = (Meals_Cafeteria_Dittrichring) meals_cafeteria_dittrichringService.findByNameAndServingDateAndId(receivedMeal.getName(), receivedMeal.getServingDate(), receivedMeal.getId()).get(0);

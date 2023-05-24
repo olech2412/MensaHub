@@ -1,11 +1,11 @@
-package com.essensGetter.api.ControllerTest;
+package com.essensGetter.api.APINavigation.ControllerTest;
 
 import com.essensGetter.api.JPA.entities.meals.Meals_Cafeteria_Dittrichring;
 import com.essensGetter.api.JPA.entities.meals.Meals_Mensa_Academica;
-import com.essensGetter.api.JPA.entities.meals.Meals_Mensa_am_Medizincampus;
+import com.essensGetter.api.JPA.entities.meals.Meals_Mensa_Peterssteinweg;
 import com.essensGetter.api.JPA.services.meals.Meals_Cafeteria_DittrichringService;
 import com.essensGetter.api.JPA.services.meals.Meals_Mensa_AcademicaService;
-import com.essensGetter.api.JPA.services.meals.Meals_Mensa_am_MedizincampusService;
+import com.essensGetter.api.JPA.services.meals.Meals_Mensa_PeterssteinwegService;
 import net.bytebuddy.utility.RandomString;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -30,7 +30,7 @@ import static org.hamcrest.Matchers.hasItems;
 
 @SpringBootTest
 @AutoConfigureMockMvc
-public class MensaamMedizincampusControllerTest {
+public class MensaPeterssteinwegControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -41,7 +41,7 @@ public class MensaamMedizincampusControllerTest {
             "      \"id\": 1,\n" +
             "      \"name\": \"Testname\",\n" +
             "      \"description\": \"Testbeschreibung\",\n" +
-            "      \"price\": \"4,00€/ 5,50€/ 6,50€\",\n" +
+            "      \"price\": \"3,05€/ 4,90€/ 6,70€\",\n" +
             "      \"category\": \"Testkategorie\",\n" +
             "      \"servingDate\": \"2001-01-01\",\n" +
             "      \"responseCode\": 200,\n" +
@@ -51,38 +51,39 @@ public class MensaamMedizincampusControllerTest {
             "    }";
 
     @Autowired
-    Meals_Mensa_am_MedizincampusService meals_mensa_am_medizincampusService;
+    Meals_Mensa_PeterssteinwegService mealsMensaPeterssteinwegService;
 
     @Test
     public void contextLoads() {
         assertThat(mockMvc).isNotNull();
-        assertThat(meals_mensa_am_medizincampusService).isNotNull();
+        assertThat(mealsMensaPeterssteinwegService).isNotNull();
     }
 
     @Test
     public void controllerShouldReturnMealData() throws Exception {
-        this.mockMvc.perform(MockMvcRequestBuilders.get("/mealsForFritz/meals_mensa_am_medizincampus?code=8PLUv50emD7jBakyy9U4").contentType(MediaType.APPLICATION_JSON)).andDo(print())
+        this.mockMvc.perform(MockMvcRequestBuilders.get("/mealsForFritz/mensa_peterssteinweg?code=8PLUv50emD7jBakyy9U4").contentType(MediaType.APPLICATION_JSON)).andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasItems()));
     }
 
     @Test
     public void controllerShouldBeAccessedOnlyWithAuthCode() throws Exception {
-        this.mockMvc.perform(MockMvcRequestBuilders.get("/mealsForFritz/meals_mensa_am_medizincampus")).andDo(print()).andExpect(status().is(401));
+        this.mockMvc.perform(MockMvcRequestBuilders.get("/mealsForFritz/mensa_peterssteinweg")).andDo(print()).andExpect(status().is(401));
     }
 
     @Test
     public void controllerShouldBeAccessedOnlyWithValidAuthCode() throws Exception {
-        this.mockMvc.perform(MockMvcRequestBuilders.get("/mealsForFritz/meals_mensa_am_medizincampus?code=" + RandomString.make(20))).andDo(print()).andExpect(status().is(401));
+        this.mockMvc.perform(MockMvcRequestBuilders.get("/mealsForFritz/mensa_peterssteinweg?code=" + RandomString.make(20))).andDo(print()).andExpect(status().is(401));
     }
 
     @Test
     public void controllerShouldReceivePostData() throws Exception {
-        Meals_Mensa_am_Medizincampus testMealBeforePost = (Meals_Mensa_am_Medizincampus) meals_mensa_am_medizincampusService.findByNameAndServingDateAndId("Testname", LocalDate.parse("2001-01-01"), 1L).get(0);
-        this.mockMvc.perform(post("/mealsFromFritz/mensa_am_medizincampus?code=8PLUv50emD7jBakyy9U4").contentType(MediaType.APPLICATION_JSON).content(jsonData))
+        Meals_Mensa_Peterssteinweg testMealBeforePost = (Meals_Mensa_Peterssteinweg) mealsMensaPeterssteinwegService.findByNameAndServingDateAndId("Testname", LocalDate.parse("2001-01-01"), 1L).get(0);
+        this.mockMvc.perform(post("/mealsFromFritz/mensa_peterssteinweg?code=8PLUv50emD7jBakyy9U4").contentType(MediaType.APPLICATION_JSON).content(jsonData))
                 .andDo(print())
-                .andExpect(status().isOk()).andReturn();
-        Meals_Mensa_am_Medizincampus testMealAfterPost = (Meals_Mensa_am_Medizincampus) meals_mensa_am_medizincampusService.findByNameAndServingDateAndId("Testname", LocalDate.parse("2001-01-01"), 1L).get(0);
+                .andExpect(status()
+                .isOk()).andReturn();
+        Meals_Mensa_Peterssteinweg testMealAfterPost = (Meals_Mensa_Peterssteinweg) mealsMensaPeterssteinwegService.findByNameAndServingDateAndId("Testname", LocalDate.parse("2001-01-01"), 1L).get(0);
 
         Assertions.assertTrue(testMealBeforePost.getVotes() < testMealAfterPost.getVotes());
         Assertions.assertEquals(1, testMealAfterPost.getVotes() - testMealBeforePost.getVotes());

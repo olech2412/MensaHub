@@ -26,15 +26,13 @@ public class ControllerMensaTierklinik {
         this.mensa_tierklinikService = mensa_tierklinikService;
     }
 
-    @CrossOrigin(origins = {"https://mensi-mates.whosfritz.de/"})
-    @GetMapping("/mealsForFritz/mensa_tierklinik")
+    @GetMapping("/getMeals/mensa_tierklinik")
     public Iterable<? extends Meal> getMeals() {
         log.debug("Meals were requested");
         return meals_mensa_tierklinikService.findAllMealsByServingDateGreaterThanEqual(LocalDate.now().minusDays(2));
     }
 
-    @CrossOrigin(origins = {"https://mensi-mates.whosfritz.de/"})
-    @PostMapping("/mealsFromFritz/mensa_tierklinik")
+    @PostMapping("/sendRating/mensa_tierklinik")
     public void saveMeal(@RequestBody Meals_Mensa_Tierklinik receivedMeal) {
         log.info("Meal received: " + receivedMeal);
         Meals_Mensa_Tierklinik mealFromDB = (Meals_Mensa_Tierklinik) meals_mensa_tierklinikService.findByNameAndServingDateAndId(receivedMeal.getName(), receivedMeal.getServingDate(), receivedMeal.getId()).get(0);

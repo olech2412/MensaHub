@@ -26,15 +26,13 @@ public class ControllerMensaamMedizincampus {
         this.mensa_am_medizincampusService = mensa_am_medizincampusService;
     }
 
-    @CrossOrigin(origins = {"https://mensi-mates.whosfritz.de/"})
-    @GetMapping("/mealsForFritz/meals_mensa_am_medizincampus")
+    @GetMapping("/getMeals/meals_mensa_am_medizincampus")
     public Iterable<? extends Meal> getMeals() {
         log.debug("Meals were requested");
         return meals_mensa_am_medizincampusService.findAllMealsByServingDateGreaterThanEqual(LocalDate.now().minusDays(2));
     }
 
-    @CrossOrigin(origins = {"https://mensi-mates.whosfritz.de/"})
-    @PostMapping("/mealsFromFritz/mensa_am_medizincampus")
+    @PostMapping("/sendRating/mensa_am_medizincampus")
     public void saveMeal(@RequestBody Meals_Mensa_am_Medizincampus receivedMeal) {
         log.info("Meal received: " + receivedMeal);
         Meals_Mensa_am_Medizincampus mealFromDB = (Meals_Mensa_am_Medizincampus) meals_mensa_am_medizincampusService.findByNameAndServingDateAndId(receivedMeal.getName(), receivedMeal.getServingDate(), receivedMeal.getId()).get(0);
