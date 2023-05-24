@@ -26,7 +26,7 @@ public class CodeInterceptor implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         String code = request.getParameter("code");
         APIAccess apiAccess = repository.findAPIAccessByToken(code);
-        log.info("Request from " + request.getRemoteAddr() + " with code " + code);
+        log.debug("Request from " + request.getRemoteAddr() + " with code " + code);
         if (apiAccess == null) {
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid code");
             log.warn("Invalid code " + code);

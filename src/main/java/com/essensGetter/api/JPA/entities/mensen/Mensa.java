@@ -1,5 +1,6 @@
 package com.essensGetter.api.JPA.entities.mensen;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
@@ -14,10 +15,12 @@ public abstract class Mensa {
     @GeneratedValue(strategy = GenerationType.AUTO)
     @EqualsAndHashCode.Exclude
     @Column(name = "id", nullable = false)
+    @JsonIgnore
     private Long id;
 
     private String name;
 
+    @JsonIgnore
     private String apiUrl;
 
     public Mensa() {

@@ -1,5 +1,6 @@
 package com.essensGetter.api.JPA.entities.meals;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
@@ -24,9 +25,11 @@ public abstract class Meal {
     private String category;
     private LocalDate servingDate;
 
+    @JsonIgnore
     private Integer responseCode;
     private Double rating = 0.0;
     private Integer votes = 0;
+    @JsonIgnore
     private Integer starsTotal = 0;
 
     public Meal() {
