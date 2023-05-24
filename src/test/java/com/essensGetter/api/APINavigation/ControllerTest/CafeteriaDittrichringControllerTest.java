@@ -57,25 +57,25 @@ public class CafeteriaDittrichringControllerTest {
 
     @Test
     public void controllerShouldReturnMealData() throws Exception {
-        this.mockMvc.perform(MockMvcRequestBuilders.get("/mealsForFritz/cafeteria_dittrichring?code=8PLUv50emD7jBakyy9U4").contentType(MediaType.APPLICATION_JSON)).andDo(print())
+        this.mockMvc.perform(MockMvcRequestBuilders.get("/getMeals/cafeteria_dittrichring?code=8PLUv50emD7jBakyy9U4").contentType(MediaType.APPLICATION_JSON)).andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasItems()));
     }
 
     @Test
     public void controllerShouldBeAccessedOnlyWithAuthCode() throws Exception {
-        this.mockMvc.perform(MockMvcRequestBuilders.get("/mealsForFritz/cafeteria_dittrichring")).andDo(print()).andExpect(status().is(401));
+        this.mockMvc.perform(MockMvcRequestBuilders.get("/getMeals/cafeteria_dittrichring")).andDo(print()).andExpect(status().is(401));
     }
 
     @Test
     public void controllerShouldBeAccessedOnlyWithValidAuthCode() throws Exception {
-        this.mockMvc.perform(MockMvcRequestBuilders.get("/mealsForFritz/cafeteria_dittrichring?code=" + RandomString.make(20))).andDo(print()).andExpect(status().is(401));
+        this.mockMvc.perform(MockMvcRequestBuilders.get("/getMeals/cafeteria_dittrichring?code=" + RandomString.make(20))).andDo(print()).andExpect(status().is(401));
     }
 
     @Test
     public void controllerShouldReceivePostData() throws Exception {
         Meals_Cafeteria_Dittrichring testMealBeforePost = (Meals_Cafeteria_Dittrichring) meals_cafeteria_dittrichringService.findByNameAndServingDateAndId("Testname", LocalDate.parse("2001-01-01"), 1L).get(0);
-        this.mockMvc.perform(post("/mealsFromFritz/cafeteria_dittrichring?code=8PLUv50emD7jBakyy9U4").contentType(MediaType.APPLICATION_JSON).content(jsonData))
+        this.mockMvc.perform(post("/sendRating/cafeteria_dittrichring?code=8PLUv50emD7jBakyy9U4").contentType(MediaType.APPLICATION_JSON).content(jsonData))
                 .andDo(print())
                 .andExpect(status()
                 .isOk()).andReturn();

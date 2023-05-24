@@ -61,25 +61,25 @@ public class MenseriaamBotanischenGartenControllerTest {
 
     @Test
     public void controllerShouldReturnMealData() throws Exception {
-        this.mockMvc.perform(MockMvcRequestBuilders.get("/mealsForFritz/menseria_am_botanischen_garten?code=8PLUv50emD7jBakyy9U4").contentType(MediaType.APPLICATION_JSON)).andDo(print())
+        this.mockMvc.perform(MockMvcRequestBuilders.get("/getMeals/menseria_am_botanischen_garten?code=8PLUv50emD7jBakyy9U4").contentType(MediaType.APPLICATION_JSON)).andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasItems()));
     }
 
     @Test
     public void controllerShouldBeAccessedOnlyWithAuthCode() throws Exception {
-        this.mockMvc.perform(MockMvcRequestBuilders.get("/mealsForFritz/menseria_am_botanischen_garten")).andDo(print()).andExpect(status().is(401));
+        this.mockMvc.perform(MockMvcRequestBuilders.get("/getMeals/menseria_am_botanischen_garten")).andDo(print()).andExpect(status().is(401));
     }
 
     @Test
     public void controllerShouldBeAccessedOnlyWithValidAuthCode() throws Exception {
-        this.mockMvc.perform(MockMvcRequestBuilders.get("/mealsForFritz/menseria_am_botanischen_garten?code=" + RandomString.make(20))).andDo(print()).andExpect(status().is(401));
+        this.mockMvc.perform(MockMvcRequestBuilders.get("/getMeals/menseria_am_botanischen_garten?code=" + RandomString.make(20))).andDo(print()).andExpect(status().is(401));
     }
 
     @Test
     public void controllerShouldReceivePostData() throws Exception {
         Meals_Menseria_am_Botanischen_Garten testMealBeforePost = (Meals_Menseria_am_Botanischen_Garten) mealsMenseriaAmBotanischenGartenServices.findByNameAndServingDateAndId("Testname", LocalDate.parse("2001-01-01"), 1L).get(0);
-        this.mockMvc.perform(post("/mealsFromFritz/menseria_am_botanischen_garten?code=8PLUv50emD7jBakyy9U4").contentType(MediaType.APPLICATION_JSON).content(jsonData))
+        this.mockMvc.perform(post("/sendRating/menseria_am_botanischen_garten?code=8PLUv50emD7jBakyy9U4").contentType(MediaType.APPLICATION_JSON).content(jsonData))
                 .andDo(print())
                 .andExpect(status()
                 .isOk()).andReturn();
