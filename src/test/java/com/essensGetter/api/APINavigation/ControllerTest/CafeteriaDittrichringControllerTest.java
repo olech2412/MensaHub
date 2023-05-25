@@ -2,6 +2,7 @@ package com.essensGetter.api.APINavigation.ControllerTest;
 
 import com.essensGetter.api.JPA.entities.meals.Meals_Cafeteria_Dittrichring;
 import com.essensGetter.api.JPA.services.meals.Meals_Cafeteria_DittrichringService;
+import com.essensGetter.api.JPA.services.mensen.Cafeteria_DittrichringService;
 import net.bytebuddy.utility.RandomString;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -13,16 +14,16 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.math.RoundingMode;
+import java.nio.charset.StandardCharsets;
 import java.text.DecimalFormat;
 import java.time.LocalDate;
 
+import static org.hamcrest.Matchers.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.hasItems;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -32,6 +33,8 @@ public class CafeteriaDittrichringControllerTest {
     private MockMvc mockMvc;
 
     Integer randomRating = ((int) (Math.random() * (5)));
+
+    String mensaName = "cafeteria_dittrichring";
 
     String jsonData = "{\n" +
             "      \"id\": 1,\n" +
@@ -49,33 +52,100 @@ public class CafeteriaDittrichringControllerTest {
     @Autowired
     Meals_Cafeteria_DittrichringService meals_cafeteria_dittrichringService;
 
+    @Autowired
+    Cafeteria_DittrichringService cafeteria_dittrichringService;
+
     @Test
     public void contextLoads() {
         assertThat(mockMvc).isNotNull();
         assertThat(meals_cafeteria_dittrichringService).isNotNull();
+        assertThat(cafeteria_dittrichringService).isNotNull();
     }
 
     @Test
     public void controllerShouldReturnMealData() throws Exception {
-        this.mockMvc.perform(MockMvcRequestBuilders.get("/getMeals/cafeteria_dittrichring?code=8PLUv50emD7jBakyy9U4").contentType(MediaType.APPLICATION_JSON)).andDo(print())
+        this.mockMvc.perform(MockMvcRequestBuilders.get("/" + mensaName + "/getMeals/from/2001-01-01/to/2001-03-03?code=8PLUv50emD7jBakyy9U4").contentType(MediaType.APPLICATION_JSON)).andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasItems()));
+                .andExpect(jsonPath("$", hasItems()))
+                .andExpect(jsonPath("$", hasSize(3)));
     }
 
     @Test
     public void controllerShouldBeAccessedOnlyWithAuthCode() throws Exception {
-        this.mockMvc.perform(MockMvcRequestBuilders.get("/getMeals/cafeteria_dittrichring")).andDo(print()).andExpect(status().is(401));
+        this.mockMvc.perform(MockMvcRequestBuilders.get("/" + mensaName + "/")).andDo(print()).andExpect(status().is(401));
+        this.mockMvc.perform(MockMvcRequestBuilders.get("/" + mensaName + "/getMeals/from/2001-01-01/to/2001-02-03")).andDo(print()).andExpect(status().is(401));
     }
 
     @Test
     public void controllerShouldBeAccessedOnlyWithValidAuthCode() throws Exception {
-        this.mockMvc.perform(MockMvcRequestBuilders.get("/getMeals/cafeteria_dittrichring?code=" + RandomString.make(20))).andDo(print()).andExpect(status().is(401));
+        this.mockMvc.perform(MockMvcRequestBuilders.get("/" + mensaName + "/?code=" + RandomString.make(20))).andDo(print()).andExpect(status().is(401));
+    }
+
+    @Test
+    public void controllerShouldProvideMensaName() throws Exception {
+        String content = this.mockMvc.perform(MockMvcRequestBuilders.get("/" + mensaName + "/?code=8PLUv50emD7jBakyy9U4")).andDo(print())
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString(StandardCharsets.UTF_8);
+
+        Assertions.assertEquals(content, "[{\"name\":\"" + cafeteria_dittrichringService.getMensa().getName() + "\"}]");
+    }
+
+    @Test
+    public void controllerShouldProvideMealsForSpecificTimeRange() throws Exception {
+        this.mockMvc.perform(MockMvcRequestBuilders.get("/" + mensaName + "/getMeals/from/2001-01-01/to/2001-03-03?code=8PLUv50emD7jBakyy9U4")).andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(3)))
+                .andExpect(jsonPath("$[0].servingDate", is("2001-01-01")))
+                .andExpect(jsonPath("$[1].servingDate", is("2001-02-02")))
+                .andExpect(jsonPath("$[2].servingDate", is("2001-03-03")));
+    }
+
+    @Test
+    public void controllerShouldProvideMealsForSpeicificDate() throws Exception {
+        this.mockMvc.perform(MockMvcRequestBuilders.get("/" + mensaName + "/servingDate/2001-02-02?code=8PLUv50emD7jBakyy9U4")).andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(1)))
+                .andExpect(jsonPath("$[0].servingDate", is("2001-02-02")));
+    }
+
+    @Test
+    public void controllerShouldProvideMealsForSpecificCategory() throws Exception {
+        this.mockMvc.perform(MockMvcRequestBuilders.get("/" + mensaName + "/category/Pastateller?code=8PLUv50emD7jBakyy9U4")).andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasItems()))
+                .andExpect(jsonPath("$", hasSize(meals_cafeteria_dittrichringService.findAllByCategory("Pastateller").size())));
+    }
+
+    @Test
+    public void controllerShouldProvideMealsForSpecificCategoryAndServingDate() throws Exception {
+        this.mockMvc.perform(MockMvcRequestBuilders.get("/" + mensaName + "/category/Testkategorie3/servingDate/2001-03-03?code=8PLUv50emD7jBakyy9U4")).andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasItems()))
+                .andExpect(jsonPath("$", hasSize(meals_cafeteria_dittrichringService.findAllByCategoryAndServingDate("Testkategorie3", LocalDate.parse("2001-03-03")).size())));
+    }
+
+    @Test
+    public void controllerShouldProvideMealsWhereRatingIsLessThen() throws Exception {
+        this.mockMvc.perform(MockMvcRequestBuilders.get("/" + mensaName + "/byRatingLessThen/" + randomRating +"?code=8PLUv50emD7jBakyy9U4")).andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasItems()))
+                .andExpect(jsonPath("$", hasSize(meals_cafeteria_dittrichringService.findAllByRatingLessThanEqual(Double.valueOf(randomRating)).size())));
+    }
+
+    @Test
+    public void controllerShouldProvideMealsWhereRatingIsHigherThen() throws Exception {
+        this.mockMvc.perform(MockMvcRequestBuilders.get("/" + mensaName + "/byRatingHigherThen/" + randomRating +"?code=8PLUv50emD7jBakyy9U4")).andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasItems()))
+                .andExpect(jsonPath("$", hasSize(meals_cafeteria_dittrichringService.findAllByRatingGreaterThanEqual(Double.valueOf(randomRating)).size())));
     }
 
     @Test
     public void controllerShouldReceivePostData() throws Exception {
         Meals_Cafeteria_Dittrichring testMealBeforePost = (Meals_Cafeteria_Dittrichring) meals_cafeteria_dittrichringService.findByNameAndServingDateAndId("Testname", LocalDate.parse("2001-01-01"), 1L).get(0);
-        this.mockMvc.perform(post("/sendRating/cafeteria_dittrichring?code=8PLUv50emD7jBakyy9U4").contentType(MediaType.APPLICATION_JSON).content(jsonData))
+        this.mockMvc.perform(post("/" + mensaName + "/sendRating?code=8PLUv50emD7jBakyy9U4").contentType(MediaType.APPLICATION_JSON).content(jsonData))
                 .andDo(print())
                 .andExpect(status()
                 .isOk()).andReturn();

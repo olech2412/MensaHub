@@ -18,7 +18,7 @@ import java.time.LocalDate;
 
 @RestController
 @Log4j2
-@RequestMapping("/mensa_am_botanischen_garten")
+@RequestMapping("/menseria_am_botanischen_garten")
 public class ControllerMenseriaamBotanischenGarten {
 
     private final Meals_Menseria_am_Botanischen_GartenServices meals_menseria_am_botanischen_gartenServices;
