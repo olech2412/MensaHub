@@ -11,7 +11,7 @@ Die EssensGetter API ist eine SpringBoot Anwendung, die mithilfe von Maven und J
 3. Navigieren Sie in der Kommandozeile in das Verzeichnis des Projekts.
 4. Führen Sie den Befehl `mvn clean install` aus, um die Abhängigkeiten zu installieren.
 5. Starten Sie die Anwendung mit dem Befehl `mvn spring-boot:run`.
-6. Die API sollte jetzt unter http://localhost:8080 erreichbar sein.
+6. Die API sollte jetzt unter http://localhost:8083 erreichbar sein.
 
 ## Verwendung
 
