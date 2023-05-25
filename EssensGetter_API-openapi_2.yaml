@@ -1,0 +1,1314 @@
+openapi: "3.0.3"
+info:
+  title: "EssensGetter_API API"
+  description: "EssensGetter_API API"
+  version: "1.0.0"
+servers:
+  - url: "https://EssensGetter_API"
+paths:
+  /essensGetter/mensa_academica/sendRating:
+    post:
+      summary: "POST essensGetter/mensa_academica/sendRating"
+      operationId: "saveRatingForMeal"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Generic_Meal"
+        required: true
+      responses:
+        "200":
+          description: "OK"
+  /essensGetter/mensa_academica/:
+    get:
+      summary: "GET essensGetter/mensa_academica/"
+      operationId: "getMensa"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/Mensa_Academica"
+  /essensGetter/mensa_academica/getMeals/from/{startDate}/to/{enddate}:
+    get:
+      summary: "GET essensGetter/mensa_academica/getMeals/from/{startDate}/to/{enddate}"
+      operationId: "getMealsNextDays"
+      parameters:
+        - name: "startDate"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+        - name: "enddate"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "object"
+  /essensGetter/mensa_academica/servingDate/{servingDate}:
+    get:
+      summary: "GET essensGetter/mensa_academica/servingDate/{servingDate}"
+      operationId: "getMealByServingDate"
+      parameters:
+        - name: "servingDate"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "object"
+  /essensGetter/mensa_academica/category/{category}:
+    get:
+      summary: "GET essensGetter/mensa_academica/category/{category}"
+      operationId: "getMealByCategory"
+      parameters:
+        - name: "category"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "object"
+  /essensGetter/mensa_academica/category/{category}/servingDate/{servingDate}:
+    get:
+      summary: "GET essensGetter/mensa_academica/category/{category}/servingDate/{servingDate}"
+      operationId: "getMealByCategoryAndServingDate"
+      parameters:
+        - name: "category"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+        - name: "servingDate"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "object"
+  /essensGetter/mensa_academica/byRatingLessThen/{rating}:
+    get:
+      summary: "GET essensGetter/mensa_academica/byRatingLessThen/{rating}"
+      operationId: "getMealByRatingLessThan"
+      parameters:
+        - name: "rating"
+          in: "path"
+          required: true
+          schema:
+            type: "number"
+            format: "double"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "object"
+  /essensGetter/mensa_academica/byRatingHigherThen/{rating}:
+    get:
+      summary: "GET essensGetter/mensa_academica/byRatingHigherThen/{rating}"
+      operationId: "getMealByRatingHigherThan"
+      parameters:
+        - name: "rating"
+          in: "path"
+          required: true
+          schema:
+            type: "number"
+            format: "double"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "object"
+  /essensGetter/mensa_am_medizincampus/sendRating:
+    post:
+      summary: "POST essensGetter/mensa_am_medizincampus/sendRating"
+      operationId: "saveRatingForMeal"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Generic_Meal"
+        required: true
+      responses:
+        "200":
+          description: "OK"
+  /essensGetter/mensa_am_medizincampus/:
+    get:
+      summary: "GET essensGetter/mensa_am_medizincampus/"
+      operationId: "getMensa"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/Mensa_am_Medizincampus"
+  /essensGetter/mensa_am_medizincampus/getMeals/from/{startDate}/to/{enddate}:
+    get:
+      summary: "GET essensGetter/mensa_am_medizincampus/getMeals/from/{startDate}/to/{enddate}"
+      operationId: "getMealsNextDays"
+      parameters:
+        - name: "startDate"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+        - name: "enddate"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "object"
+  /essensGetter/mensa_am_medizincampus/servingDate/{servingDate}:
+    get:
+      summary: "GET essensGetter/mensa_am_medizincampus/servingDate/{servingDate}"
+      operationId: "getMealByServingDate"
+      parameters:
+        - name: "servingDate"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "object"
+  /essensGetter/mensa_am_medizincampus/category/{category}:
+    get:
+      summary: "GET essensGetter/mensa_am_medizincampus/category/{category}"
+      operationId: "getMealByCategory"
+      parameters:
+        - name: "category"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "object"
+  /essensGetter/mensa_am_medizincampus/category/{category}/servingDate/{servingDate}:
+    get:
+      summary: "GET essensGetter/mensa_am_medizincampus/category/{category}/servingDate/{servingDate}"
+      operationId: "getMealByCategoryAndServingDate"
+      parameters:
+        - name: "category"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+        - name: "servingDate"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "object"
+  /essensGetter/mensa_am_medizincampus/byRatingLessThen/{rating}:
+    get:
+      summary: "GET essensGetter/mensa_am_medizincampus/byRatingLessThen/{rating}"
+      operationId: "getMealByRatingLessThan"
+      parameters:
+        - name: "rating"
+          in: "path"
+          required: true
+          schema:
+            type: "number"
+            format: "double"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "object"
+  /essensGetter/mensa_am_medizincampus/byRatingHigherThen/{rating}:
+    get:
+      summary: "GET essensGetter/mensa_am_medizincampus/byRatingHigherThen/{rating}"
+      operationId: "getMealByRatingHigherThan"
+      parameters:
+        - name: "rating"
+          in: "path"
+          required: true
+          schema:
+            type: "number"
+            format: "double"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "object"
+  /essensGetter/mensa_tierklinik/sendRating:
+    post:
+      summary: "POST essensGetter/mensa_tierklinik/sendRating"
+      operationId: "saveRatingForMeal"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Generic_Meal"
+        required: true
+      responses:
+        "200":
+          description: "OK"
+  /essensGetter/mensa_tierklinik/:
+    get:
+      summary: "GET essensGetter/mensa_tierklinik/"
+      operationId: "getMensa"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/Mensa_Tierklinik"
+  /essensGetter/mensa_tierklinik/getMeals/from/{startDate}/to/{enddate}:
+    get:
+      summary: "GET essensGetter/mensa_tierklinik/getMeals/from/{startDate}/to/{enddate}"
+      operationId: "getMealsNextDays"
+      parameters:
+        - name: "startDate"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+        - name: "enddate"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "object"
+  /essensGetter/mensa_tierklinik/servingDate/{servingDate}:
+    get:
+      summary: "GET essensGetter/mensa_tierklinik/servingDate/{servingDate}"
+      operationId: "getMealByServingDate"
+      parameters:
+        - name: "servingDate"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "object"
+  /essensGetter/mensa_tierklinik/category/{category}:
+    get:
+      summary: "GET essensGetter/mensa_tierklinik/category/{category}"
+      operationId: "getMealByCategory"
+      parameters:
+        - name: "category"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "object"
+  /essensGetter/mensa_tierklinik/category/{category}/servingDate/{servingDate}:
+    get:
+      summary: "GET essensGetter/mensa_tierklinik/category/{category}/servingDate/{servingDate}"
+      operationId: "getMealByCategoryAndServingDate"
+      parameters:
+        - name: "category"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+        - name: "servingDate"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "object"
+  /essensGetter/mensa_tierklinik/byRatingLessThen/{rating}:
+    get:
+      summary: "GET essensGetter/mensa_tierklinik/byRatingLessThen/{rating}"
+      operationId: "getMealByRatingLessThan"
+      parameters:
+        - name: "rating"
+          in: "path"
+          required: true
+          schema:
+            type: "number"
+            format: "double"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "object"
+  /essensGetter/mensa_tierklinik/byRatingHigherThen/{rating}:
+    get:
+      summary: "GET essensGetter/mensa_tierklinik/byRatingHigherThen/{rating}"
+      operationId: "getMealByRatingHigherThan"
+      parameters:
+        - name: "rating"
+          in: "path"
+          required: true
+          schema:
+            type: "number"
+            format: "double"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "object"
+  /essensGetter/mensa_peterssteinweg/sendRating:
+    post:
+      summary: "POST essensGetter/mensa_peterssteinweg/sendRating"
+      operationId: "saveRatingForMeal"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Generic_Meal"
+        required: true
+      responses:
+        "200":
+          description: "OK"
+  /essensGetter/mensa_peterssteinweg/:
+    get:
+      summary: "GET essensGetter/mensa_peterssteinweg/"
+      operationId: "getMensa"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/Mensa_Peterssteinweg"
+  /essensGetter/mensa_peterssteinweg/getMeals/from/{startDate}/to/{enddate}:
+    get:
+      summary: "GET essensGetter/mensa_peterssteinweg/getMeals/from/{startDate}/to/{enddate}"
+      operationId: "getMealsNextDays"
+      parameters:
+        - name: "startDate"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+        - name: "enddate"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "object"
+  /essensGetter/mensa_peterssteinweg/servingDate/{servingDate}:
+    get:
+      summary: "GET essensGetter/mensa_peterssteinweg/servingDate/{servingDate}"
+      operationId: "getMealByServingDate"
+      parameters:
+        - name: "servingDate"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "object"
+  /essensGetter/mensa_peterssteinweg/category/{category}:
+    get:
+      summary: "GET essensGetter/mensa_peterssteinweg/category/{category}"
+      operationId: "getMealByCategory"
+      parameters:
+        - name: "category"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "object"
+  /essensGetter/mensa_peterssteinweg/category/{category}/servingDate/{servingDate}:
+    get:
+      summary: "GET essensGetter/mensa_peterssteinweg/category/{category}/servingDate/{servingDate}"
+      operationId: "getMealByCategoryAndServingDate"
+      parameters:
+        - name: "category"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+        - name: "servingDate"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "object"
+  /essensGetter/mensa_peterssteinweg/byRatingLessThen/{rating}:
+    get:
+      summary: "GET essensGetter/mensa_peterssteinweg/byRatingLessThen/{rating}"
+      operationId: "getMealByRatingLessThan"
+      parameters:
+        - name: "rating"
+          in: "path"
+          required: true
+          schema:
+            type: "number"
+            format: "double"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "object"
+  /essensGetter/mensa_peterssteinweg/byRatingHigherThen/{rating}:
+    get:
+      summary: "GET essensGetter/mensa_peterssteinweg/byRatingHigherThen/{rating}"
+      operationId: "getMealByRatingHigherThan"
+      parameters:
+        - name: "rating"
+          in: "path"
+          required: true
+          schema:
+            type: "number"
+            format: "double"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "object"
+  /essensGetter/mensa_schoenauerstr/sendRating:
+    post:
+      summary: "POST essensGetter/mensa_schoenauerstr/sendRating"
+      operationId: "saveRatingForMeal"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Generic_Meal"
+        required: true
+      responses:
+        "200":
+          description: "OK"
+  /essensGetter/mensa_schoenauerstr/:
+    get:
+      summary: "GET essensGetter/mensa_schoenauerstr/"
+      operationId: "getMensa"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/Mensa_Schoenauer_Str"
+  /essensGetter/mensa_schoenauerstr/getMeals/from/{startDate}/to/{enddate}:
+    get:
+      summary: "GET essensGetter/mensa_schoenauerstr/getMeals/from/{startDate}/to/{enddate}"
+      operationId: "getMealsNextDays"
+      parameters:
+        - name: "startDate"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+        - name: "enddate"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "object"
+  /essensGetter/mensa_schoenauerstr/servingDate/{servingDate}:
+    get:
+      summary: "GET essensGetter/mensa_schoenauerstr/servingDate/{servingDate}"
+      operationId: "getMealByServingDate"
+      parameters:
+        - name: "servingDate"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "object"
+  /essensGetter/mensa_schoenauerstr/category/{category}:
+    get:
+      summary: "GET essensGetter/mensa_schoenauerstr/category/{category}"
+      operationId: "getMealByCategory"
+      parameters:
+        - name: "category"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "object"
+  /essensGetter/mensa_schoenauerstr/category/{category}/servingDate/{servingDate}:
+    get:
+      summary: "GET essensGetter/mensa_schoenauerstr/category/{category}/servingDate/{servingDate}"
+      operationId: "getMealByCategoryAndServingDate"
+      parameters:
+        - name: "category"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+        - name: "servingDate"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "object"
+  /essensGetter/mensa_schoenauerstr/byRatingLessThen/{rating}:
+    get:
+      summary: "GET essensGetter/mensa_schoenauerstr/byRatingLessThen/{rating}"
+      operationId: "getMealByRatingLessThan"
+      parameters:
+        - name: "rating"
+          in: "path"
+          required: true
+          schema:
+            type: "number"
+            format: "double"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "object"
+  /essensGetter/mensa_schoenauerstr/byRatingHigherThen/{rating}:
+    get:
+      summary: "GET essensGetter/mensa_schoenauerstr/byRatingHigherThen/{rating}"
+      operationId: "getMealByRatingHigherThan"
+      parameters:
+        - name: "rating"
+          in: "path"
+          required: true
+          schema:
+            type: "number"
+            format: "double"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "object"
+  /essensGetter/mensa_am_park/sendRating:
+    post:
+      summary: "POST essensGetter/mensa_am_park/sendRating"
+      operationId: "saveRatingForMeal"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Generic_Meal"
+        required: true
+      responses:
+        "200":
+          description: "OK"
+  /essensGetter/mensa_am_park/:
+    get:
+      summary: "GET essensGetter/mensa_am_park/"
+      operationId: "getMensa"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/Mensa_am_Park"
+  /essensGetter/mensa_am_park/getMeals/from/{startDate}/to/{enddate}:
+    get:
+      summary: "GET essensGetter/mensa_am_park/getMeals/from/{startDate}/to/{enddate}"
+      operationId: "getMealsNextDays"
+      parameters:
+        - name: "startDate"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+        - name: "enddate"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "object"
+  /essensGetter/mensa_am_park/servingDate/{servingDate}:
+    get:
+      summary: "GET essensGetter/mensa_am_park/servingDate/{servingDate}"
+      operationId: "getMealByServingDate"
+      parameters:
+        - name: "servingDate"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "object"
+  /essensGetter/mensa_am_park/category/{category}:
+    get:
+      summary: "GET essensGetter/mensa_am_park/category/{category}"
+      operationId: "getMealByCategory"
+      parameters:
+        - name: "category"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "object"
+  /essensGetter/mensa_am_park/category/{category}/servingDate/{servingDate}:
+    get:
+      summary: "GET essensGetter/mensa_am_park/category/{category}/servingDate/{servingDate}"
+      operationId: "getMealByCategoryAndServingDate"
+      parameters:
+        - name: "category"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+        - name: "servingDate"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "object"
+  /essensGetter/mensa_am_park/byRatingLessThen/{rating}:
+    get:
+      summary: "GET essensGetter/mensa_am_park/byRatingLessThen/{rating}"
+      operationId: "getMealByRatingLessThan"
+      parameters:
+        - name: "rating"
+          in: "path"
+          required: true
+          schema:
+            type: "number"
+            format: "double"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "object"
+  /essensGetter/mensa_am_park/byRatingHigherThen/{rating}:
+    get:
+      summary: "GET essensGetter/mensa_am_park/byRatingHigherThen/{rating}"
+      operationId: "getMealByRatingHigherThan"
+      parameters:
+        - name: "rating"
+          in: "path"
+          required: true
+          schema:
+            type: "number"
+            format: "double"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "object"
+  /essensGetter/mensa_am_elsterbecken/sendRating:
+    post:
+      summary: "POST essensGetter/mensa_am_elsterbecken/sendRating"
+      operationId: "saveRatingForMeal"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Generic_Meal"
+        required: true
+      responses:
+        "200":
+          description: "OK"
+  /essensGetter/mensa_am_elsterbecken/:
+    get:
+      summary: "GET essensGetter/mensa_am_elsterbecken/"
+      operationId: "getMensa"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/Mensa_am_Elsterbecken"
+  /essensGetter/mensa_am_elsterbecken/getMeals/from/{startDate}/to/{enddate}:
+    get:
+      summary: "GET essensGetter/mensa_am_elsterbecken/getMeals/from/{startDate}/to/{enddate}"
+      operationId: "getMealsNextDays"
+      parameters:
+        - name: "startDate"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+        - name: "enddate"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "object"
+  /essensGetter/mensa_am_elsterbecken/servingDate/{servingDate}:
+    get:
+      summary: "GET essensGetter/mensa_am_elsterbecken/servingDate/{servingDate}"
+      operationId: "getMealByServingDate"
+      parameters:
+        - name: "servingDate"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "object"
+  /essensGetter/mensa_am_elsterbecken/category/{category}:
+    get:
+      summary: "GET essensGetter/mensa_am_elsterbecken/category/{category}"
+      operationId: "getMealByCategory"
+      parameters:
+        - name: "category"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "object"
+  /essensGetter/mensa_am_elsterbecken/category/{category}/servingDate/{servingDate}:
+    get:
+      summary: "GET essensGetter/mensa_am_elsterbecken/category/{category}/servingDate/{servingDate}"
+      operationId: "getMealByCategoryAndServingDate"
+      parameters:
+        - name: "category"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+        - name: "servingDate"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "object"
+  /essensGetter/mensa_am_elsterbecken/byRatingLessThen/{rating}:
+    get:
+      summary: "GET essensGetter/mensa_am_elsterbecken/byRatingLessThen/{rating}"
+      operationId: "getMealByRatingLessThan"
+      parameters:
+        - name: "rating"
+          in: "path"
+          required: true
+          schema:
+            type: "number"
+            format: "double"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "object"
+  /essensGetter/mensa_am_elsterbecken/byRatingHigherThen/{rating}:
+    get:
+      summary: "GET essensGetter/mensa_am_elsterbecken/byRatingHigherThen/{rating}"
+      operationId: "getMealByRatingHigherThan"
+      parameters:
+        - name: "rating"
+          in: "path"
+          required: true
+          schema:
+            type: "number"
+            format: "double"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "object"
+  /essensGetter/menseria_am_botanischen_garten/sendRating:
+    post:
+      summary: "POST essensGetter/menseria_am_botanischen_garten/sendRating"
+      operationId: "saveRatingForMeal"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Generic_Meal"
+        required: true
+      responses:
+        "200":
+          description: "OK"
+  /essensGetter/menseria_am_botanischen_garten/:
+    get:
+      summary: "GET essensGetter/menseria_am_botanischen_garten/"
+      operationId: "getMensa"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/Menseria_am_Botanischen_Garten"
+  /essensGetter/menseria_am_botanischen_garten/getMeals/from/{startDate}/to/{enddate}:
+    get:
+      summary: "GET essensGetter/menseria_am_botanischen_garten/getMeals/from/{startDate}/to/{enddate}"
+      operationId: "getMealsNextDays"
+      parameters:
+        - name: "startDate"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+        - name: "enddate"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "object"
+  /essensGetter/menseria_am_botanischen_garten/servingDate/{servingDate}:
+    get:
+      summary: "GET essensGetter/menseria_am_botanischen_garten/servingDate/{servingDate}"
+      operationId: "getMealByServingDate"
+      parameters:
+        - name: "servingDate"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "object"
+  /essensGetter/menseria_am_botanischen_garten/category/{category}:
+    get:
+      summary: "GET essensGetter/menseria_am_botanischen_garten/category/{category}"
+      operationId: "getMealByCategory"
+      parameters:
+        - name: "category"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "object"
+  /essensGetter/menseria_am_botanischen_garten/category/{category}/servingDate/{servingDate}:
+    get:
+      summary: "GET essensGetter/menseria_am_botanischen_garten/category/{category}/servingDate/{servingDate}"
+      operationId: "getMealByCategoryAndServingDate"
+      parameters:
+        - name: "category"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+        - name: "servingDate"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "object"
+  /essensGetter/menseria_am_botanischen_garten/byRatingLessThen/{rating}:
+    get:
+      summary: "GET essensGetter/menseria_am_botanischen_garten/byRatingLessThen/{rating}"
+      operationId: "getMealByRatingLessThan"
+      parameters:
+        - name: "rating"
+          in: "path"
+          required: true
+          schema:
+            type: "number"
+            format: "double"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "object"
+  /essensGetter/menseria_am_botanischen_garten/byRatingHigherThen/{rating}:
+    get:
+      summary: "GET essensGetter/menseria_am_botanischen_garten/byRatingHigherThen/{rating}"
+      operationId: "getMealByRatingHigherThan"
+      parameters:
+        - name: "rating"
+          in: "path"
+          required: true
+          schema:
+            type: "number"
+            format: "double"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "object"
+  /essensGetter/cafeteria_dittrichring/sendRating:
+    post:
+      summary: "POST essensGetter/cafeteria_dittrichring/sendRating"
+      operationId: "saveRatingForMeal"
+      responses:
+        "200":
+          description: "OK"
+  /essensGetter/cafeteria_dittrichring/:
+    get:
+      summary: "GET essensGetter/cafeteria_dittrichring/"
+      operationId: "getMensa"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/Cafeteria_Dittrichring"
+  /essensGetter/cafeteria_dittrichring/getMeals/from/{startDate}/to/{enddate}:
+    get:
+      summary: "GET essensGetter/cafeteria_dittrichring/getMeals/from/{startDate}/to/{enddate}"
+      operationId: "getMealsNextDays"
+      parameters:
+        - name: "startDate"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+        - name: "enddate"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "object"
+  /essensGetter/cafeteria_dittrichring/servingDate/{servingDate}:
+    get:
+      summary: "GET essensGetter/cafeteria_dittrichring/servingDate/{servingDate}"
+      operationId: "getMealByServingDate"
+      parameters:
+        - name: "servingDate"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "object"
+  /essensGetter/cafeteria_dittrichring/category/{category}:
+    get:
+      summary: "GET essensGetter/cafeteria_dittrichring/category/{category}"
+      operationId: "getMealByCategory"
+      parameters:
+        - name: "category"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "object"
+  /essensGetter/cafeteria_dittrichring/category/{category}/servingDate/{servingDate}:
+    get:
+      summary: "GET essensGetter/cafeteria_dittrichring/category/{category}/servingDate/{servingDate}"
+      operationId: "getMealByCategoryAndServingDate"
+      parameters:
+        - name: "category"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+        - name: "servingDate"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "object"
+  /essensGetter/cafeteria_dittrichring/byRatingLessThen/{rating}:
+    get:
+      summary: "GET essensGetter/cafeteria_dittrichring/byRatingLessThen/{rating}"
+      operationId: "getMealByRatingLessThan"
+      parameters:
+        - name: "rating"
+          in: "path"
+          required: true
+          schema:
+            type: "number"
+            format: "double"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "object"
+  /essensGetter/cafeteria_dittrichring/byRatingHigherThen/{rating}:
+    get:
+      summary: "GET essensGetter/cafeteria_dittrichring/byRatingHigherThen/{rating}"
+      operationId: "getMealByRatingHigherThan"
+      parameters:
+        - name: "rating"
+          in: "path"
+          required: true
+          schema:
+            type: "number"
+            format: "double"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "object"
+components:
+  schemas:
+    Generic_Meal:
+      type: "object"
+      properties:
+        id:
+          type: "integer"
+          format: "int64"
+        name:
+          type: "string"
+        description:
+          type: "string"
+        price:
+          type: "string"
+        category:
+          type: "string"
+        servingDate:
+          type: "string"
+          format: "date"
+        rating:
+          type: "number"
+          format: "double"
+        votes:
+          type: "integer"
+          format: "int32"
+    Mensa_Academica:
+      type: "object"
+      properties:
+        name:
+          type: "string"
+    Mensa_am_Medizincampus:
+      type: "object"
+      properties:
+        name:
+          type: "string"
+    Mensa_Tierklinik:
+      type: "object"
+      properties:
+        name:
+          type: "string"
+    Mensa_Peterssteinweg:
+      type: "object"
+      properties:
+        name:
+          type: "string"
+    Mensa_Schoenauer_Str:
+      type: "object"
+      properties:
+        name:
+          type: "string"
+    Mensa_am_Park:
+      type: "object"
+      properties:
+        name:
+          type: "string"
+    Mensa_am_Elsterbecken:
+      type: "object"
+      properties:
+        name:
+          type: "string"
+    Menseria_am_Botanischen_Garten:
+      type: "object"
+      properties:
+        name:
+          type: "string"
+    Cafeteria_Dittrichring:
+      type: "object"
+      properties:
+        name:
+          type: "string"
