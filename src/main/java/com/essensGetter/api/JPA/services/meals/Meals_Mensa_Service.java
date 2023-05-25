@@ -24,4 +24,14 @@ public abstract class Meals_Mensa_Service extends Abstract_Service {
     public abstract void delete(Meal meal, Mensa mensa);
 
     public abstract List<? extends Meal> findByNameAndServingDateAndId(String name, LocalDate servingDate, Long id);
+
+    public abstract List<? extends Meal> findAllByCategory(String category);
+
+    public abstract List<? extends Meal> findAllByCategoryAndServingDate(String category, LocalDate servingDate);
+
+    public abstract List<? extends Meal> findAllByRatingLessThanEqual(Double rating);
+
+    public abstract List<? extends Meal> findAllByRatingGreaterThanEqual(Double rating);
+
+    public abstract List<? extends Meal> findAllByServingDateGreaterThanEqualAndServingDateLessThanEqual(LocalDate startDate, LocalDate endDate);
 }

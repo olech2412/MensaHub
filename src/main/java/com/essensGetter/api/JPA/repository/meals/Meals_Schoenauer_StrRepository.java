@@ -1,5 +1,6 @@
 package com.essensGetter.api.JPA.repository.meals;
 
+import com.essensGetter.api.JPA.entities.meals.Meals_Mensa_Tierklinik;
 import com.essensGetter.api.JPA.entities.meals.Meals_Schoenauer_Str;
 import org.springframework.data.repository.CrudRepository;
 
@@ -10,8 +11,18 @@ public interface Meals_Schoenauer_StrRepository extends CrudRepository<Meals_Sch
 
     List<Meals_Schoenauer_Str> findAllMealsByServingDateGreaterThanEqual(LocalDate servingDate);
 
+    List<Meals_Schoenauer_Str> findAllByServingDateGreaterThanEqualAndServingDateLessThanEqualOrderByServingDate(LocalDate startDate, LocalDate endDate);
+
     List<Meals_Schoenauer_Str> findAllMealsByServingDate(LocalDate servingDate);
 
     List<Meals_Schoenauer_Str> findByNameAndServingDateAndId(String name, LocalDate servingDate, Long id);
+
+    List<Meals_Schoenauer_Str> findAllByCategory(String category);
+
+    List<Meals_Schoenauer_Str> findAllByCategoryAndServingDate(String category, LocalDate servingDate);
+
+    List<Meals_Schoenauer_Str> findAllByRatingLessThanEqual(Double rating);
+
+    List<Meals_Schoenauer_Str> findAllByRatingGreaterThanEqual(Double rating);
 
 }

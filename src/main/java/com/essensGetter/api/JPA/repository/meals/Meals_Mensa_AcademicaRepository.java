@@ -1,5 +1,6 @@
 package com.essensGetter.api.JPA.repository.meals;
 
+import com.essensGetter.api.JPA.entities.meals.Meals_Cafeteria_Dittrichring;
 import com.essensGetter.api.JPA.entities.meals.Meals_Mensa_Academica;
 import org.springframework.data.repository.CrudRepository;
 
@@ -10,8 +11,18 @@ public interface Meals_Mensa_AcademicaRepository extends CrudRepository<Meals_Me
 
     List<Meals_Mensa_Academica> findAllMealsByServingDateGreaterThanEqual(LocalDate servingDate);
 
+    List<Meals_Mensa_Academica> findAllByServingDateGreaterThanEqualAndServingDateLessThanEqualOrderByServingDate(LocalDate startDate, LocalDate endDate);
+
     List<Meals_Mensa_Academica> findAllMealsByServingDate(LocalDate servingDate);
 
     List<Meals_Mensa_Academica> findByNameAndServingDateAndId(String name, LocalDate servingDate, Long id);
+
+    List<Meals_Mensa_Academica> findAllByCategory(String category);
+
+    List<Meals_Mensa_Academica> findAllByCategoryAndServingDate(String category, LocalDate servingDate);
+
+    List<Meals_Mensa_Academica> findAllByRatingLessThanEqual(Double rating);
+
+    List<Meals_Mensa_Academica> findAllByRatingGreaterThanEqual(Double rating);
 
 }

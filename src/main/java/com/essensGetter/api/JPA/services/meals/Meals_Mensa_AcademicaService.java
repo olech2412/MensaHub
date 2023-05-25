@@ -116,6 +116,31 @@ public class Meals_Mensa_AcademicaService extends Meals_Mensa_Service {
         return meals_mensa_academicaRepository.findByNameAndServingDateAndId(name, servingDate, id);
     }
 
+    @Override
+    public List<? extends Meal> findAllByCategory(String category) {
+        return meals_mensa_academicaRepository.findAllByCategory(category);
+    }
+
+    @Override
+    public List<? extends Meal> findAllByCategoryAndServingDate(String category, LocalDate servingDate) {
+        return meals_mensa_academicaRepository.findAllByCategoryAndServingDate(category, servingDate);
+    }
+
+    @Override
+    public List<? extends Meal> findAllByRatingLessThanEqual(Double rating) {
+        return meals_mensa_academicaRepository.findAllByRatingLessThanEqual(rating);
+    }
+
+    @Override
+    public List<? extends Meal> findAllByRatingGreaterThanEqual(Double rating) {
+        return meals_mensa_academicaRepository.findAllByRatingGreaterThanEqual(rating);
+    }
+
+    @Override
+    public List<? extends Meal> findAllByServingDateGreaterThanEqualAndServingDateLessThanEqual(LocalDate startDate, LocalDate endDate) {
+        return meals_mensa_academicaRepository.findAllByServingDateGreaterThanEqualAndServingDateLessThanEqualOrderByServingDate(startDate, endDate);
+    }
+
 
 }
 

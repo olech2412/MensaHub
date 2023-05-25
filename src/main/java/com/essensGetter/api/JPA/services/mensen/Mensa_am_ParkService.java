@@ -18,7 +18,7 @@ public class Mensa_am_ParkService extends Mensa_Service {
      * @return Mensa am Park as Iterable
      */
     @Override
-    public Iterable<? extends Mensa> findAll() {
+    public Iterable<Mensa_am_Park> findAll() {
         return mensa_am_parkRepository.findAll();
     }
 

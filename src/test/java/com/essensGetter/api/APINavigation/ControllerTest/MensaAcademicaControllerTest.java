@@ -2,7 +2,6 @@ package com.essensGetter.api.APINavigation.ControllerTest;
 
 import com.essensGetter.api.JPA.entities.meals.Meals_Cafeteria_Dittrichring;
 import com.essensGetter.api.JPA.entities.meals.Meals_Mensa_Academica;
-import com.essensGetter.api.JPA.services.meals.Meals_Cafeteria_DittrichringService;
 import com.essensGetter.api.JPA.services.meals.Meals_Mensa_AcademicaService;
 import net.bytebuddy.utility.RandomString;
 import org.junit.jupiter.api.Assertions;

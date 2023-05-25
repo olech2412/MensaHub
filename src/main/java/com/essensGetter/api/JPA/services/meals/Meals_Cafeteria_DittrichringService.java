@@ -114,22 +114,27 @@ public class Meals_Cafeteria_DittrichringService extends Meals_Mensa_Service {
         return meals_cafeteria_dittrichringRepository.findByNameAndServingDateAndId(name, servingDate, id);
     }
 
+    @Override
     public List<? extends Meal> findAllByCategory(String category) {
         return meals_cafeteria_dittrichringRepository.findAllByCategory(category);
     }
 
+    @Override
     public List<? extends Meal> findAllByCategoryAndServingDate(String category, LocalDate servingDate) {
         return meals_cafeteria_dittrichringRepository.findAllByCategoryAndServingDate(category, servingDate);
     }
 
+    @Override
     public List<? extends Meal> findAllByRatingLessThanEqual(Double rating) {
         return meals_cafeteria_dittrichringRepository.findAllByRatingLessThanEqual(rating);
     }
 
+    @Override
     public List<? extends Meal> findAllByRatingGreaterThanEqual(Double rating) {
         return meals_cafeteria_dittrichringRepository.findAllByRatingGreaterThanEqual(rating);
     }
 
+    @Override
     public List<? extends Meal> findAllByServingDateGreaterThanEqualAndServingDateLessThanEqual(LocalDate startDate, LocalDate endDate) {
         return meals_cafeteria_dittrichringRepository.findAllByServingDateGreaterThanEqualAndServingDateLessThanEqualOrderByServingDate(startDate, endDate);
     }

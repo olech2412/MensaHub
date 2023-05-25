@@ -112,5 +112,53 @@ public class Meals_Mensa_TierklinikService extends Meals_Mensa_Service {
     public List<? extends Meal> findByNameAndServingDateAndId(String name, LocalDate servingDate, Long id) {
         return meals_mensa_tierklinikRepository.findByNameAndServingDateAndId(name, servingDate, id);
     }
+
+    /**
+     * @param category
+     * @return
+     */
+    @Override
+    public List<? extends Meal> findAllByCategory(String category) {
+        return meals_mensa_tierklinikRepository.findAllByCategory(category);
+    }
+
+    /**
+     * @param category
+     * @param servingDate
+     * @return
+     */
+    @Override
+    public List<? extends Meal> findAllByCategoryAndServingDate(String category, LocalDate servingDate) {
+        return meals_mensa_tierklinikRepository.findAllByCategoryAndServingDate(category, servingDate);
+    }
+
+    /**
+     * @param rating
+     * @return
+     */
+    @Override
+    public List<? extends Meal> findAllByRatingLessThanEqual(Double rating) {
+        return meals_mensa_tierklinikRepository.findAllByRatingLessThanEqual(rating);
+
+    }
+
+    /**
+     * @param rating
+     * @return
+     */
+    @Override
+    public List<? extends Meal> findAllByRatingGreaterThanEqual(Double rating) {
+        return meals_mensa_tierklinikRepository.findAllByRatingGreaterThanEqual(rating);
+    }
+
+    /**
+     * @param startDate
+     * @param endDate
+     * @return
+     */
+    @Override
+    public List<? extends Meal> findAllByServingDateGreaterThanEqualAndServingDateLessThanEqual(LocalDate startDate, LocalDate endDate) {
+        return meals_mensa_tierklinikRepository.findAllByServingDateGreaterThanEqualAndServingDateLessThanEqualOrderByServingDate(startDate, endDate);
+    }
 }
 

@@ -1,6 +1,7 @@
 package com.essensGetter.api.JPA.services.mensen;
 
 import com.essensGetter.api.JPA.entities.mensen.Mensa;
+import com.essensGetter.api.JPA.entities.mensen.Mensa_Peterssteinweg;
 import com.essensGetter.api.JPA.entities.mensen.Mensa_Schoenauer_Str;
 import com.essensGetter.api.JPA.repository.mensen.Mensa_Schoenauer_StrRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +19,7 @@ public class Mensa_Schoenauer_StrService extends Mensa_Service {
      * @return Mensa Schoenauer Str as Iterable
      */
     @Override
-    public Iterable<? extends Mensa> findAll() {
+    public Iterable<Mensa_Schoenauer_Str> findAll() {
         return mensa_schoenauer_strRepository.findAll();
     }
 
