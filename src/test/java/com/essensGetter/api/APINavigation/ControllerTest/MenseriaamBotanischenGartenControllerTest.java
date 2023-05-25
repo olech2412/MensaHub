@@ -1,11 +1,9 @@
 package com.essensGetter.api.APINavigation.ControllerTest;
 
 import com.essensGetter.api.JPA.entities.meals.Meals_Cafeteria_Dittrichring;
-import com.essensGetter.api.JPA.entities.meals.Meals_Mensa_Academica;
 import com.essensGetter.api.JPA.entities.meals.Meals_Menseria_am_Botanischen_Garten;
-import com.essensGetter.api.JPA.services.meals.Meals_Cafeteria_DittrichringService;
-import com.essensGetter.api.JPA.services.meals.Meals_Mensa_AcademicaService;
 import com.essensGetter.api.JPA.services.meals.Meals_Menseria_am_Botanischen_GartenServices;
+import com.essensGetter.api.JPA.services.mensen.Menseria_am_Botanischen_GartenService;
 import net.bytebuddy.utility.RandomString;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -17,16 +15,17 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.math.RoundingMode;
+import java.nio.charset.StandardCharsets;
 import java.text.DecimalFormat;
 import java.time.LocalDate;
 
+import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.hasItems;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -36,6 +35,8 @@ public class MenseriaamBotanischenGartenControllerTest {
     private MockMvc mockMvc;
 
     Integer randomRating = ((int) (Math.random() * (5)));
+
+    String mensaName = "menseria_am_botanischen_garten";
 
     String jsonData = "{\n" +
             "      \"id\": 1,\n" +
@@ -53,36 +54,103 @@ public class MenseriaamBotanischenGartenControllerTest {
     @Autowired
     Meals_Menseria_am_Botanischen_GartenServices mealsMenseriaAmBotanischenGartenServices;
 
+    @Autowired
+    Menseria_am_Botanischen_GartenService menseriaAmBotanischenGartenService;
+
     @Test
     public void contextLoads() {
         assertThat(mockMvc).isNotNull();
         assertThat(mealsMenseriaAmBotanischenGartenServices).isNotNull();
+        assertThat(menseriaAmBotanischenGartenService).isNotNull();
     }
 
     @Test
     public void controllerShouldReturnMealData() throws Exception {
-        this.mockMvc.perform(MockMvcRequestBuilders.get("/getMeals/menseria_am_botanischen_garten?code=8PLUv50emD7jBakyy9U4").contentType(MediaType.APPLICATION_JSON)).andDo(print())
+        this.mockMvc.perform(MockMvcRequestBuilders.get("/" + mensaName + "/getMeals/from/2001-01-01/to/2001-03-03?code=8PLUv50emD7jBakyy9U4").contentType(MediaType.APPLICATION_JSON)).andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasItems()));
+                .andExpect(jsonPath("$", hasItems()))
+                .andExpect(jsonPath("$", hasSize(3)));
     }
 
     @Test
     public void controllerShouldBeAccessedOnlyWithAuthCode() throws Exception {
-        this.mockMvc.perform(MockMvcRequestBuilders.get("/getMeals/menseria_am_botanischen_garten")).andDo(print()).andExpect(status().is(401));
+        this.mockMvc.perform(MockMvcRequestBuilders.get("/" + mensaName + "/")).andDo(print()).andExpect(status().is(401));
+        this.mockMvc.perform(MockMvcRequestBuilders.get("/" + mensaName + "/getMeals/from/2001-01-01/to/2001-02-03")).andDo(print()).andExpect(status().is(401));
     }
 
     @Test
     public void controllerShouldBeAccessedOnlyWithValidAuthCode() throws Exception {
-        this.mockMvc.perform(MockMvcRequestBuilders.get("/getMeals/menseria_am_botanischen_garten?code=" + RandomString.make(20))).andDo(print()).andExpect(status().is(401));
+        this.mockMvc.perform(MockMvcRequestBuilders.get("/" + mensaName + "/?code=" + RandomString.make(20))).andDo(print()).andExpect(status().is(401));
+    }
+
+    @Test
+    public void controllerShouldProvideMensaName() throws Exception {
+        String content = this.mockMvc.perform(MockMvcRequestBuilders.get("/" + mensaName + "/?code=8PLUv50emD7jBakyy9U4")).andDo(print())
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString(StandardCharsets.UTF_8);
+
+        Assertions.assertEquals(content, "[{\"name\":\"" + menseriaAmBotanischenGartenService.getMensa().getName() + "\"}]");
+    }
+
+    @Test
+    public void controllerShouldProvideMealsForSpecificTimeRange() throws Exception {
+        this.mockMvc.perform(MockMvcRequestBuilders.get("/" + mensaName + "/getMeals/from/2001-01-01/to/2001-03-03?code=8PLUv50emD7jBakyy9U4")).andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(3)))
+                .andExpect(jsonPath("$[0].servingDate", is("2001-01-01")))
+                .andExpect(jsonPath("$[1].servingDate", is("2001-02-02")))
+                .andExpect(jsonPath("$[2].servingDate", is("2001-03-03")));
+    }
+
+    @Test
+    public void controllerShouldProvideMealsForSpeicificDate() throws Exception {
+        this.mockMvc.perform(MockMvcRequestBuilders.get("/" + mensaName + "/servingDate/2001-02-02?code=8PLUv50emD7jBakyy9U4")).andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(1)))
+                .andExpect(jsonPath("$[0].servingDate", is("2001-02-02")));
+    }
+
+    @Test
+    public void controllerShouldProvideMealsForSpecificCategory() throws Exception {
+        this.mockMvc.perform(MockMvcRequestBuilders.get("/" + mensaName + "/category/Pastateller?code=8PLUv50emD7jBakyy9U4")).andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasItems()))
+                .andExpect(jsonPath("$", hasSize(mealsMenseriaAmBotanischenGartenServices.findAllByCategory("Pastateller").size())));
+    }
+
+    @Test
+    public void controllerShouldProvideMealsForSpecificCategoryAndServingDate() throws Exception {
+        this.mockMvc.perform(MockMvcRequestBuilders.get("/" + mensaName + "/category/Testkategorie3/servingDate/2001-03-03?code=8PLUv50emD7jBakyy9U4")).andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasItems()))
+                .andExpect(jsonPath("$", hasSize(mealsMenseriaAmBotanischenGartenServices.findAllByCategoryAndServingDate("Testkategorie3", LocalDate.parse("2001-03-03")).size())));
+    }
+
+    @Test
+    public void controllerShouldProvideMealsWhereRatingIsLessThen() throws Exception {
+        this.mockMvc.perform(MockMvcRequestBuilders.get("/" + mensaName + "/byRatingLessThen/" + randomRating +"?code=8PLUv50emD7jBakyy9U4")).andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasItems()))
+                .andExpect(jsonPath("$", hasSize(mealsMenseriaAmBotanischenGartenServices.findAllByRatingLessThanEqual(Double.valueOf(randomRating)).size())));
+    }
+
+    @Test
+    public void controllerShouldProvideMealsWhereRatingIsHigherThen() throws Exception {
+        this.mockMvc.perform(MockMvcRequestBuilders.get("/" + mensaName + "/byRatingHigherThen/" + randomRating +"?code=8PLUv50emD7jBakyy9U4")).andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasItems()))
+                .andExpect(jsonPath("$", hasSize(mealsMenseriaAmBotanischenGartenServices.findAllByRatingGreaterThanEqual(Double.valueOf(randomRating)).size())));
     }
 
     @Test
     public void controllerShouldReceivePostData() throws Exception {
         Meals_Menseria_am_Botanischen_Garten testMealBeforePost = (Meals_Menseria_am_Botanischen_Garten) mealsMenseriaAmBotanischenGartenServices.findByNameAndServingDateAndId("Testname", LocalDate.parse("2001-01-01"), 1L).get(0);
-        this.mockMvc.perform(post("/sendRating/menseria_am_botanischen_garten?code=8PLUv50emD7jBakyy9U4").contentType(MediaType.APPLICATION_JSON).content(jsonData))
+        this.mockMvc.perform(post("/" + mensaName + "/sendRating?code=8PLUv50emD7jBakyy9U4").contentType(MediaType.APPLICATION_JSON).content(jsonData))
                 .andDo(print())
                 .andExpect(status()
-                .isOk()).andReturn();
+                        .isOk()).andReturn();
         Meals_Menseria_am_Botanischen_Garten testMealAfterPost = (Meals_Menseria_am_Botanischen_Garten) mealsMenseriaAmBotanischenGartenServices.findByNameAndServingDateAndId("Testname", LocalDate.parse("2001-01-01"), 1L).get(0);
 
         Assertions.assertTrue(testMealBeforePost.getVotes() < testMealAfterPost.getVotes());

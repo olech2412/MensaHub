@@ -113,5 +113,53 @@ public class Meals_Menseria_am_Botanischen_GartenServices extends Meals_Mensa_Se
         return meals_menseria_am_botanischen_gartenRepository.findByNameAndServingDateAndId(name, servingDate, id);
     }
 
+    /**
+     * @param category
+     * @return
+     */
+    @Override
+    public List<? extends Meal> findAllByCategory(String category) {
+        return meals_menseria_am_botanischen_gartenRepository.findAllByCategory(category);
+    }
+
+    /**
+     * @param category
+     * @param servingDate
+     * @return
+     */
+    @Override
+    public List<? extends Meal> findAllByCategoryAndServingDate(String category, LocalDate servingDate) {
+        return meals_menseria_am_botanischen_gartenRepository.findAllByCategoryAndServingDate(category, servingDate);
+    }
+
+    /**
+     * @param rating
+     * @return
+     */
+    @Override
+    public List<? extends Meal> findAllByRatingLessThanEqual(Double rating) {
+        return meals_menseria_am_botanischen_gartenRepository.findAllByRatingLessThanEqual(rating);
+
+    }
+
+    /**
+     * @param rating
+     * @return
+     */
+    @Override
+    public List<? extends Meal> findAllByRatingGreaterThanEqual(Double rating) {
+        return meals_menseria_am_botanischen_gartenRepository.findAllByRatingGreaterThanEqual(rating);
+    }
+
+    /**
+     * @param startDate
+     * @param endDate
+     * @return
+     */
+    @Override
+    public List<? extends Meal> findAllByServingDateGreaterThanEqualAndServingDateLessThanEqual(LocalDate startDate, LocalDate endDate) {
+        return meals_menseria_am_botanischen_gartenRepository.findAllByServingDateGreaterThanEqualAndServingDateLessThanEqualOrderByServingDate(startDate, endDate);
+    }
+
 }
 

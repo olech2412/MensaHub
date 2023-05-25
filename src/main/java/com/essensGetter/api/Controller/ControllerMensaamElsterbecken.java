@@ -1,9 +1,14 @@
 package com.essensGetter.api.Controller;
 
+import com.essensGetter.api.JPA.entities.meals.Generic_Meal;
 import com.essensGetter.api.JPA.entities.meals.Meal;
+import com.essensGetter.api.JPA.entities.meals.Meals_Mensa_Academica;
 import com.essensGetter.api.JPA.entities.meals.Meals_Mensa_am_Elsterbecken;
+import com.essensGetter.api.JPA.entities.mensen.Mensa_Academica;
+import com.essensGetter.api.JPA.entities.mensen.Mensa_am_Elsterbecken;
 import com.essensGetter.api.JPA.services.meals.Meals_Mensa_am_ElsterbeckenService;
 import com.essensGetter.api.JPA.services.mensen.Mensa_am_ElsterbeckenService;
+import com.sun.istack.NotNull;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.web.bind.annotation.*;
 
@@ -13,7 +18,8 @@ import java.time.LocalDate;
 
 @RestController
 @Log4j2
-public class ControllerMensaamElsterbecken {
+@RequestMapping("/mensa_am_elsterbecken")
+public class ControllerMensaamElsterbecken implements BasicMealController{
 
     private final Meals_Mensa_am_ElsterbeckenService meals_mensa_am_elsterbeckenService;
 
@@ -26,16 +32,50 @@ public class ControllerMensaamElsterbecken {
         this.mensa_am_elsterbeckenService = mensa_am_elsterbeckenService;
     }
 
-    @CrossOrigin(origins = {"https://mensi-mates.whosfritz.de/"})
-    @GetMapping("/getMeals/mensa_am_elsterbecken")
-    public Iterable<? extends Meal> getMeals() {
-        log.debug("Meals were requested");
-        return meals_mensa_am_elsterbeckenService.findAllMealsByServingDateGreaterThanEqual(LocalDate.now().minusDays(2));
+    @GetMapping("/")
+    public Iterable<Mensa_am_Elsterbecken> getMensa() {
+        log.debug("Mensa info requested");
+        return mensa_am_elsterbeckenService.findAll();
     }
 
-    @CrossOrigin(origins = {"https://mensi-mates.whosfritz.de/"})
-    @PostMapping("/sendRating/mensa_am_elsterbecken")
-    public void saveMeal(@RequestBody Meals_Mensa_am_Elsterbecken receivedMeal) {
+    @GetMapping("/getMeals/from/{startDate}/to/{enddate}")
+    public Iterable<? extends Meal> getMealsNextDays(@PathVariable String startDate, @PathVariable String enddate) {
+        log.debug("Meals were requested from " + startDate + " until " + enddate);
+        return meals_mensa_am_elsterbeckenService.findAllByServingDateGreaterThanEqualAndServingDateLessThanEqual(LocalDate.parse(startDate), LocalDate.parse(enddate));
+    }
+
+    @GetMapping("/servingDate/{servingDate}")
+    public Iterable<? extends Meal> getMealByServingDate(@PathVariable(value = "servingDate") @NotNull String servingDate) {
+        log.debug("Meals were requested with servingDate: " + servingDate);
+        return meals_mensa_am_elsterbeckenService.findAllMealsByServingDate(LocalDate.parse(servingDate));
+    }
+
+    @GetMapping("/category/{category}")
+    public Iterable<? extends Meal> getMealByCategory(@PathVariable("category") @NotNull String category) {
+        log.debug("Meals were requested with category: " + category);
+        return meals_mensa_am_elsterbeckenService.findAllByCategory(category);
+    }
+
+    @GetMapping("/category/{category}/servingDate/{servingDate}")
+    public Iterable<? extends Meal> getMealByCategoryAndServingDate(@PathVariable("category") @NotNull String category, @PathVariable("servingDate") @NotNull String servingDate) {
+        log.debug("Meals were requested with category: " + category + " on " + servingDate);
+        return meals_mensa_am_elsterbeckenService.findAllByCategoryAndServingDate(category, LocalDate.parse(servingDate));
+    }
+
+    @GetMapping("/byRatingLessThen/{rating}")
+    public Iterable<? extends Meal> getMealByRatingLessThan(@PathVariable("rating") @NotNull Double rating) {
+        log.debug("Meals were requested with rating less then: " + rating);
+        return meals_mensa_am_elsterbeckenService.findAllByRatingLessThanEqual(rating);
+    }
+
+    @GetMapping("/byRatingHigherThen/{rating}")
+    public Iterable<? extends Meal> getMealByRatingHigherThan(@PathVariable("rating") @NotNull Double rating) {
+        log.debug("Meals were requested with rating higher then: " + rating);
+        return meals_mensa_am_elsterbeckenService.findAllByRatingGreaterThanEqual(rating);
+    }
+
+    @PostMapping("/sendRating")
+    public void saveRatingForMeal(@RequestBody Generic_Meal receivedMeal) {
         log.info("Meal received: " + receivedMeal);
         Meals_Mensa_am_Elsterbecken mealFromDB = (Meals_Mensa_am_Elsterbecken) meals_mensa_am_elsterbeckenService.findByNameAndServingDateAndId(receivedMeal.getName(), receivedMeal.getServingDate(), receivedMeal.getId()).get(0);
         if (mealFromDB != null) {

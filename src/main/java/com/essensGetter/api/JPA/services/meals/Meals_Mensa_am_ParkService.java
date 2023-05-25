@@ -113,5 +113,53 @@ public class Meals_Mensa_am_ParkService extends Meals_Mensa_Service {
         return meals_mensa_am_parkRepository.findByNameAndServingDateAndId(name, servingDate, id);
     }
 
+    /**
+     * @param category
+     * @return
+     */
+    @Override
+    public List<? extends Meal> findAllByCategory(String category) {
+        return meals_mensa_am_parkRepository.findAllByCategory(category);
+    }
+
+    /**
+     * @param category
+     * @param servingDate
+     * @return
+     */
+    @Override
+    public List<? extends Meal> findAllByCategoryAndServingDate(String category, LocalDate servingDate) {
+        return meals_mensa_am_parkRepository.findAllByCategoryAndServingDate(category, servingDate);
+    }
+
+    /**
+     * @param rating
+     * @return
+     */
+    @Override
+    public List<? extends Meal> findAllByRatingLessThanEqual(Double rating) {
+        return meals_mensa_am_parkRepository.findAllByRatingLessThanEqual(rating);
+
+    }
+
+    /**
+     * @param rating
+     * @return
+     */
+    @Override
+    public List<? extends Meal> findAllByRatingGreaterThanEqual(Double rating) {
+        return meals_mensa_am_parkRepository.findAllByRatingGreaterThanEqual(rating);
+    }
+
+    /**
+     * @param startDate
+     * @param endDate
+     * @return
+     */
+    @Override
+    public List<? extends Meal> findAllByServingDateGreaterThanEqualAndServingDateLessThanEqual(LocalDate startDate, LocalDate endDate) {
+        return meals_mensa_am_parkRepository.findAllByServingDateGreaterThanEqualAndServingDateLessThanEqualOrderByServingDate(startDate, endDate);
+    }
+
 }
 

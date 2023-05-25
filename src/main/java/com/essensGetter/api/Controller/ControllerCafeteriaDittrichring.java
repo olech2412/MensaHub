@@ -1,5 +1,6 @@
 package com.essensGetter.api.Controller;
 
+import com.essensGetter.api.JPA.entities.meals.Generic_Meal;
 import com.essensGetter.api.JPA.entities.meals.Meal;
 import com.essensGetter.api.JPA.entities.meals.Meals_Cafeteria_Dittrichring;
 import com.essensGetter.api.JPA.entities.mensen.Cafeteria_Dittrichring;
@@ -16,7 +17,7 @@ import java.time.LocalDate;
 @RestController
 @Log4j2
 @RequestMapping("/cafeteria_dittrichring")
-public class ControllerCafeteriaDittrichring {
+public class ControllerCafeteriaDittrichring implements BasicMealController{
 
     private final Meals_Cafeteria_DittrichringService meals_cafeteria_dittrichringService;
 
@@ -35,7 +36,7 @@ public class ControllerCafeteriaDittrichring {
         return cafeteria_dittrichringService.findAll();
     }
 
-    @GetMapping("/getMeals/from/{startDate}/until/{enddate}")
+    @GetMapping("/getMeals/from/{startDate}/to/{enddate}")
     public Iterable<? extends Meal> getMealsNextDays(@PathVariable String startDate, @PathVariable String enddate) {
         log.debug("Meals were requested from " + startDate + " until " + enddate);
         return meals_cafeteria_dittrichringService.findAllByServingDateGreaterThanEqualAndServingDateLessThanEqual(LocalDate.parse(startDate), LocalDate.parse(enddate));
@@ -54,25 +55,29 @@ public class ControllerCafeteriaDittrichring {
     }
 
     @GetMapping("/category/{category}/servingDate/{servingDate}")
-    public Iterable<? extends Meal> getMealByCategory(@PathVariable("category") @NotNull String category, @PathVariable("servingDate") @NotNull String servingDate) {
+    public Iterable<? extends Meal> getMealByCategoryAndServingDate(@PathVariable("category") @NotNull String category, @PathVariable("servingDate") @NotNull String servingDate) {
         log.debug("Meals were requested with category: " + category + " on " + servingDate);
         return meals_cafeteria_dittrichringService.findAllByCategoryAndServingDate(category, LocalDate.parse(servingDate));
     }
 
     @GetMapping("/byRatingLessThen/{rating}")
-    public Iterable<? extends Meal> getMealByRatingLessThen(@PathVariable("rating") @NotNull Double rating) {
+    public Iterable<? extends Meal> getMealByRatingLessThan(@PathVariable("rating") @NotNull Double rating) {
         log.debug("Meals were requested with rating less then: " + rating);
         return meals_cafeteria_dittrichringService.findAllByRatingLessThanEqual(rating);
     }
 
     @GetMapping("/byRatingHigherThen/{rating}")
-    public Iterable<? extends Meal> getMealByRatingHigherThen(@PathVariable("rating") @NotNull Double rating) {
+    public Iterable<? extends Meal> getMealByRatingHigherThan(@PathVariable("rating") @NotNull Double rating) {
         log.debug("Meals were requested with rating higher then: " + rating);
         return meals_cafeteria_dittrichringService.findAllByRatingGreaterThanEqual(rating);
     }
 
+    /**
+     * @param receivedMeal
+     */
+    @Override
     @PostMapping("/sendRating")
-    public void saveMeal(@RequestBody Meals_Cafeteria_Dittrichring receivedMeal) {
+    public void saveRatingForMeal(Generic_Meal receivedMeal) {
         log.info("Meal received: " + receivedMeal);
         Meals_Cafeteria_Dittrichring mealFromDB = (Meals_Cafeteria_Dittrichring) meals_cafeteria_dittrichringService.findByNameAndServingDateAndId(receivedMeal.getName(), receivedMeal.getServingDate(), receivedMeal.getId()).get(0);
         if (mealFromDB != null) {

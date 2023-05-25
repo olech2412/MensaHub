@@ -111,5 +111,53 @@ public class Meals_Mensa_Schoenauer_StrService extends Meals_Mensa_Service {
     public List<? extends Meal> findByNameAndServingDateAndId(String name, LocalDate servingDate, Long id) {
         return meals_schoenauer_strRepository.findByNameAndServingDateAndId(name, servingDate, id);
     }
+
+    /**
+     * @param category
+     * @return
+     */
+    @Override
+    public List<? extends Meal> findAllByCategory(String category) {
+        return meals_schoenauer_strRepository.findAllByCategory(category);
+    }
+
+    /**
+     * @param category
+     * @param servingDate
+     * @return
+     */
+    @Override
+    public List<? extends Meal> findAllByCategoryAndServingDate(String category, LocalDate servingDate) {
+        return meals_schoenauer_strRepository.findAllByCategoryAndServingDate(category, servingDate);
+    }
+
+    /**
+     * @param rating
+     * @return
+     */
+    @Override
+    public List<? extends Meal> findAllByRatingLessThanEqual(Double rating) {
+        return meals_schoenauer_strRepository.findAllByRatingLessThanEqual(rating);
+
+    }
+
+    /**
+     * @param rating
+     * @return
+     */
+    @Override
+    public List<? extends Meal> findAllByRatingGreaterThanEqual(Double rating) {
+        return meals_schoenauer_strRepository.findAllByRatingGreaterThanEqual(rating);
+    }
+
+    /**
+     * @param startDate
+     * @param endDate
+     * @return
+     */
+    @Override
+    public List<? extends Meal> findAllByServingDateGreaterThanEqualAndServingDateLessThanEqual(LocalDate startDate, LocalDate endDate) {
+        return meals_schoenauer_strRepository.findAllByServingDateGreaterThanEqualAndServingDateLessThanEqualOrderByServingDate(startDate, endDate);
+    }
 }
 
