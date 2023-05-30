@@ -33,4 +33,9 @@ jobs:
       run: mvn -B package --file pom.xml
     - name: Generate Test Report
       run: mvn surefire-report:report
+    - name: Upload Test Report
+      uses: actions/upload-artifact@v2
+      with:
+        name: Test Report
+        path: target/site/surefire-report.html
     
