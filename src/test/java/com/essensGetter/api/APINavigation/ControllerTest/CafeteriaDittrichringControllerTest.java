@@ -4,8 +4,10 @@ import com.essensGetter.api.JPA.entities.meals.Meals_Cafeteria_Dittrichring;
 import com.essensGetter.api.JPA.services.meals.Meals_Cafeteria_DittrichringService;
 import com.essensGetter.api.JPA.services.mensen.Cafeteria_DittrichringService;
 import net.bytebuddy.utility.RandomString;
+import org.junit.FixMethodOrder;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.runners.MethodSorters;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -27,6 +29,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@FixMethodOrder(MethodSorters.DEFAULT)
 public class CafeteriaDittrichringControllerTest {
 
     @Autowired
