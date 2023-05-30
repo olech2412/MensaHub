@@ -179,3 +179,51 @@
 2023-05-30 07:45:09.658  INFO 5656 --- [SpringApplicationShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
 2023-05-30 07:45:09.660  INFO 5656 --- [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
 2023-05-30 07:45:09.665  INFO 5656 --- [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
+2023-05-30 12:01:46.082  INFO 21248 --- [main] c.e.api.EssensGetterApiApplication       : Starting EssensGetterApiApplication using Java 11.0.3-redhat on DVZSN-GN3880 with PID 21248 (C:\Entwicklung\Workspace\EssensGetter-API\target\classes started by christopho in C:\Entwicklung\Workspace\EssensGetter-API)
+2023-05-30 12:01:46.088  INFO 21248 --- [main] c.e.api.EssensGetterApiApplication       : No active profile set, falling back to 1 default profile: "default"
+2023-05-30 12:01:46.657  INFO 21248 --- [main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2023-05-30 12:01:46.754  INFO 21248 --- [main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 90 ms. Found 23 JPA repository interfaces.
+2023-05-30 12:01:47.092  INFO 21248 --- [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port(s): 8083 (http)
+2023-05-30 12:01:47.099  INFO 21248 --- [main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2023-05-30 12:01:47.099  INFO 21248 --- [main] org.apache.catalina.core.StandardEngine  : Starting Servlet engine: [Apache Tomcat/9.0.70]
+2023-05-30 12:01:47.200  INFO 21248 --- [main] o.a.c.c.C.[.[localhost].[/essensGetter]  : Initializing Spring embedded WebApplicationContext
+2023-05-30 12:01:47.200  INFO 21248 --- [main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 1072 ms
+2023-05-30 12:01:47.329  INFO 21248 --- [main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2023-05-30 12:01:47.359  INFO 21248 --- [main] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 5.6.14.Final
+2023-05-30 12:01:47.453  INFO 21248 --- [main] o.hibernate.annotations.common.Version   : HCANN000001: Hibernate Commons Annotations {5.1.2.Final}
+2023-05-30 12:01:47.521  INFO 21248 --- [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2023-05-30 12:01:47.576  INFO 21248 --- [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2023-05-30 12:01:47.587  INFO 21248 --- [main] org.hibernate.dialect.Dialect            : HHH000400: Using dialect: org.hibernate.dialect.MariaDBDialect
+2023-05-30 12:01:48.234  INFO 21248 --- [main] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000490: Using JtaPlatform implementation: [org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform]
+2023-05-30 12:01:48.240  INFO 21248 --- [main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2023-05-30 12:01:48.957  INFO 21248 --- [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port(s): 8083 (http) with context path '/essensGetter'
+2023-05-30 12:01:48.965  INFO 21248 --- [main] c.e.api.EssensGetterApiApplication       : Started EssensGetterApiApplication in 3.335 seconds (JVM running for 4.133)
+2023-05-30 12:02:24.367  INFO 21248 --- [http-nio-8083-exec-4] o.a.c.c.C.[.[localhost].[/essensGetter]  : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2023-05-30 12:02:24.368  INFO 21248 --- [http-nio-8083-exec-4] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2023-05-30 12:02:24.369  INFO 21248 --- [http-nio-8083-exec-4] o.s.web.servlet.DispatcherServlet        : Completed initialization in 1 ms
+2023-05-30 12:02:24.500 DEBUG 21248 --- [http-nio-8083-exec-4] c.e.a.C.ControllerSchoenauerStr          : Mensa info requested
+2023-05-30 12:02:40.318 DEBUG 21248 --- [http-nio-8083-exec-6] c.e.a.Controller.ControllerMensaamPark   : Mensa info requested
+2023-05-30 12:03:48.981 DEBUG 21248 --- [http-nio-8083-exec-3] c.e.a.Controller.ControllerMensaamPark   : Meals were requested from 2023-05-01 until 2023-05-31
+2023-05-30 13:41:10.780  INFO 21248 --- [SpringApplicationShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2023-05-30 13:41:10.781  INFO 21248 --- [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2023-05-30 13:41:10.784  INFO 21248 --- [SpringApplicationShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
+2023-05-30 15:32:07.178  INFO 6432 --- [main] c.e.api.EssensGetterApiApplication       : Starting EssensGetterApiApplication using Java 11.0.3-redhat on DVZSN-GN3880 with PID 6432 (C:\Entwicklung\Workspace\EssensGetter-API\target\classes started by christopho in C:\Entwicklung\Workspace\EssensGetter-API)
+2023-05-30 15:32:07.188  INFO 6432 --- [main] c.e.api.EssensGetterApiApplication       : No active profile set, falling back to 1 default profile: "default"
+2023-05-30 15:32:08.001  WARN 6432 --- [main] ConfigServletWebServerApplicationContext : Exception encountered during context initialization - cancelling refresh attempt: org.springframework.beans.factory.support.BeanDefinitionOverrideException: Invalid bean definition with name 'jwtAuthenticationFilter' defined in class path resource [com/essensGetter/api/security/config/SecurityConfig.class]: Cannot register bean definition [Root bean: class [null]; scope=; abstract=false; lazyInit=null; autowireMode=3; dependencyCheck=0; autowireCandidate=true; primary=false; factoryBeanName=securityConfig; factoryMethodName=jwtAuthenticationFilter; initMethodName=null; destroyMethodName=(inferred); defined in class path resource [com/essensGetter/api/security/config/SecurityConfig.class]] for bean 'jwtAuthenticationFilter': There is already [Generic bean: class [com.essensGetter.api.security.JwtAuthenticationFilter]; scope=singleton; abstract=false; lazyInit=null; autowireMode=0; dependencyCheck=0; autowireCandidate=true; primary=false; factoryBeanName=null; factoryMethodName=null; initMethodName=null; destroyMethodName=null; defined in file [C:\Entwicklung\Workspace\EssensGetter-API\target\classes\com\essensGetter\api\security\JwtAuthenticationFilter.class]] bound.
+2023-05-30 15:32:08.008  INFO 6432 --- [main] ConditionEvaluationReportLoggingListener : 
+
+Error starting ApplicationContext. To display the conditions report re-run your application with 'debug' enabled.
+2023-05-30 15:32:08.022 ERROR 6432 --- [main] o.s.b.d.LoggingFailureAnalysisReporter   : 
+
+***************************
+APPLICATION FAILED TO START
+***************************
+
+Description:
+
+The bean 'jwtAuthenticationFilter', defined in class path resource [com/essensGetter/api/security/config/SecurityConfig.class], could not be registered. A bean with that name has already been defined in file [C:\Entwicklung\Workspace\EssensGetter-API\target\classes\com\essensGetter\api\security\JwtAuthenticationFilter.class] and overriding is disabled.
+
+Action:
+
+Consider renaming one of the beans or enabling overriding by setting spring.main.allow-bean-definition-overriding=true
+
