@@ -1,6 +1,7 @@
 package com.essensGetter.api.security;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -15,14 +16,13 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-@Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     @Autowired
-    private JWTTokenProvider jwtTokenProvider;
+    private CustomUserDetailsService customUserDetailsService;
 
     @Autowired
-    private CustomUserDetailsService customUserDetailsService;
+    private JWTTokenProvider jwtTokenProvider;
 
     /**
      * @param request
@@ -36,7 +36,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String jwt = getJwtFroMRequest(request);
 
         if(StringUtils.hasText(jwt) && jwtTokenProvider.validateToken(jwt)) {
-            String mail = jwtTokenProvider.getUserMailFromToken(jwt);
+            String mail = jwtTokenProvider.getUserDataFromToken(jwt);
             UserDetails userDetails = customUserDetailsService.loadUserByUsername(mail);
             UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
 

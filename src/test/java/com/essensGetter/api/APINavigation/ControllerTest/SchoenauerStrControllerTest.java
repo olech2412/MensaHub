@@ -155,7 +155,7 @@ public class SchoenauerStrControllerTest {
 
         Assertions.assertTrue(testMealBeforePost.getVotes() < testMealAfterPost.getVotes());
         Assertions.assertEquals(1, testMealAfterPost.getVotes() - testMealBeforePost.getVotes());
-        Assertions.assertEquals(testMealAfterPost.getStarsTotal(), (int) (testMealBeforePost.getStarsTotal() + randomRating));
+        Assertions.assertEquals(testMealAfterPost.getStarsTotal(), testMealBeforePost.getStarsTotal() + randomRating);
 
         Double calculatedRating = Double.valueOf(testMealAfterPost.getStarsTotal()) / Double.valueOf(testMealAfterPost.getVotes());
         DecimalFormat df = new DecimalFormat("#.#");

@@ -1,12 +1,14 @@
 package com.essensGetter.api.security;
 
 import io.jsonwebtoken.*;
+import io.jsonwebtoken.io.Decoders;
+import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SignatureException;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.neo4j.Neo4jProperties;
 import org.springframework.stereotype.Component;
 
+import java.security.Key;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
@@ -18,22 +20,23 @@ public class JWTTokenProvider {
     @Value("${api.jwtSecret}")
     private String jwtSecret;
 
-    public String generateToken(String userEmail) {
+    public String generateToken(String userName) {
         Instant now = Instant.now();
-        Instant expiration = now.plus(7, ChronoUnit.DAYS);
+        Instant expiration = now.plus(2, ChronoUnit.MINUTES);
 
         return Jwts.builder()
-                .setSubject(userEmail)
+                .setSubject(userName)
                 .setIssuedAt(Date.from(now))
                 .setExpiration(Date.from(expiration))
-                .signWith(SignatureAlgorithm.HS512, jwtSecret)
+                .signWith(getSigningKey(), SignatureAlgorithm.HS512)
                 .compact();
     }
 
-    public String getUserMailFromToken(String token){
-        Claims claims = Jwts.parserBuilder().build()
-                .setSigningKey(jwtSecret)
-                .parseClaimsJwt(token)
+    public String getUserDataFromToken(String token){
+        Claims claims = Jwts.parserBuilder()
+                .setSigningKey(getSigningKey())
+                .build()
+                .parseClaimsJws(token)
                 .getBody();
 
         return claims.getSubject();
@@ -41,7 +44,7 @@ public class JWTTokenProvider {
 
     public boolean validateToken(String token) {
         try {
-            Jwts.parserBuilder().build().setSigningKey(jwtSecret).parseClaimsJws(token);
+            Jwts.parserBuilder().setSigningKey(getSigningKey()).build().parseClaimsJws(token);
             return true;
         } catch (IllegalArgumentException exception) {
             log.error("JWT claims string is empty");
@@ -56,5 +59,10 @@ public class JWTTokenProvider {
         }
 
         return false;
+    }
+
+    private Key getSigningKey() {
+        byte[] keyBytes = Decoders.BASE64.decode(jwtSecret);
+        return Keys.hmacShaKeyFor(keyBytes);
     }
 }

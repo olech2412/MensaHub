@@ -1,6 +1,5 @@
 package com.essensGetter.api.JPA.repository.meals;
 
-import com.essensGetter.api.JPA.entities.meals.Meals_Mensa_Peterssteinweg;
 import com.essensGetter.api.JPA.entities.meals.Meals_Mensa_Tierklinik;
 import org.springframework.data.repository.CrudRepository;
 
