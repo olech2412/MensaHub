@@ -32,7 +32,7 @@ public class JWTTokenProvider {
                 .compact();
     }
 
-    public String getUserDataFromToken(String token){
+    public String getUserDataFromToken(String token) {
         Claims claims = Jwts.parserBuilder()
                 .setSigningKey(getSigningKey())
                 .build()

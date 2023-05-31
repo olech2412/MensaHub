@@ -2,9 +2,7 @@ package com.essensGetter.api.Controller;
 
 import com.essensGetter.api.JPA.entities.meals.Generic_Meal;
 import com.essensGetter.api.JPA.entities.meals.Meal;
-import com.essensGetter.api.JPA.entities.meals.Meals_Mensa_Academica;
 import com.essensGetter.api.JPA.entities.meals.Meals_Mensa_am_Elsterbecken;
-import com.essensGetter.api.JPA.entities.mensen.Mensa_Academica;
 import com.essensGetter.api.JPA.entities.mensen.Mensa_am_Elsterbecken;
 import com.essensGetter.api.JPA.services.meals.Meals_Mensa_am_ElsterbeckenService;
 import com.essensGetter.api.JPA.services.mensen.Mensa_am_ElsterbeckenService;
@@ -19,12 +17,11 @@ import java.time.LocalDate;
 @RestController
 @Log4j2
 @RequestMapping("/mensa_am_elsterbecken")
-public class ControllerMensaamElsterbecken implements BasicMealController{
+public class ControllerMensaamElsterbecken implements BasicMealController {
 
     private final Meals_Mensa_am_ElsterbeckenService meals_mensa_am_elsterbeckenService;
 
     private final Mensa_am_ElsterbeckenService mensa_am_elsterbeckenService;
-
 
 
     public ControllerMensaamElsterbecken(Meals_Mensa_am_ElsterbeckenService meals_mensa_am_elsterbeckenService, Mensa_am_ElsterbeckenService mensa_am_elsterbeckenService) {

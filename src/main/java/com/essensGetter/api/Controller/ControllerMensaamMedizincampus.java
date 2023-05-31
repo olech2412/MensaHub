@@ -2,9 +2,7 @@ package com.essensGetter.api.Controller;
 
 import com.essensGetter.api.JPA.entities.meals.Generic_Meal;
 import com.essensGetter.api.JPA.entities.meals.Meal;
-import com.essensGetter.api.JPA.entities.meals.Meals_Mensa_am_Elsterbecken;
 import com.essensGetter.api.JPA.entities.meals.Meals_Mensa_am_Medizincampus;
-import com.essensGetter.api.JPA.entities.mensen.Mensa_am_Elsterbecken;
 import com.essensGetter.api.JPA.entities.mensen.Mensa_am_Medizincampus;
 import com.essensGetter.api.JPA.services.meals.Meals_Mensa_am_MedizincampusService;
 import com.essensGetter.api.JPA.services.mensen.Mensa_am_MedizincampusService;
@@ -24,7 +22,6 @@ public class ControllerMensaamMedizincampus {
     private final Meals_Mensa_am_MedizincampusService meals_mensa_am_medizincampusService;
 
     private final Mensa_am_MedizincampusService mensa_am_medizincampusService;
-
 
 
     public ControllerMensaamMedizincampus(Meals_Mensa_am_MedizincampusService meals_mensa_am_medizincampusService, Mensa_am_MedizincampusService mensa_am_medizincampusService) {

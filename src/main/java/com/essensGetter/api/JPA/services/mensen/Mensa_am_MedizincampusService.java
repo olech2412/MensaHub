@@ -1,6 +1,5 @@
 package com.essensGetter.api.JPA.services.mensen;
 
-import com.essensGetter.api.JPA.entities.mensen.Mensa;
 import com.essensGetter.api.JPA.entities.mensen.Mensa_am_Medizincampus;
 import com.essensGetter.api.JPA.repository.mensen.Mensa_am_MedizincampusRepository;
 import org.springframework.beans.factory.annotation.Autowired;
