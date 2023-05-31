@@ -1,4 +1,4 @@
-package com.essensGetter.api.JPA.entities.authentification;
+package com.essensGetter.api.JPA.entities.authentication;
 
 import lombok.Getter;
 import lombok.Setter;
