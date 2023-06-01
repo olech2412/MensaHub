@@ -44,7 +44,7 @@ jobs:
         java-version: '11'
         distribution: 'temurin'
         cache: maven
-    - name: Build with Maven
+    - name: Run Tests with Maven
       run: mvn test --file pom.xml
     - name: Generate Test Report
       run: mvn surefire-report:report
