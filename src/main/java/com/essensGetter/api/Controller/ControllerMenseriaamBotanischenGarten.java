@@ -29,7 +29,7 @@ public class ControllerMenseriaamBotanischenGarten {
         this.menseria_am_botanischen_gartenService = menseria_am_botanischen_gartenService;
     }
 
-    @GetMapping("/")
+    @GetMapping("")
     public Iterable<Menseria_am_Botanischen_Garten> getMensa() {
         log.debug("Mensa info requested");
         return menseria_am_botanischen_gartenService.findAll();

@@ -3,16 +3,15 @@ package com.essensGetter.api.APINavigation.ControllerTest;
 import com.essensGetter.api.JPA.entities.meals.Meals_Cafeteria_Dittrichring;
 import com.essensGetter.api.JPA.services.meals.Meals_Cafeteria_DittrichringService;
 import com.essensGetter.api.JPA.services.mensen.Cafeteria_DittrichringService;
-import net.bytebuddy.utility.RandomString;
-import org.junit.FixMethodOrder;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.junit.runners.MethodSorters;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.math.RoundingMode;
@@ -21,6 +20,7 @@ import java.text.DecimalFormat;
 import java.time.LocalDate;
 
 import static org.hamcrest.Matchers.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 
@@ -29,7 +29,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
-@FixMethodOrder(MethodSorters.DEFAULT)
 public class CafeteriaDittrichringControllerTest {
 
     @Autowired
@@ -58,6 +57,19 @@ public class CafeteriaDittrichringControllerTest {
     @Autowired
     Cafeteria_DittrichringService cafeteria_dittrichringService;
 
+    public String getJWTToken() throws Exception {
+        MvcResult mvcResult = this.mockMvc.perform(MockMvcRequestBuilders.post("/auth/login").contentType(MediaType.APPLICATION_JSON)
+                .content("{" +
+                        "    \"apiUsername\": \"controllerTestUser\",\n" +
+                        "    \"password\": \"1345t3456543754\"\n" +
+                        "}"))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andReturn();
+
+        return mvcResult.getResponse().getContentAsString();
+    }
+
     @Test
     public void contextLoads() {
         assertThat(mockMvc).isNotNull();
@@ -67,26 +79,16 @@ public class CafeteriaDittrichringControllerTest {
 
     @Test
     public void controllerShouldReturnMealData() throws Exception {
-        this.mockMvc.perform(MockMvcRequestBuilders.get("/" + mensaName + "/getMeals/from/2001-01-01/to/2001-03-03?code=8PLUv50emD7jBakyy9U4").contentType(MediaType.APPLICATION_JSON)).andDo(print())
+        System.out.println(getJWTToken());
+        this.mockMvc.perform(MockMvcRequestBuilders.get("/" + mensaName + "/getMeals/from/2001-01-01/to/2001-03-03").header(HttpHeaders.AUTHORIZATION,"Bearer " + getJWTToken()).contentType(MediaType.APPLICATION_JSON)).andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasItems()))
                 .andExpect(jsonPath("$", hasSize(3)));
     }
 
     @Test
-    public void controllerShouldBeAccessedOnlyWithAuthCode() throws Exception {
-        this.mockMvc.perform(MockMvcRequestBuilders.get("/" + mensaName + "/")).andDo(print()).andExpect(status().is(401));
-        this.mockMvc.perform(MockMvcRequestBuilders.get("/" + mensaName + "/getMeals/from/2001-01-01/to/2001-02-03")).andDo(print()).andExpect(status().is(401));
-    }
-
-    @Test
-    public void controllerShouldBeAccessedOnlyWithValidAuthCode() throws Exception {
-        this.mockMvc.perform(MockMvcRequestBuilders.get("/" + mensaName + "/?code=" + RandomString.make(20))).andDo(print()).andExpect(status().is(401));
-    }
-
-    @Test
     public void controllerShouldProvideMensaName() throws Exception {
-        String content = this.mockMvc.perform(MockMvcRequestBuilders.get("/" + mensaName + "/?code=8PLUv50emD7jBakyy9U4")).andDo(print())
+        String content = this.mockMvc.perform(MockMvcRequestBuilders.get("/" + mensaName).header(HttpHeaders.AUTHORIZATION,"Bearer " + getJWTToken())).andDo(print())
                 .andExpect(status().isOk())
                 .andReturn()
                 .getResponse()
@@ -97,7 +99,7 @@ public class CafeteriaDittrichringControllerTest {
 
     @Test
     public void controllerShouldProvideMealsForSpecificTimeRange() throws Exception {
-        this.mockMvc.perform(MockMvcRequestBuilders.get("/" + mensaName + "/getMeals/from/2001-01-01/to/2001-03-03?code=8PLUv50emD7jBakyy9U4")).andDo(print())
+        this.mockMvc.perform(MockMvcRequestBuilders.get("/" + mensaName + "/getMeals/from/2001-01-01/to/2001-03-03").header(HttpHeaders.AUTHORIZATION,"Bearer " + getJWTToken())).andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(3)))
                 .andExpect(jsonPath("$[0].servingDate", is("2001-01-01")))
@@ -107,7 +109,7 @@ public class CafeteriaDittrichringControllerTest {
 
     @Test
     public void controllerShouldProvideMealsForSpeicificDate() throws Exception {
-        this.mockMvc.perform(MockMvcRequestBuilders.get("/" + mensaName + "/servingDate/2001-02-02?code=8PLUv50emD7jBakyy9U4")).andDo(print())
+        this.mockMvc.perform(MockMvcRequestBuilders.get("/" + mensaName + "/servingDate/2001-02-02").header(HttpHeaders.AUTHORIZATION,"Bearer " + getJWTToken())).andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(1)))
                 .andExpect(jsonPath("$[0].servingDate", is("2001-02-02")));
@@ -115,7 +117,7 @@ public class CafeteriaDittrichringControllerTest {
 
     @Test
     public void controllerShouldProvideMealsForSpecificCategory() throws Exception {
-        this.mockMvc.perform(MockMvcRequestBuilders.get("/" + mensaName + "/category/Pastateller?code=8PLUv50emD7jBakyy9U4")).andDo(print())
+        this.mockMvc.perform(MockMvcRequestBuilders.get("/" + mensaName + "/category/Pastateller").header(HttpHeaders.AUTHORIZATION,"Bearer " + getJWTToken())).andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasItems()))
                 .andExpect(jsonPath("$", hasSize(meals_cafeteria_dittrichringService.findAllByCategory("Pastateller").size())));
@@ -123,7 +125,7 @@ public class CafeteriaDittrichringControllerTest {
 
     @Test
     public void controllerShouldProvideMealsForSpecificCategoryAndServingDate() throws Exception {
-        this.mockMvc.perform(MockMvcRequestBuilders.get("/" + mensaName + "/category/Testkategorie3/servingDate/2001-03-03?code=8PLUv50emD7jBakyy9U4")).andDo(print())
+        this.mockMvc.perform(MockMvcRequestBuilders.get("/" + mensaName + "/category/Testkategorie3/servingDate/2001-03-03").header(HttpHeaders.AUTHORIZATION,"Bearer " + getJWTToken())).andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasItems()))
                 .andExpect(jsonPath("$", hasSize(meals_cafeteria_dittrichringService.findAllByCategoryAndServingDate("Testkategorie3", LocalDate.parse("2001-03-03")).size())));
@@ -131,7 +133,7 @@ public class CafeteriaDittrichringControllerTest {
 
     @Test
     public void controllerShouldProvideMealsWhereRatingIsLessThen() throws Exception {
-        this.mockMvc.perform(MockMvcRequestBuilders.get("/" + mensaName + "/byRatingLessThen/" + randomRating +"?code=8PLUv50emD7jBakyy9U4")).andDo(print())
+        this.mockMvc.perform(MockMvcRequestBuilders.get("/" + mensaName + "/byRatingLessThen/" + randomRating).header(HttpHeaders.AUTHORIZATION,"Bearer " + getJWTToken())).andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasItems()))
                 .andExpect(jsonPath("$", hasSize(meals_cafeteria_dittrichringService.findAllByRatingLessThanEqual(Double.valueOf(randomRating)).size())));
@@ -139,7 +141,7 @@ public class CafeteriaDittrichringControllerTest {
 
     @Test
     public void controllerShouldProvideMealsWhereRatingIsHigherThen() throws Exception {
-        this.mockMvc.perform(MockMvcRequestBuilders.get("/" + mensaName + "/byRatingHigherThen/" + randomRating +"?code=8PLUv50emD7jBakyy9U4")).andDo(print())
+        this.mockMvc.perform(MockMvcRequestBuilders.get("/" + mensaName + "/byRatingHigherThen/" + randomRating).header(HttpHeaders.AUTHORIZATION,"Bearer " + getJWTToken())).andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasItems()))
                 .andExpect(jsonPath("$", hasSize(meals_cafeteria_dittrichringService.findAllByRatingGreaterThanEqual(Double.valueOf(randomRating)).size())));
@@ -148,7 +150,7 @@ public class CafeteriaDittrichringControllerTest {
     @Test
     public void controllerShouldReceivePostData() throws Exception {
         Meals_Cafeteria_Dittrichring testMealBeforePost = (Meals_Cafeteria_Dittrichring) meals_cafeteria_dittrichringService.findByNameAndServingDateAndId("Testname", LocalDate.parse("2001-01-01"), 1L).get(0);
-        this.mockMvc.perform(post("/" + mensaName + "/sendRating?code=8PLUv50emD7jBakyy9U4").contentType(MediaType.APPLICATION_JSON).content(jsonData))
+        this.mockMvc.perform(post("/" + mensaName + "/sendRating").header(HttpHeaders.AUTHORIZATION,"Bearer " + getJWTToken()).contentType(MediaType.APPLICATION_JSON).content(jsonData))
                 .andDo(print())
                 .andExpect(status()
                 .isOk()).andReturn();

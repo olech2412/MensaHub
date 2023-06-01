@@ -29,7 +29,7 @@ public class ControllerSchoenauerStr {
         this.mensa_schoenauer_strService = mensa_schoenauer_strService;
     }
 
-    @GetMapping("/")
+    @GetMapping("")
     public Iterable<Mensa_Schoenauer_Str> getMensa() {
         log.debug("Mensa info requested");
         return mensa_schoenauer_strService.findAll();

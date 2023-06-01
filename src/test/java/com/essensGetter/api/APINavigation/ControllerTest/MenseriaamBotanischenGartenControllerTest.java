@@ -10,8 +10,10 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.math.RoundingMode;
@@ -57,6 +59,19 @@ public class MenseriaamBotanischenGartenControllerTest {
     @Autowired
     Menseria_am_Botanischen_GartenService menseriaAmBotanischenGartenService;
 
+    public String getJWTToken() throws Exception {
+        MvcResult mvcResult = this.mockMvc.perform(MockMvcRequestBuilders.post("/auth/login").contentType(MediaType.APPLICATION_JSON)
+                        .content("{" +
+                                "    \"apiUsername\": \"controllerTestUser\",\n" +
+                                "    \"password\": \"1345t3456543754\"\n" +
+                                "}"))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andReturn();
+
+        return mvcResult.getResponse().getContentAsString();
+    }
+
     @Test
     public void contextLoads() {
         assertThat(mockMvc).isNotNull();
@@ -66,26 +81,15 @@ public class MenseriaamBotanischenGartenControllerTest {
 
     @Test
     public void controllerShouldReturnMealData() throws Exception {
-        this.mockMvc.perform(MockMvcRequestBuilders.get("/" + mensaName + "/getMeals/from/2001-01-01/to/2001-03-03?code=8PLUv50emD7jBakyy9U4").contentType(MediaType.APPLICATION_JSON)).andDo(print())
+        this.mockMvc.perform(MockMvcRequestBuilders.get("/" + mensaName + "/getMeals/from/2001-01-01/to/2001-03-03").header(HttpHeaders.AUTHORIZATION,"Bearer " + getJWTToken()).contentType(MediaType.APPLICATION_JSON)).andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasItems()))
                 .andExpect(jsonPath("$", hasSize(3)));
     }
 
     @Test
-    public void controllerShouldBeAccessedOnlyWithAuthCode() throws Exception {
-        this.mockMvc.perform(MockMvcRequestBuilders.get("/" + mensaName + "/")).andDo(print()).andExpect(status().is(401));
-        this.mockMvc.perform(MockMvcRequestBuilders.get("/" + mensaName + "/getMeals/from/2001-01-01/to/2001-02-03")).andDo(print()).andExpect(status().is(401));
-    }
-
-    @Test
-    public void controllerShouldBeAccessedOnlyWithValidAuthCode() throws Exception {
-        this.mockMvc.perform(MockMvcRequestBuilders.get("/" + mensaName + "/?code=" + RandomString.make(20))).andDo(print()).andExpect(status().is(401));
-    }
-
-    @Test
     public void controllerShouldProvideMensaName() throws Exception {
-        String content = this.mockMvc.perform(MockMvcRequestBuilders.get("/" + mensaName + "/?code=8PLUv50emD7jBakyy9U4")).andDo(print())
+        String content = this.mockMvc.perform(MockMvcRequestBuilders.get("/" + mensaName).header(HttpHeaders.AUTHORIZATION,"Bearer " + getJWTToken())).andDo(print())
                 .andExpect(status().isOk())
                 .andReturn()
                 .getResponse()
@@ -96,7 +100,7 @@ public class MenseriaamBotanischenGartenControllerTest {
 
     @Test
     public void controllerShouldProvideMealsForSpecificTimeRange() throws Exception {
-        this.mockMvc.perform(MockMvcRequestBuilders.get("/" + mensaName + "/getMeals/from/2001-01-01/to/2001-03-03?code=8PLUv50emD7jBakyy9U4")).andDo(print())
+        this.mockMvc.perform(MockMvcRequestBuilders.get("/" + mensaName + "/getMeals/from/2001-01-01/to/2001-03-03").header(HttpHeaders.AUTHORIZATION,"Bearer " + getJWTToken())).andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(3)))
                 .andExpect(jsonPath("$[0].servingDate", is("2001-01-01")))
@@ -106,7 +110,7 @@ public class MenseriaamBotanischenGartenControllerTest {
 
     @Test
     public void controllerShouldProvideMealsForSpeicificDate() throws Exception {
-        this.mockMvc.perform(MockMvcRequestBuilders.get("/" + mensaName + "/servingDate/2001-02-02?code=8PLUv50emD7jBakyy9U4")).andDo(print())
+        this.mockMvc.perform(MockMvcRequestBuilders.get("/" + mensaName + "/servingDate/2001-02-02").header(HttpHeaders.AUTHORIZATION,"Bearer " + getJWTToken())).andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(1)))
                 .andExpect(jsonPath("$[0].servingDate", is("2001-02-02")));
@@ -114,7 +118,7 @@ public class MenseriaamBotanischenGartenControllerTest {
 
     @Test
     public void controllerShouldProvideMealsForSpecificCategory() throws Exception {
-        this.mockMvc.perform(MockMvcRequestBuilders.get("/" + mensaName + "/category/Pastateller?code=8PLUv50emD7jBakyy9U4")).andDo(print())
+        this.mockMvc.perform(MockMvcRequestBuilders.get("/" + mensaName + "/category/Pastateller").header(HttpHeaders.AUTHORIZATION,"Bearer " + getJWTToken())).andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasItems()))
                 .andExpect(jsonPath("$", hasSize(mealsMenseriaAmBotanischenGartenServices.findAllByCategory("Pastateller").size())));
@@ -122,7 +126,7 @@ public class MenseriaamBotanischenGartenControllerTest {
 
     @Test
     public void controllerShouldProvideMealsForSpecificCategoryAndServingDate() throws Exception {
-        this.mockMvc.perform(MockMvcRequestBuilders.get("/" + mensaName + "/category/Testkategorie3/servingDate/2001-03-03?code=8PLUv50emD7jBakyy9U4")).andDo(print())
+        this.mockMvc.perform(MockMvcRequestBuilders.get("/" + mensaName + "/category/Testkategorie3/servingDate/2001-03-03").header(HttpHeaders.AUTHORIZATION,"Bearer " + getJWTToken())).andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasItems()))
                 .andExpect(jsonPath("$", hasSize(mealsMenseriaAmBotanischenGartenServices.findAllByCategoryAndServingDate("Testkategorie3", LocalDate.parse("2001-03-03")).size())));
@@ -130,7 +134,7 @@ public class MenseriaamBotanischenGartenControllerTest {
 
     @Test
     public void controllerShouldProvideMealsWhereRatingIsLessThen() throws Exception {
-        this.mockMvc.perform(MockMvcRequestBuilders.get("/" + mensaName + "/byRatingLessThen/" + randomRating +"?code=8PLUv50emD7jBakyy9U4")).andDo(print())
+        this.mockMvc.perform(MockMvcRequestBuilders.get("/" + mensaName + "/byRatingLessThen/" + randomRating).header(HttpHeaders.AUTHORIZATION,"Bearer " + getJWTToken())).andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasItems()))
                 .andExpect(jsonPath("$", hasSize(mealsMenseriaAmBotanischenGartenServices.findAllByRatingLessThanEqual(Double.valueOf(randomRating)).size())));
@@ -138,7 +142,7 @@ public class MenseriaamBotanischenGartenControllerTest {
 
     @Test
     public void controllerShouldProvideMealsWhereRatingIsHigherThen() throws Exception {
-        this.mockMvc.perform(MockMvcRequestBuilders.get("/" + mensaName + "/byRatingHigherThen/" + randomRating +"?code=8PLUv50emD7jBakyy9U4")).andDo(print())
+        this.mockMvc.perform(MockMvcRequestBuilders.get("/" + mensaName + "/byRatingHigherThen/" + randomRating).header(HttpHeaders.AUTHORIZATION,"Bearer " + getJWTToken())).andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasItems()))
                 .andExpect(jsonPath("$", hasSize(mealsMenseriaAmBotanischenGartenServices.findAllByRatingGreaterThanEqual(Double.valueOf(randomRating)).size())));
@@ -147,7 +151,7 @@ public class MenseriaamBotanischenGartenControllerTest {
     @Test
     public void controllerShouldReceivePostData() throws Exception {
         Meals_Menseria_am_Botanischen_Garten testMealBeforePost = (Meals_Menseria_am_Botanischen_Garten) mealsMenseriaAmBotanischenGartenServices.findByNameAndServingDateAndId("Testname", LocalDate.parse("2001-01-01"), 1L).get(0);
-        this.mockMvc.perform(post("/" + mensaName + "/sendRating?code=8PLUv50emD7jBakyy9U4").contentType(MediaType.APPLICATION_JSON).content(jsonData))
+        this.mockMvc.perform(post("/" + mensaName + "/sendRating").header(HttpHeaders.AUTHORIZATION,"Bearer " + getJWTToken()).contentType(MediaType.APPLICATION_JSON).content(jsonData))
                 .andDo(print())
                 .andExpect(status()
                         .isOk()).andReturn();

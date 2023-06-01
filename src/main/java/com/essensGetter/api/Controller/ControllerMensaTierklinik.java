@@ -29,7 +29,7 @@ public class ControllerMensaTierklinik {
         this.mensa_tierklinikService = mensa_tierklinikService;
     }
 
-    @GetMapping("/")
+    @GetMapping("")
     public Iterable<Mensa_Tierklinik> getMensa() {
         log.debug("Mensa info requested");
         return mensa_tierklinikService.findAll();

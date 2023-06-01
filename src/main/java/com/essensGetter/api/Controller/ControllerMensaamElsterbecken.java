@@ -29,7 +29,7 @@ public class ControllerMensaamElsterbecken implements BasicMealController {
         this.mensa_am_elsterbeckenService = mensa_am_elsterbeckenService;
     }
 
-    @GetMapping("/")
+    @GetMapping("")
     public Iterable<Mensa_am_Elsterbecken> getMensa() {
         log.debug("Mensa info requested");
         return mensa_am_elsterbeckenService.findAll();

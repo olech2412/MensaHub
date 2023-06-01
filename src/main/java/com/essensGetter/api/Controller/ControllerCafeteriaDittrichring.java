@@ -29,7 +29,7 @@ public class ControllerCafeteriaDittrichring implements BasicMealController {
         this.cafeteria_dittrichringService = cafeteria_dittrichringService;
     }
 
-    @GetMapping("/")
+    @GetMapping("")
     public Iterable<Cafeteria_Dittrichring> getMensa() {
         log.debug("Mensa info requested");
         return cafeteria_dittrichringService.findAll();
