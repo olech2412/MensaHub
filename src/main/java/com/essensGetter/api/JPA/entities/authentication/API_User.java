@@ -54,6 +54,10 @@ public class API_User {
     @Size(min = 10, max = 255, message = "The length must be between 10 and 255 characters")
     private String description;
 
+    @Column(name = "role", nullable = false)
+    @NotEmpty
+    private String role = "ROLE_DEV";
+
     @Column(name = "creationDate", nullable = false)
     private LocalDate creationDate;
 
