@@ -1,9 +1,4 @@
 /**
-  Provide API access code
- */
-INSERT INTO `api_access` (`id`, `calls`, `can_read`, `can_write`, `description`, `email`, `enabled`, `last_call`, `max_calls`, `token`) VALUES (1, 1503, TRUE, TRUE, 'Your description', 'contact', TRUE, '2023-05-30 07:45:09', 999999999999999, '8PLUv50emD7jBakyy9U4');
-
-/**
   Prepare Mensen data
  */
 INSERT INTO `cafeteria_dittrichring` (`id`, `api_url`, `name`) VALUES (1, 'https://openmensa.org/api/v2/canteens/70/meals', 'Cafeteria Dittrichring');
@@ -46,3 +41,8 @@ INSERT INTO `meals_menseria_am_botanischen_garten` (`id`, `category`, `descripti
 INSERT INTO `meals_schoenauer_str` (`id`, `category`, `description`, `name`, `price`, `rating`, `response_code`, `serving_date`, `stars_total`, `votes`, `mensa_schoenauer_str_id`) VALUES (1, 'Testkategorie', 'Testbeschreibung', 'Testname', '3,05€/ 4,90€/ 6,70€', 1.5, 200, '2001-01-01', 32, 21, 1);
 INSERT INTO `meals_schoenauer_str` (`id`, `category`, `description`, `name`, `price`, `rating`, `response_code`, `serving_date`, `stars_total`, `votes`, `mensa_schoenauer_str_id`) VALUES (9999999999999998, 'Testkategorie3', 'Testbeschreibung3', 'Testname3', NULL, 0, 200, '2001-03-03', 0, 0, 1);
 INSERT INTO `meals_schoenauer_str` (`id`, `category`, `description`, `name`, `price`, `rating`, `response_code`, `serving_date`, `stars_total`, `votes`, `mensa_schoenauer_str_id`) VALUES (9999999999999999, 'Testkategorie2', 'Testbeschreibung2', 'Testname2', '3,05€/ 4,90€/ 6,70€', 1.7, 200, '2001-02-02', 68, 39, 1);
+
+/**
+  Provide login to API
+ */
+INSERT INTO `api_user` (`api_user_id`, `username`, `blocking_reason`, `creation_date`, `description`, `email`, `enabled_by_admin`, `num_requests`, `password`, `verified_email`) VALUES (8, 'controllerTestUser', NULL, '2023-06-01', 'Das ist eine Testbeschreibung für das anlegen eines Nutzers', 'testemail@test.de', TRUE, 0, '$2a$10$sSG1wiNZgpX8VkjmabVUA.I6XTwO3kGOLJuVVYrJwfnz.aZWfLr4m', TRUE);

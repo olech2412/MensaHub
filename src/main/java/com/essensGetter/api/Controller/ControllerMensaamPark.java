@@ -2,9 +2,7 @@ package com.essensGetter.api.Controller;
 
 import com.essensGetter.api.JPA.entities.meals.Generic_Meal;
 import com.essensGetter.api.JPA.entities.meals.Meal;
-import com.essensGetter.api.JPA.entities.meals.Meals_Mensa_am_Medizincampus;
 import com.essensGetter.api.JPA.entities.meals.Meals_Mensa_am_Park;
-import com.essensGetter.api.JPA.entities.mensen.Mensa_am_Medizincampus;
 import com.essensGetter.api.JPA.entities.mensen.Mensa_am_Park;
 import com.essensGetter.api.JPA.services.meals.Meals_Mensa_am_ParkService;
 import com.essensGetter.api.JPA.services.mensen.Mensa_am_ParkService;
@@ -26,13 +24,12 @@ public class ControllerMensaamPark {
     private final Mensa_am_ParkService mensa_am_parkService;
 
 
-
     public ControllerMensaamPark(Meals_Mensa_am_ParkService meals_mensa_am_parkService, Mensa_am_ParkService mensa_am_parkService) {
         this.meals_mensa_am_parkService = meals_mensa_am_parkService;
         this.mensa_am_parkService = mensa_am_parkService;
     }
 
-    @GetMapping("/")
+    @GetMapping("")
     public Iterable<Mensa_am_Park> getMensa() {
         log.debug("Mensa info requested");
         return mensa_am_parkService.findAll();

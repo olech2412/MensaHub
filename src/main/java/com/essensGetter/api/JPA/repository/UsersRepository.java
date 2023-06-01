@@ -1,6 +1,6 @@
 package com.essensGetter.api.JPA.repository;
 
-import com.essensGetter.api.JPA.entities.authentification.Users;
+import com.essensGetter.api.JPA.entities.authentication.Users;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 

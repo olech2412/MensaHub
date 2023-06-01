@@ -2,10 +2,8 @@ package com.essensGetter.api.Controller;
 
 import com.essensGetter.api.JPA.entities.meals.Generic_Meal;
 import com.essensGetter.api.JPA.entities.meals.Meal;
-import com.essensGetter.api.JPA.entities.meals.Meals_Menseria_am_Botanischen_Garten;
 import com.essensGetter.api.JPA.entities.meals.Meals_Schoenauer_Str;
 import com.essensGetter.api.JPA.entities.mensen.Mensa_Schoenauer_Str;
-import com.essensGetter.api.JPA.entities.mensen.Menseria_am_Botanischen_Garten;
 import com.essensGetter.api.JPA.services.meals.Meals_Mensa_Schoenauer_StrService;
 import com.essensGetter.api.JPA.services.mensen.Mensa_Schoenauer_StrService;
 import com.sun.istack.NotNull;
@@ -26,13 +24,12 @@ public class ControllerSchoenauerStr {
     private final Mensa_Schoenauer_StrService mensa_schoenauer_strService;
 
 
-
     public ControllerSchoenauerStr(Meals_Mensa_Schoenauer_StrService meals_mensa_schoenauer_strService, Mensa_Schoenauer_StrService mensa_schoenauer_strService) {
         this.meals_mensa_schoenauer_strService = meals_mensa_schoenauer_strService;
         this.mensa_schoenauer_strService = mensa_schoenauer_strService;
     }
 
-    @GetMapping("/")
+    @GetMapping("")
     public Iterable<Mensa_Schoenauer_Str> getMensa() {
         log.debug("Mensa info requested");
         return mensa_schoenauer_strService.findAll();
@@ -85,7 +82,7 @@ public class ControllerSchoenauerStr {
             DecimalFormat df = new DecimalFormat("#.#");
             df.setRoundingMode(RoundingMode.FLOOR);
             mealFromDB.setRating(Double.parseDouble(df.format(calculatedRating).replaceFirst(",", ".")));
-            meals_mensa_schoenauer_strService.save(mealFromDB,  mensa_schoenauer_strService.getMensa());
+            meals_mensa_schoenauer_strService.save(mealFromDB, mensa_schoenauer_strService.getMensa());
         } else {
             log.error("Meal was not found in DB");
         }

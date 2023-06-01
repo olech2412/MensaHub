@@ -2,9 +2,6 @@ package com.essensGetter.api.JPA.entities.mensen;
 
 import com.essensGetter.api.JPA.entities.MailUser;
 import com.essensGetter.api.JPA.entities.meals.Meals_Schoenauer_Str;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.Getter;
-import lombok.Setter;
 
 import javax.persistence.*;
 import java.util.Set;

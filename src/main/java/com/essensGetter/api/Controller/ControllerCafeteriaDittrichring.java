@@ -17,12 +17,11 @@ import java.time.LocalDate;
 @RestController
 @Log4j2
 @RequestMapping("/cafeteria_dittrichring")
-public class ControllerCafeteriaDittrichring implements BasicMealController{
+public class ControllerCafeteriaDittrichring implements BasicMealController {
 
     private final Meals_Cafeteria_DittrichringService meals_cafeteria_dittrichringService;
 
     private final Cafeteria_DittrichringService cafeteria_dittrichringService;
-
 
 
     public ControllerCafeteriaDittrichring(Meals_Cafeteria_DittrichringService meals_cafeteria_dittrichringService, Cafeteria_DittrichringService cafeteria_dittrichringService) {
@@ -30,7 +29,7 @@ public class ControllerCafeteriaDittrichring implements BasicMealController{
         this.cafeteria_dittrichringService = cafeteria_dittrichringService;
     }
 
-    @GetMapping("/")
+    @GetMapping("")
     public Iterable<Cafeteria_Dittrichring> getMensa() {
         log.debug("Mensa info requested");
         return cafeteria_dittrichringService.findAll();

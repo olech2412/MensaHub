@@ -3,9 +3,7 @@ package com.essensGetter.api.Controller;
 import com.essensGetter.api.JPA.entities.meals.Generic_Meal;
 import com.essensGetter.api.JPA.entities.meals.Meal;
 import com.essensGetter.api.JPA.entities.meals.Meals_Mensa_Peterssteinweg;
-import com.essensGetter.api.JPA.entities.meals.Meals_Mensa_am_Park;
 import com.essensGetter.api.JPA.entities.mensen.Mensa_Peterssteinweg;
-import com.essensGetter.api.JPA.entities.mensen.Mensa_am_Park;
 import com.essensGetter.api.JPA.services.meals.Meals_Mensa_PeterssteinwegService;
 import com.essensGetter.api.JPA.services.mensen.Mensa_PeterssteinwegService;
 import com.sun.istack.NotNull;
@@ -26,13 +24,12 @@ public class ControllerMensaPeterssteinweg {
     private final Mensa_PeterssteinwegService mensa_peterssteinwegService;
 
 
-
     public ControllerMensaPeterssteinweg(Meals_Mensa_PeterssteinwegService meals_mensa_peterssteinwegService, Mensa_PeterssteinwegService mensa_peterssteinwegService) {
         this.meals_mensa_peterssteinwegService = meals_mensa_peterssteinwegService;
         this.mensa_peterssteinwegService = mensa_peterssteinwegService;
     }
 
-    @GetMapping("/")
+    @GetMapping("")
     public Iterable<Mensa_Peterssteinweg> getMensa() {
         log.debug("Mensa info requested");
         return mensa_peterssteinwegService.findAll();
