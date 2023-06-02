@@ -45,4 +45,4 @@ INSERT INTO `meals_schoenauer_str` (`id`, `category`, `description`, `name`, `pr
 /**
   Provide login to API
  */
-INSERT INTO `api_user` (`api_user_id`, `username`, `blocking_reason`, `creation_date`, `description`, `email`, `enabled_by_admin`, `num_requests`, `password`, `verified_email`) VALUES (8, 'controllerTestUser', NULL, '2023-06-01', 'Das ist eine Testbeschreibung für das anlegen eines Nutzers', 'testemail@test.de', TRUE, 0, '$2a$10$sSG1wiNZgpX8VkjmabVUA.I6XTwO3kGOLJuVVYrJwfnz.aZWfLr4m', TRUE);
+INSERT INTO `api_user` (`api_user_id`, `username`, `blocking_reason`, `creation_date`, `description`, `email`, `enabled_by_admin`, `num_requests`, `password`, `verified_email`, `role`) VALUES (8, 'controllerTestUser', NULL, '2023-06-01', 'Das ist eine Testbeschreibung für das anlegen eines Nutzers', 'testemail@test.de', TRUE, 0, '$2a$10$sSG1wiNZgpX8VkjmabVUA.I6XTwO3kGOLJuVVYrJwfnz.aZWfLr4m', TRUE, 'ROLE_DEV');
