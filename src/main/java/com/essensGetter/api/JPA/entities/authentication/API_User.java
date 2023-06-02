@@ -56,6 +56,7 @@ public class API_User {
 
     @Column(name = "role", nullable = false)
     @NotEmpty
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String role = "ROLE_DEV";
 
     @Column(name = "creationDate", nullable = false)
