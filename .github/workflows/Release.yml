@@ -20,7 +20,7 @@ jobs:
           distribution: 'temurin'
 
       - name: Build and package
-        run: ./mvnw clean package
+        run: mvn clean package
 
       - name: Create release
         id: create_release
