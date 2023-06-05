@@ -22,53 +22,8 @@ jobs:
       - name: Build and package
         run: mvn clean package
 
-      - name: List files in target directory
-        run: ls -R ./target
-
-      - name: Get project version
-        id: get_version
-        run: echo "::set-output name=version::$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)"
-
-      - name: Create release
-        id: create_release
-        uses: actions/github-script@v5
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          script: |
-            const response = await github.repos.createRelease({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              tag_name: '${{ steps.get_version.outputs.version }}',
-              target_commitish: process.env.GITHUB_SHA,
-              name: 'Release ${{ steps.get_version.outputs.version }}',
-              body: 'This is the release for version ${{ steps.get_version.outputs.version }}',
-              draft: false,
-              prerelease: false
-            });
-
-            console.log(response.data.upload_url);
-            core.setOutput('upload_url', response.data.upload_url)
-
-      - name: Upload artifacts
+      - name: Upload artifact
         uses: actions/upload-artifact@v2
         with:
-          name: EssensGetter_API
-          path: ./target
-
-      - name: Download artifacts
-        uses: actions/download-artifact@v2
-        with:
-          name: EssensGetter_API
-          path: ./downloaded-artifacts
-
-      - name: Upload release assets
-        id: upload_assets
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./downloaded-artifacts/*
-          asset_name: EssensGetter_API.jar
-          asset_content_type: application/java-archive
+          path: ./target/*.jar
+          name: EssensGetter_API.jar
