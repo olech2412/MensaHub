@@ -1,6 +1,7 @@
 # EssensGetter API
 
 [![Java CI with Maven](https://github.com/olech2412/EssensGetter-API/actions/workflows/maven.yml/badge.svg)](https://github.com/olech2412/EssensGetter-API/actions/workflows/maven.yml)
+[![Test CI/CD Pipeline](https://github.com/olech2412/EssensGetter-API/actions/workflows/TestPipeline.yml/badge.svg?branch=master)](https://github.com/olech2412/EssensGetter-API/actions/workflows/TestPipeline.yml)
 
 Dies ist ein privates Studentenprojekt. Die API steht nicht für die Öffentlichkeit zur Verfügung und wird nicht zu kommerziellen Zwecken genutzt. Außerdem kann und will ich keinen stabilen Betrieb der Anwendung gewährleisten.
 
