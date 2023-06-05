@@ -21,10 +21,22 @@ jobs:
 
       - name: Build and package
         run: mvn clean package
+        
+      - name: Create release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          body: |
+            This is the release for tag ${{ github.ref }}
+          draft: false
+          prerelease: false
 
       - name: Upload artifact
         uses: actions/upload-artifact@v2
         with:
           path: ./target/*.jar
           name: EssensGetter_API.jar
-          content_type: application/java-archive
