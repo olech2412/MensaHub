@@ -31,41 +31,44 @@ jobs:
 
       - name: Create release
         id: create_release
+        uses: actions/github-script@v5
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          TAG_NAME="${{ steps.get_version.outputs.version }}"
-          BODY="This is the release for version $TAG_NAME"
+        with:
+          script: |
+            const response = await github.repos.createRelease({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              tag_name: '${{ steps.get_version.outputs.version }}',
+              target_commitish: process.env.GITHUB_SHA,
+              name: 'Release ${{ steps.get_version.outputs.version }}',
+              body: 'This is the release for version ${{ steps.get_version.outputs.version }}',
+              draft: false,
+              prerelease: false
+            });
 
-          RESPONSE=$(curl -X POST \
-            -H "Accept: application/vnd.github.v3+json" \
-            -H "Authorization: Bearer $GITHUB_TOKEN" \
-            -d '{
-              "tag_name": "'"$TAG_NAME"'",
-              "target_commitish": "'"$GITHUB_SHA"'",
-              "name": "Release $'"${{ steps.get_version.outputs.version }}'"',
-              "body": "'"$BODY"'",
-              "draft": false,
-              "prerelease": false
-            }' \
-            "https://api.github.com/repos/${{ github.repository }}/releases")
-
-          UPLOAD_URL=$(echo "$RESPONSE" | jq -r '.upload_url')
-          UPLOAD_URL="${UPLOAD_URL%\{*}" # Remove extra parameters from the URL
-
-          echo "::set-output name=upload_url::$UPLOAD_URL"
+            console.log(response.data.upload_url);
+            core.setOutput('upload_url', response.data.upload_url)
 
       - name: Upload artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: EssensGetter_API
+          path: ./target
+
+      - name: Download artifacts
+        uses: actions/download-artifact@v2
+        with:
+          name: EssensGetter_API
+          path: ./downloaded-artifacts
+
+      - name: Upload release assets
+        id: upload_assets
+        uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          UPLOAD_URL="${{ steps.create_release.outputs.upload_url }}"
-          for file in ./target/*.jar; do
-            echo "Uploading $file"
-            curl -X POST \
-              -H "Accept: application/vnd.github.v3+json" \
-              -H "Authorization: Bearer $GITHUB_TOKEN" \
-              -H "Content-Type: application/java-archive" \
-              --data-binary "@$file" \
-              "$UPLOAD_URL?name=$(basename "$file")"
-          done
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./downloaded-artifacts/*
+          asset_name: EssensGetter_API.jar
+          asset_content_type: application/java-archive
