@@ -46,7 +46,6 @@ public class AuthenticationController {
             return ResponseEntity.badRequest().build();
         }
 
-        sentApiUser.setCreationDate(LocalDate.now());
         sentApiUser.setPassword(passwordEncoder.encode(sentApiUser.getPassword()));
         sentApiUser.setNumberOfRequests(0L);
 

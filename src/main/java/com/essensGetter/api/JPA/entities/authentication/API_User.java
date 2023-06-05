@@ -60,7 +60,7 @@ public class API_User {
     private String role = "ROLE_DEV";
 
     @Column(name = "creationDate", nullable = false)
-    private LocalDate creationDate;
+    private LocalDate creationDate = LocalDate.now();
 
     @Column(name = "blocking_reason")
     private String blockingReason;
