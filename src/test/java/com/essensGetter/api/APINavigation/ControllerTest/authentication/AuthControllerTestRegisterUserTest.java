@@ -107,8 +107,7 @@ public class AuthControllerTestRegisterUserTest {
                 .andExpect(jsonPath("$.description").value(description))
                 .andExpect(jsonPath("$.creationDate").value(LocalDate.now().toString()))
                 .andExpect(jsonPath("$.blockingReason").value(nullValue()))
-                .andExpect(jsonPath("$.numberOfRequests").value(0))
-                .andExpect(jsonPath("$", aMapWithSize(6)))
+                .andExpect(jsonPath("$", aMapWithSize(8)))
                 .andReturn();
 
         Assertions.assertTrue(apiUserRepository.findAPI_UserByApiUsername(userName).isPresent());

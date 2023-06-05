@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 @RestController
@@ -47,7 +47,6 @@ public class AuthenticationController {
         }
 
         sentApiUser.setPassword(passwordEncoder.encode(sentApiUser.getPassword()));
-        sentApiUser.setNumberOfRequests(0L);
 
         apiUserRepository.save(sentApiUser);
 
@@ -63,6 +62,10 @@ public class AuthenticationController {
                         loginRequest.getPassword()
                 )
         );
+        if (apiUserRepository.findAPI_UserByApiUsername(loginRequest.getApiUsername()).isPresent()) {
+            API_User apiUser = apiUserRepository.findAPI_UserByApiUsername(loginRequest.getApiUsername()).get();
+            apiUser.setLastLogin(LocalDateTime.now());
+        }
 
         return ResponseEntity.ok(jwtTokenProvider.generateToken(loginRequest.getApiUsername()));
     }

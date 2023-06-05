@@ -1,5 +1,7 @@
 package com.essensGetter.api.JPA.entities.authentication;
 
+import com.essensGetter.api.JPA.entities.ActivationCode;
+import com.essensGetter.api.JPA.entities.DeactivationCode;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.Setter;
@@ -7,6 +9,7 @@ import lombok.Setter;
 import javax.persistence.*;
 import javax.validation.constraints.*;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -65,8 +68,14 @@ public class API_User {
     @Column(name = "blocking_reason")
     private String blockingReason;
 
-    @Column(name = "num_requests")
-    private Long numberOfRequests;
+    @OneToOne
+    private ActivationCode activationCode;
+
+    @OneToOne
+    private DeactivationCode deactivationCode;
+
+    @Column(name = "last_login")
+    private LocalDateTime lastLogin;
 
     public API_User() {
 
