@@ -22,21 +22,37 @@ jobs:
       - name: Build and package
         run: mvn clean package
         
+      - name: Get project version
+        id: get_version
+        run: echo "::set-output name=version::$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)"
+
       - name: Create release
         id: create_release
-        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          TAG_NAME="${{ steps.get_version.outputs.version }}"
+          BODY="This is the release for version $TAG_NAME"
+
+          RESPONSE=$(curl -X POST \
+            -H "Accept: application/vnd.github.v3+json" \
+            -H "Authorization: Bearer $GITHUB_TOKEN" \
+            -d '{
+              "tag_name": "'"$TAG_NAME"'",
+              "target_commitish": "'"$GITHUB_SHA"'",
+              "name": "Release $'"${{ steps.get_version.outputs.version }}'"',
+              "body": "'"$BODY"'",
+              "draft": false,
+              "prerelease": false
+            }' \
+            "https://api.github.com/repos/${{ github.repository }}/releases")
+
+      - name: Upload artifact
+        uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${{ github.ref }}
-          release_name: Release ${{ github.ref }}
-          body: |
-            This is the release for tag ${{ github.ref }}
-          draft: false
-          prerelease: false
-
-      - name: Upload artifact
-        uses: actions/upload-artifact@v2
-        with:
-          path: ./target/*.jar
-          name: EssensGetter_API.jar
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./target/*.jar
+          asset_name: EssensGetter_API.jar
+          asset_content_type: application/java-archive
