@@ -21,10 +21,6 @@ jobs:
 
       - name: Build and package
         run: mvn clean package
-        
-      - name: Get project version
-        id: get_version
-        run: echo "::set-output name=version::$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)"
 
       - name: Create release
         id: create_release
@@ -47,12 +43,17 @@ jobs:
             }' \
             "https://api.github.com/repos/${{ github.repository }}/releases")
 
+          UPLOAD_URL=$(echo "$RESPONSE" | jq -r '.upload_url')
+          UPLOAD_URL="${UPLOAD_URL%\{*}" # Remove extra parameters from the URL
+
+          echo "::set-output name=upload_url::$UPLOAD_URL"
+
       - name: Upload artifact
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./target/*.jar
+          asset_path: ./target/EssensGetter_API.jar
           asset_name: EssensGetter_API.jar
           asset_content_type: application/java-archive
