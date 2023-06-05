@@ -23,11 +23,8 @@ jobs:
         run: mvn clean package
 
       - name: Upload artifact
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        uses: actions/upload-artifact@v2
         with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: ./target/*.jar
-          asset_name: application.jar
+          asset_name: EssensGetter_API.jar
           asset_content_type: application/java-archive
