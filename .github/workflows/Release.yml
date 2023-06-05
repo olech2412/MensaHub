@@ -25,6 +25,6 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-artifact@v2
         with:
-          asset_path: ./target/*.jar
-          asset_name: EssensGetter_API.jar
-          asset_content_type: application/java-archive
+          path: ./target/*.jar
+          name: EssensGetter_API.jar
+          content_type: application/java-archive
