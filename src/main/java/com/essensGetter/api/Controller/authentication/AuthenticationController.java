@@ -65,6 +65,7 @@ public class AuthenticationController {
         if (apiUserRepository.findAPI_UserByApiUsername(loginRequest.getApiUsername()).isPresent()) {
             API_User apiUser = apiUserRepository.findAPI_UserByApiUsername(loginRequest.getApiUsername()).get();
             apiUser.setLastLogin(LocalDateTime.now());
+            apiUserRepository.save(apiUser);
         }
 
         return ResponseEntity.ok(jwtTokenProvider.generateToken(loginRequest.getApiUsername()));
