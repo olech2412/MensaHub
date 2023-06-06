@@ -4,7 +4,7 @@
 [![Test CI/CD Pipeline](https://github.com/olech2412/EssensGetter-API/actions/workflows/TestPipeline.yml/badge.svg?branch=master)](https://github.com/olech2412/EssensGetter-API/actions/workflows/TestPipeline.yml)
 [![Release](https://github.com/olech2412/EssensGetter-API/actions/workflows/Release.yml/badge.svg)](https://github.com/olech2412/EssensGetter-API/actions/workflows/Release.yml)
 
-Dies ist ein privates Studentenprojekt. Die API steht nicht für die Öffentlichkeit zur Verfügung und wird nicht zu kommerziellen Zwecken genutzt. Außerdem kann und will ich keinen stabilen Betrieb der Anwendung gewährleisten.
+Dies ist ein privates Studentenprojekt. Die API steht nicht für die Öffentlichkeit zur Verfügung und wird nicht zu kommerziellen Zwecken genutzt.
 
 Die EssensGetter API ist eine SpringBoot Anwendung, die mithilfe von Maven und Java 11 erstellt wurde. Sie stellt Informationen bereit, die aus dem EssensGetter 2.0 in eine Datenbank geschrieben wurden, um andere Programmierprojekte zu ermöglichen.
 
