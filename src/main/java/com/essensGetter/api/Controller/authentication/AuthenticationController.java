@@ -5,6 +5,7 @@ import com.essensGetter.api.JPA.repository.API_UserRepository;
 import com.essensGetter.api.requests.LoginRequest;
 import com.essensGetter.api.security.JWTTokenProvider;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -56,19 +57,25 @@ public class AuthenticationController {
 
     @PostMapping("/login")
     public ResponseEntity<String> login(@RequestBody LoginRequest loginRequest) {
-        authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        loginRequest.getApiUsername(),
-                        loginRequest.getPassword()
-                )
-        );
-        if (apiUserRepository.findAPI_UserByApiUsername(loginRequest.getApiUsername()).isPresent()) {
+
+        if (apiUserRepository.findAPI_UserByApiUsername(loginRequest.getApiUsername()).isPresent() &&
+                apiUserRepository.findAPI_UserByApiUsername(loginRequest.getApiUsername()).get().getEnabledByAdmin().equals(true)) {
+
+            authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(
+                            loginRequest.getApiUsername(),
+                            loginRequest.getPassword()
+                    )
+            );
+
             API_User apiUser = apiUserRepository.findAPI_UserByApiUsername(loginRequest.getApiUsername()).get();
             apiUser.setLastLogin(LocalDateTime.now());
             apiUserRepository.save(apiUser);
+            return ResponseEntity.ok(jwtTokenProvider.generateToken(loginRequest.getApiUsername()));
+        } else {
+            log.warn("Username not found or user tried to access without permission by admin: " + loginRequest.getApiUsername());
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
-
-        return ResponseEntity.ok(jwtTokenProvider.generateToken(loginRequest.getApiUsername()));
     }
 
 }
