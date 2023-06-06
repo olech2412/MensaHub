@@ -1,0 +1,29 @@
+name: Release
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up JDK 11
+        uses: actions/setup-java@v2
+        with:
+          java-version: 11
+          distribution: 'temurin'
+
+      - name: Build and package
+        run: mvn clean package
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v2
+        with:
+          path: ./target/*.jar
+          name: EssensGetter_API.jar
