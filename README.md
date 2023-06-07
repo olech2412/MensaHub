@@ -6,7 +6,7 @@
 
 Dies ist ein privates Studentenprojekt. Die API steht nicht für die Öffentlichkeit zur Verfügung und wird nicht zu kommerziellen Zwecken genutzt.
 
-MensaHub-Gateways ist eine SpringBoot Anwendung, die mithilfe von Maven und Java 11 erstellt wurde. Sie stellt Informationen bereit, die aus dem MensaHub-DataDispatcher in eine Datenbank geschrieben wurden, um andere Programmierprojekte zu ermöglichen.
+MensaHub-Gateway ist eine SpringBoot Anwendung, die mithilfe von Maven und Java 11 erstellt wurde. Sie stellt Informationen bereit, die aus dem MensaHub-DataDispatcher in eine Datenbank geschrieben wurden, um andere Programmierprojekte zu ermöglichen.
 
 ## Installation
 
