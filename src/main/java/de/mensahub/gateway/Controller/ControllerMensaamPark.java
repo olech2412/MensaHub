@@ -17,6 +17,7 @@ import java.time.LocalDate;
 @RestController
 @Log4j2
 @RequestMapping("/mensa_am_park")
+@CrossOrigin(origins = "https://mensi-mates.whosfritz.de")
 public class ControllerMensaamPark {
 
     private final Meals_Mensa_am_ParkService meals_mensa_am_parkService;

@@ -10,10 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.time.LocalDateTime;
@@ -22,6 +19,7 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/auth")
 @Log4j2
+@CrossOrigin(origins = "https://mensi-mates.whosfritz.de")
 public class AuthenticationController {
 
     private final API_UserRepository apiUserRepository;
