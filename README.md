@@ -6,7 +6,7 @@
 
 Dies ist ein privates Studentenprojekt. Die API steht nicht für die Öffentlichkeit zur Verfügung und wird nicht zu kommerziellen Zwecken genutzt.
 
-MensaHub-Gateway ist eine SpringBoot Anwendung, die mithilfe von Maven und Java 11 erstellt wurde. Sie stellt Informationen bereit, die aus dem MensaHub-DataDispatcher in eine Datenbank geschrieben wurden, um andere Programmierprojekte zu ermöglichen.
+"MensaHub-Gateway" ist eine SpringBoot Anwendung, die mithilfe von Maven und Java 11 erstellt wurde. Sie stellt Informationen bereit, die aus dem "MensaHub-DataDispatcher" in eine Datenbank geschrieben wurden, um andere Programmierprojekte zu ermöglichen.
 
 ## Installation
 
@@ -19,10 +19,5 @@ MensaHub-Gateway ist eine SpringBoot Anwendung, die mithilfe von Maven und Java 
 
 ## Verwendung
 
-Die API stellt verschiedene Endpunkte zur Verfügung, um auf die Daten in der Datenbank zugreifen zu können. Eine ausführliche Dokumentation der verfügbaren Endpunkte finden Sie im Code oder in der API-Dokumentation.
-Der Zugriff auf die API ist nur mit einem Zugriffstoken möglich!
-
-## Das Konzept
-![EssensGetter SoftwareArchitektur drawio (1)](https://user-images.githubusercontent.com/76694468/212769942-63c4dd74-2664-4111-9736-429c27f669c5.png)
-
-Ich hoffe, dass Sie die Anwendung trotzdem nützlich finden.
+Die API stellt verschiedene Endpunkte zur Verfügung, um auf die Daten in der Datenbank zugreifen zu können. Eine ausführliche Dokumentation der verfügbaren Endpunkte finden Sie im Code oder in der API-Dokumentation. Im realen Produktionsbetrieb findet sich die API Doumentation auch im "MensaHub-Junction" im Developer Portal wieder.
+Der Zugriff auf die API ist nur mit einem vorher erstellten API-Account möglich und verwendet JWT zur authentifizierung!
