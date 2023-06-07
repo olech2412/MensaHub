@@ -14,6 +14,7 @@ import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.time.LocalDate;
 
+@CrossOrigin(origins = "https://mensi-mates.whosfritz.de")
 @RestController
 @Log4j2
 @RequestMapping("/mensa_schoenauerstr")
