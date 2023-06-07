@@ -19,6 +19,7 @@ import javax.validation.Valid;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
+@CrossOrigin(origins = "https://mensi-mates.whosfritz.de")
 @RestController
 @RequestMapping("/auth")
 @Log4j2
