@@ -1,12 +1,12 @@
-# EssensGetter API
+# MensaHub-Gateway
 
-[![Java CI with Maven](https://github.com/olech2412/EssensGetter-API/actions/workflows/maven.yml/badge.svg)](https://github.com/olech2412/EssensGetter-API/actions/workflows/maven.yml)
-[![Test CI/CD Pipeline](https://github.com/olech2412/EssensGetter-API/actions/workflows/TestPipeline.yml/badge.svg?branch=master)](https://github.com/olech2412/EssensGetter-API/actions/workflows/TestPipeline.yml)
-[![Release](https://github.com/olech2412/EssensGetter-API/actions/workflows/Release.yml/badge.svg)](https://github.com/olech2412/EssensGetter-API/actions/workflows/Release.yml)
+[![Release](https://github.com/olech2412/MensaHub-Gateway/actions/workflows/Release.yml/badge.svg)](https://github.com/olech2412/MensaHub-Gateway/actions/workflows/Release.yml)
+[![Daily build and test](https://github.com/olech2412/MensaHub-Gateway/actions/workflows/maven.yml/badge.svg)](https://github.com/olech2412/MensaHub-Gateway/actions/workflows/maven.yml)
+[![Test CI/CD Pipeline](https://github.com/olech2412/MensaHub-Gateway/actions/workflows/TestPipeline.yml/badge.svg)](https://github.com/olech2412/MensaHub-Gateway/actions/workflows/TestPipeline.yml)
 
-Dies ist ein privates Studentenprojekt. Die API steht nicht für die Öffentlichkeit zur Verfügung und wird nicht zu kommerziellen Zwecken genutzt. Außerdem kann und will ich keinen stabilen Betrieb der Anwendung gewährleisten.
+Dies ist ein privates Studentenprojekt. Die API steht nicht für die Öffentlichkeit zur Verfügung und wird nicht zu kommerziellen Zwecken genutzt.
 
-Die EssensGetter API ist eine SpringBoot Anwendung, die mithilfe von Maven und Java 11 erstellt wurde. Sie stellt Informationen bereit, die aus dem EssensGetter 2.0 in eine Datenbank geschrieben wurden, um andere Programmierprojekte zu ermöglichen.
+"MensaHub-Gateway" ist eine SpringBoot Anwendung, die mithilfe von Maven und Java 11 erstellt wurde. Sie stellt Informationen bereit, die aus dem "MensaHub-DataDispatcher" in eine Datenbank geschrieben wurden, um andere Programmierprojekte zu ermöglichen.
 
 ## Installation
 
@@ -19,14 +19,5 @@ Die EssensGetter API ist eine SpringBoot Anwendung, die mithilfe von Maven und J
 
 ## Verwendung
 
-Die API stellt verschiedene Endpunkte zur Verfügung, um auf die Daten in der Datenbank zugreifen zu können. Eine ausführliche Dokumentation der verfügbaren Endpunkte finden Sie im Code oder in der API-Dokumentation.
-Der Zugriff auf die API ist nur mit einem Zugriffstoken möglich!
-
-## Das Konzept
-![EssensGetter SoftwareArchitektur drawio (1)](https://user-images.githubusercontent.com/76694468/212769942-63c4dd74-2664-4111-9736-429c27f669c5.png)
-
-## Hinweis
-
-Bitte beachten Sie, dass dies ein privates Studentenprojekt ist und die API nicht für die Öffentlichkeit zur Verfügung steht. Der Betrieb der Anwendung kann nicht garantiert werden und die Anwendung darf nicht zu kommerziellen Zwecken genutzt werden.
-
-Ich hoffe, dass Sie die Anwendung trotzdem nützlich finden.
+Die API stellt verschiedene Endpunkte zur Verfügung, um auf die Daten in der Datenbank zugreifen zu können. Eine ausführliche Dokumentation der verfügbaren Endpunkte finden Sie im Code oder in der API-Dokumentation. Im realen Produktionsbetrieb findet sich die API Doumentation auch im "MensaHub-Junction" im Developer Portal wieder.
+Der Zugriff auf die API ist nur mit einem vorher erstellten API-Account möglich und verwendet JWT zur authentifizierung!
