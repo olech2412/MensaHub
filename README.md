@@ -21,3 +21,6 @@ Dies ist ein privates Studentenprojekt. Die API steht nicht für die Öffentlich
 
 Die API stellt verschiedene Endpunkte zur Verfügung, um auf die Daten in der Datenbank zugreifen zu können. Eine ausführliche Dokumentation der verfügbaren Endpunkte finden Sie im Code oder in der API-Dokumentation. Im realen Produktionsbetrieb findet sich die API Doumentation auch im "MensaHub-Junction" im Developer Portal wieder.
 Der Zugriff auf die API ist nur mit einem vorher erstellten API-Account möglich und verwendet JWT zur authentifizierung!
+
+## Das Konzept
+![MensaHub-Architektur (1)](https://github.com/olech2412/MensaHub-Junction/assets/76694468/f916f0ff-b0ac-48ee-8f80-5876b9b46e19)
