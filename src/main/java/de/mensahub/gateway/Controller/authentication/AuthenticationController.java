@@ -19,7 +19,7 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/auth")
 @Log4j2
-@CrossOrigin(origins = "https://mensi-mates.whosfritz.de")
+@CrossOrigin(origins = "*")
 public class AuthenticationController {
 
     private final API_UserRepository apiUserRepository;
