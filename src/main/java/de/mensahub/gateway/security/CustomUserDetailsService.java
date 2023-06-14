@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 import java.util.Collections;
 
 @Service
-public class CustomUserDetailsService implements UserDetailsService {
+public class CustomUserDetailsService implements UserDetailsService { // This class is used to authenticate the user
     private final API_UserRepository apiUserRepository;
 
     public CustomUserDetailsService(API_UserRepository apiUserRepository) {
@@ -19,13 +19,14 @@ public class CustomUserDetailsService implements UserDetailsService {
     }
 
     /**
-     * @param username
-     * @return
-     * @throws UsernameNotFoundException
+     * Loads the user by username from the database
+     * @param username The username of the user
+     * @return The user details
+     * @throws UsernameNotFoundException If the user was not found
      */
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        API_User apiUser = apiUserRepository.findAPI_UserByApiUsername(username).orElseThrow(() -> new UsernameNotFoundException("User was not found"));
+        API_User apiUser = apiUserRepository.findAPI_UserByApiUsername(username).orElseThrow(() -> new UsernameNotFoundException("User was not found")); // Find the user by username
 
         return new User(
                 apiUser.getApiUsername(),

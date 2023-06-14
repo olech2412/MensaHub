@@ -7,6 +7,10 @@ import com.sun.istack.NotNull;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 
+/**
+ * Interface for the basic meal controller
+ * This interface is used to provide the basic methods for the meal controllers
+ */
 public interface BasicMealController {
 
     /**

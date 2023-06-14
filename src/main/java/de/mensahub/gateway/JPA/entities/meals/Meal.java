@@ -12,6 +12,9 @@ import java.time.LocalDate;
 @Setter
 @EqualsAndHashCode
 @MappedSuperclass
+/**
+ * Provides the functionality of a meal
+ */
 public abstract class Meal {
 
     @Id

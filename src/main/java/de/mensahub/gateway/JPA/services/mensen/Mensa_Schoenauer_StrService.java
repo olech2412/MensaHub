@@ -27,7 +27,7 @@ public class Mensa_Schoenauer_StrService extends Mensa_Service {
     @Override
     public Mensa_Schoenauer_Str getMensa() {
         List<Mensa_Schoenauer_Str> mensa_schoenauer_strList = (List<Mensa_Schoenauer_Str>) mensa_schoenauer_strRepository.findAll();
-        return mensa_schoenauer_strList.get(0);
+        return mensa_schoenauer_strList.get(0); // There is only one Mensa Schoenauer Str
     }
 }
 

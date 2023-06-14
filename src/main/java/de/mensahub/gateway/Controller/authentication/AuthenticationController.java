@@ -30,6 +30,13 @@ public class AuthenticationController {
 
     private final JWTTokenProvider jwtTokenProvider;
 
+    /**
+     * Constructor for AuthenticationController
+     * @param apiUserRepository - Repository for API_User
+     * @param passwordEncoder - Password encoder for BCrypt
+     * @param authenticationManager - Authentication manager for Spring Security
+     * @param jwtTokenProvider - JWT Token provider for Spring Security
+     */
     public AuthenticationController(API_UserRepository apiUserRepository, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager, JWTTokenProvider jwtTokenProvider) {
         this.apiUserRepository = apiUserRepository;
         this.passwordEncoder = passwordEncoder;
@@ -37,6 +44,11 @@ public class AuthenticationController {
         this.jwtTokenProvider = jwtTokenProvider;
     }
 
+    /**
+     * Register a new user via POST request
+     * @param sentApiUser - User to register
+     * @return - Saved user
+     */
     @PostMapping("/register")
     public ResponseEntity<API_User> register(@Valid @RequestBody API_User sentApiUser) {
         Optional<API_User> userOptional = apiUserRepository.findAPI_UserByApiUsername(sentApiUser.getApiUsername());
@@ -45,16 +57,21 @@ public class AuthenticationController {
             return ResponseEntity.badRequest().build();
         }
 
-        sentApiUser.setPassword(passwordEncoder.encode(sentApiUser.getPassword()));
+        sentApiUser.setPassword(passwordEncoder.encode(sentApiUser.getPassword())); // Encode password with BCrypt
 
         apiUserRepository.save(sentApiUser);
 
-        return ResponseEntity.ok(sentApiUser);
+        return ResponseEntity.ok(sentApiUser); // Return saved user
 
     }
 
+    /**
+     * Login a user via POST request
+     * @param loginRequest - Request containing username and password
+     * @return - JWT Token
+     */
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody LoginRequest loginRequest) {
+    public ResponseEntity<String> login(@RequestBody LoginRequest loginRequest) { // Post has to contain username and password
 
         if (apiUserRepository.findAPI_UserByApiUsername(loginRequest.getApiUsername()).isPresent() &&
                 apiUserRepository.findAPI_UserByApiUsername(loginRequest.getApiUsername()).get().getEnabledByAdmin().equals(true)) {
@@ -67,12 +84,12 @@ public class AuthenticationController {
             );
 
             API_User apiUser = apiUserRepository.findAPI_UserByApiUsername(loginRequest.getApiUsername()).get();
-            apiUser.setLastLogin(LocalDateTime.now());
-            apiUserRepository.save(apiUser);
-            return ResponseEntity.ok(jwtTokenProvider.generateToken(loginRequest.getApiUsername()));
+            apiUser.setLastLogin(LocalDateTime.now()); // Set last login to current time
+            apiUserRepository.save(apiUser); // Save changes
+            return ResponseEntity.ok(jwtTokenProvider.generateToken(loginRequest.getApiUsername())); // Return JWT Token
         } else {
             log.warn("Username not found or user tried to access without permission by admin: " + loginRequest.getApiUsername());
-            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED); // Return 401 if user is not found or not enabled by admin
         }
     }
 

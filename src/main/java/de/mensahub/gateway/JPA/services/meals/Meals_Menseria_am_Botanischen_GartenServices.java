@@ -20,6 +20,7 @@ public class Meals_Menseria_am_Botanischen_GartenServices extends Meals_Mensa_Se
     Meals_Menseria_am_Botanischen_GartenRepository meals_menseria_am_botanischen_gartenRepository;
 
     /**
+     * Find all meals from Menseria am Botanischen Garten
      * @return Meals Menseria am Botanischen Garten
      */
     @Override
@@ -28,8 +29,9 @@ public class Meals_Menseria_am_Botanischen_GartenServices extends Meals_Mensa_Se
     }
 
     /**
-     * @param servingDate
-     * @return All meals by serving date greater than or equal to serving date from Menseria am Botanischen Garten
+     * Find all meals by serving date greater than or equal to servingDate
+     * @param servingDate The date the meal is served (format: YYYY-MM-DD)
+     * @return All meals by serving date greater than or equal to serving date from Mensa am Botanischen Garten
      */
     @Override
     public List<Meals_Menseria_am_Botanischen_Garten> findAllMealsByServingDateGreaterThanEqual(LocalDate servingDate) {
@@ -37,8 +39,9 @@ public class Meals_Menseria_am_Botanischen_GartenServices extends Meals_Mensa_Se
     }
 
     /**
-     * @param servingDate
-     * @return All meals by serving date from Menseria am Botanischen Garten
+     * Find all meals by serving date
+     * @param servingDate The date the meal is served (format: YYYY-MM-DD)
+     * @return All meals by serving date from Mensa am Botanischen Garten
      */
     @Override
     public List<Meals_Menseria_am_Botanischen_Garten> findAllMealsByServingDate(LocalDate servingDate) {
@@ -46,8 +49,9 @@ public class Meals_Menseria_am_Botanischen_GartenServices extends Meals_Mensa_Se
     }
 
     /**
-     * @param meal
-     * @param mensa
+     * Save a meal into the database and set the mensa
+     * @param meal The meal to be saved
+     * @param mensa The mensa the meal is from
      */
     @Override
     public void save(Meal meal, Mensa mensa) {
@@ -74,8 +78,9 @@ public class Meals_Menseria_am_Botanischen_GartenServices extends Meals_Mensa_Se
     }
 
     /**
-     * @param meal
-     * @param mensa
+     * Delete a meal from the database
+     * @param meal The meal to be deleted
+     * @param mensa The mensa the meal is from
      */
     @Override
     public void delete(Meal meal, Mensa mensa) {
@@ -103,10 +108,11 @@ public class Meals_Menseria_am_Botanischen_GartenServices extends Meals_Mensa_Se
     }
 
     /**
-     * @param name
-     * @param servingDate
-     * @param id
-     * @return
+     * Find all meals by name, serving date and id
+     * @param name The name of the meal
+     * @param servingDate The date the meal is served (format: YYYY-MM-DD)
+     * @param id The id of the meal
+     * @return All meals by name and serving date and id from Mensa am Botanischen Garten
      */
     @Override
     public List<? extends Meal> findByNameAndServingDateAndId(String name, LocalDate servingDate, Long id) {
@@ -114,8 +120,9 @@ public class Meals_Menseria_am_Botanischen_GartenServices extends Meals_Mensa_Se
     }
 
     /**
-     * @param category
-     * @return
+     * Find all meals by category
+     * @param category The category of the meal
+     * @return All meals by category from Mensa am Botanischen Garten
      */
     @Override
     public List<? extends Meal> findAllByCategory(String category) {
@@ -123,9 +130,10 @@ public class Meals_Menseria_am_Botanischen_GartenServices extends Meals_Mensa_Se
     }
 
     /**
-     * @param category
-     * @param servingDate
-     * @return
+     * Find all meals by category and serving date
+     * @param category The category of the meal
+     * @param servingDate The date the meal is served (format: YYYY-MM-DD)
+     * @return All meals by category and serving date from Mensa am Botanischen Garten
      */
     @Override
     public List<? extends Meal> findAllByCategoryAndServingDate(String category, LocalDate servingDate) {
@@ -133,8 +141,9 @@ public class Meals_Menseria_am_Botanischen_GartenServices extends Meals_Mensa_Se
     }
 
     /**
-     * @param rating
-     * @return
+     * Find all meals by rating is less than or equal to the given rating
+     * @param rating The rating of the meal as double
+     * @return All meals by rating is less than or equal to the given rating from Mensa am Botanischen Garten
      */
     @Override
     public List<? extends Meal> findAllByRatingLessThanEqual(Double rating) {
@@ -143,8 +152,9 @@ public class Meals_Menseria_am_Botanischen_GartenServices extends Meals_Mensa_Se
     }
 
     /**
-     * @param rating
-     * @return
+     * Find all meals by rating is greater than or equal to the given rating
+     * @param rating The rating of the meal as double
+     * @return All meals by rating is greater than or equal to the given rating from Mensa am Botanischen Garten
      */
     @Override
     public List<? extends Meal> findAllByRatingGreaterThanEqual(Double rating) {
@@ -152,9 +162,10 @@ public class Meals_Menseria_am_Botanischen_GartenServices extends Meals_Mensa_Se
     }
 
     /**
-     * @param startDate
-     * @param endDate
-     * @return
+     * Find all meals by rating is greater than or equal to the given rating and serving date
+     * @param startDate startDate (format: YYYY-MM-DD)
+     * @param endDate endDate (format: YYYY-MM-DD)
+     * @return All meals by rating is greater than or equal to the given rating and serving date from Mensa am Botanischen Garten
      */
     @Override
     public List<? extends Meal> findAllByServingDateGreaterThanEqualAndServingDateLessThanEqual(LocalDate startDate, LocalDate endDate) {

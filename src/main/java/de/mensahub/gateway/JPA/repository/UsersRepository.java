@@ -5,6 +5,9 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
+/**
+ * UsersRepository are used to create a connection to the database via Spring Data
+ */
 public interface UsersRepository extends CrudRepository<Users, Long> {
 
     /**

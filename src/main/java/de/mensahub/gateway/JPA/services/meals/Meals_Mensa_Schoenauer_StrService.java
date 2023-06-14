@@ -20,7 +20,8 @@ public class Meals_Mensa_Schoenauer_StrService extends Meals_Mensa_Service {
     Meals_Schoenauer_StrRepository meals_schoenauer_strRepository;
 
     /**
-     * @return
+     * Find all meals from Mensa Schoenauer Str
+     * @return All meals Mensa Schoenauer Str
      */
     @Override
     public Iterable<Meals_Schoenauer_Str> findAll() {
@@ -28,7 +29,8 @@ public class Meals_Mensa_Schoenauer_StrService extends Meals_Mensa_Service {
     }
 
     /**
-     * @param servingDate
+     * Find all meals by serving date greater than or equal to servingDate
+     * @param servingDate The date the meal is served (format: YYYY-MM-DD)
      * @return All meals by serving date greater than or equal to serving date from Mensa Schoenauer Str
      */
     @Override
@@ -37,7 +39,8 @@ public class Meals_Mensa_Schoenauer_StrService extends Meals_Mensa_Service {
     }
 
     /**
-     * @param servingDate
+     * Find all meals by serving date
+     * @param servingDate The date the meal is served (format: YYYY-MM-DD)
      * @return All meals by serving date from Mensa Schoenauer Str
      */
     @Override
@@ -46,7 +49,9 @@ public class Meals_Mensa_Schoenauer_StrService extends Meals_Mensa_Service {
     }
 
     /**
-     * @param meal
+     * Save a meal into the database and set the mensa
+     * @param meal The meal to be saved
+     * @param mensa The mensa the meal is from
      */
     @Override
     public void save(Meal meal, Mensa mensa) {
@@ -73,8 +78,9 @@ public class Meals_Mensa_Schoenauer_StrService extends Meals_Mensa_Service {
     }
 
     /**
-     * @param meal
-     * @param mensa
+     * Delete a meal from the database
+     * @param meal The meal to be deleted
+     * @param mensa The mensa the meal is from
      */
     @Override
     public void delete(Meal meal, Mensa mensa) {
@@ -102,10 +108,11 @@ public class Meals_Mensa_Schoenauer_StrService extends Meals_Mensa_Service {
     }
 
     /**
-     * @param name
-     * @param servingDate
-     * @param id
-     * @return
+     * Find all meals by name, serving date and id
+     * @param name The name of the meal
+     * @param servingDate The date the meal is served (format: YYYY-MM-DD)
+     * @param id The id of the meal
+     * @return All meals by name and serving date and id from Mensa Schoenauer Str
      */
     @Override
     public List<? extends Meal> findByNameAndServingDateAndId(String name, LocalDate servingDate, Long id) {
@@ -113,8 +120,9 @@ public class Meals_Mensa_Schoenauer_StrService extends Meals_Mensa_Service {
     }
 
     /**
-     * @param category
-     * @return
+     * Find all meals by category
+     * @param category The category of the meal
+     * @return All meals by category from Mensa Schoenauer Str
      */
     @Override
     public List<? extends Meal> findAllByCategory(String category) {
@@ -122,9 +130,10 @@ public class Meals_Mensa_Schoenauer_StrService extends Meals_Mensa_Service {
     }
 
     /**
-     * @param category
-     * @param servingDate
-     * @return
+     * Find all meals by category and serving date
+     * @param category The category of the meal
+     * @param servingDate The date the meal is served (format: YYYY-MM-DD)
+     * @return All meals by category and serving date from Mensa Schoenauer Str
      */
     @Override
     public List<? extends Meal> findAllByCategoryAndServingDate(String category, LocalDate servingDate) {
@@ -132,8 +141,9 @@ public class Meals_Mensa_Schoenauer_StrService extends Meals_Mensa_Service {
     }
 
     /**
-     * @param rating
-     * @return
+     * Find all meals by rating is less than or equal to the given rating
+     * @param rating The rating of the meal as double
+     * @return All meals by rating is less than or equal to the given rating from Mensa Schoenauer Str
      */
     @Override
     public List<? extends Meal> findAllByRatingLessThanEqual(Double rating) {
@@ -142,8 +152,9 @@ public class Meals_Mensa_Schoenauer_StrService extends Meals_Mensa_Service {
     }
 
     /**
-     * @param rating
-     * @return
+     * Find all meals by rating is greater than or equal to the given rating
+     * @param rating The rating of the meal as double
+     * @return All meals by rating is greater than or equal to the given rating from Mensa Schoenauer Str
      */
     @Override
     public List<? extends Meal> findAllByRatingGreaterThanEqual(Double rating) {
@@ -151,9 +162,10 @@ public class Meals_Mensa_Schoenauer_StrService extends Meals_Mensa_Service {
     }
 
     /**
-     * @param startDate
-     * @param endDate
-     * @return
+     * Find all meals by rating is greater than or equal to the given rating and serving date
+     * @param startDate startDate (format: YYYY-MM-DD)
+     * @param endDate endDate (format: YYYY-MM-DD)
+     * @return All meals by rating is greater than or equal to the given rating and serving date from Mensa Schoenauer Str
      */
     @Override
     public List<? extends Meal> findAllByServingDateGreaterThanEqualAndServingDateLessThanEqual(LocalDate startDate, LocalDate endDate) {

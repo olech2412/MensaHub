@@ -10,16 +10,17 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 @Component
-public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
+public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint { // This class is used to return a 401 unauthorized error to clients that try to access a protected resource without proper authentication
+
     /**
-     * @param request
-     * @param response
-     * @param authException
-     * @throws IOException
-     * @throws ServletException
+     * Sends a 401 unauthorized error to the client
+     * @param request The request
+     * @param response The response
+     * @param authException The authentication exception
+     * @throws IOException if an error occurs
      */
     @Override
-    public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException, ServletException {
+    public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException {
         response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
     }
 }
