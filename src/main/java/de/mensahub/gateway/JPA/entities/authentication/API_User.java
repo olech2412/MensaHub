@@ -1,8 +1,8 @@
 package de.mensahub.gateway.JPA.entities.authentication;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import de.mensahub.gateway.JPA.entities.ActivationCode;
 import de.mensahub.gateway.JPA.entities.DeactivationCode;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.Setter;
 

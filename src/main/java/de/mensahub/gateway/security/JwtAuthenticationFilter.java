@@ -24,11 +24,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter { // This clas
 
     /**
      * Filters the requests and validates the JWT token
-     * @param request The request
-     * @param response The response
+     *
+     * @param request     The request
+     * @param response    The response
      * @param filterChain The filter chain
      * @throws ServletException If an error occurs
-     * @throws IOException If an error occurs
+     * @throws IOException      If an error occurs
      */
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
@@ -48,6 +49,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter { // This clas
 
     /**
      * Gets the JWT token from the request
+     *
      * @param request The request
      * @return The JWT token
      */

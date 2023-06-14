@@ -1,12 +1,12 @@
 package de.mensahub.gateway.Controller;
 
+import com.sun.istack.NotNull;
 import de.mensahub.gateway.JPA.entities.meals.Generic_Meal;
 import de.mensahub.gateway.JPA.entities.meals.Meal;
 import de.mensahub.gateway.JPA.entities.meals.Meals_Cafeteria_Dittrichring;
 import de.mensahub.gateway.JPA.entities.mensen.Cafeteria_Dittrichring;
 import de.mensahub.gateway.JPA.services.meals.Meals_Cafeteria_DittrichringService;
 import de.mensahub.gateway.JPA.services.mensen.Cafeteria_DittrichringService;
-import com.sun.istack.NotNull;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,8 +26,9 @@ public class ControllerCafeteriaDittrichring implements BasicMealController {
 
     /**
      * Constructor for ControllerCafeteriaDittrichring
+     *
      * @param meals_cafeteria_dittrichringService Service for meals of the cafeteria
-     * @param cafeteria_dittrichringService Service for the cafeteria
+     * @param cafeteria_dittrichringService       Service for the cafeteria
      */
     public ControllerCafeteriaDittrichring(Meals_Cafeteria_DittrichringService meals_cafeteria_dittrichringService, Cafeteria_DittrichringService cafeteria_dittrichringService) {
         this.meals_cafeteria_dittrichringService = meals_cafeteria_dittrichringService;
@@ -36,6 +37,7 @@ public class ControllerCafeteriaDittrichring implements BasicMealController {
 
     /**
      * Get the name of the cafeteria
+     *
      * @return - The name of the cafeteria
      */
     @GetMapping("")
@@ -46,8 +48,9 @@ public class ControllerCafeteriaDittrichring implements BasicMealController {
 
     /**
      * Get all meals of the cafeteria from startDate until endDate
+     *
      * @param startDate - The start date as a string (yyyy-MM-dd)
-     * @param enddate - The end date as a string (yyyy-MM-dd)
+     * @param enddate   - The end date as a string (yyyy-MM-dd)
      * @return - All meals between the start and end date
      */
     @GetMapping("/getMeals/from/{startDate}/to/{enddate}")
@@ -58,6 +61,7 @@ public class ControllerCafeteriaDittrichring implements BasicMealController {
 
     /**
      * Get all meals of the cafeteria for a specific date
+     *
      * @param servingDate - The date as a string (yyyy-MM-dd)
      * @return - All meals with the specific date
      */
@@ -69,6 +73,7 @@ public class ControllerCafeteriaDittrichring implements BasicMealController {
 
     /**
      * Get all meals of the cafeteria for a specific category
+     *
      * @param category - The category as a string
      * @return - All meals with the specific category
      */
@@ -80,7 +85,8 @@ public class ControllerCafeteriaDittrichring implements BasicMealController {
 
     /**
      * Get all meals of the cafeteria for a specific category and date
-     * @param category - The category as a string
+     *
+     * @param category    - The category as a string
      * @param servingDate - The date as a string (yyyy-MM-dd)
      * @return - All meals with the specific category and date
      */
@@ -92,6 +98,7 @@ public class ControllerCafeteriaDittrichring implements BasicMealController {
 
     /**
      * Get all meals of the cafeteria where rating is lower than a specific value
+     *
      * @param rating - The rating as a double value (specific value)
      * @return - All meals with a rating lower than the specific value
      */
@@ -103,6 +110,7 @@ public class ControllerCafeteriaDittrichring implements BasicMealController {
 
     /**
      * Get all meals of the cafeteria where rating is higher than a specific value
+     *
      * @param rating - The rating as a double value (specific value)
      * @return - All meals with a rating higher than the specific value
      */
@@ -115,6 +123,7 @@ public class ControllerCafeteriaDittrichring implements BasicMealController {
     /**
      * Receive a rating for a meal
      * A complete meal object is needed because it will be identified by name, servingDate and id
+     *
      * @param receivedMeal - The meal object with the rating
      */
     @Override

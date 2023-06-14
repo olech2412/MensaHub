@@ -1,7 +1,7 @@
 package de.mensahub.gateway.JPA.entities.meals;
 
-import de.mensahub.gateway.JPA.entities.mensen.Menseria_am_Botanischen_Garten;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import de.mensahub.gateway.JPA.entities.mensen.Menseria_am_Botanischen_Garten;
 import lombok.Getter;
 import lombok.Setter;
 

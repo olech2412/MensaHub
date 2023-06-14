@@ -32,10 +32,11 @@ public class AuthenticationController {
 
     /**
      * Constructor for AuthenticationController
-     * @param apiUserRepository - Repository for API_User
-     * @param passwordEncoder - Password encoder for BCrypt
+     *
+     * @param apiUserRepository     - Repository for API_User
+     * @param passwordEncoder       - Password encoder for BCrypt
      * @param authenticationManager - Authentication manager for Spring Security
-     * @param jwtTokenProvider - JWT Token provider for Spring Security
+     * @param jwtTokenProvider      - JWT Token provider for Spring Security
      */
     public AuthenticationController(API_UserRepository apiUserRepository, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager, JWTTokenProvider jwtTokenProvider) {
         this.apiUserRepository = apiUserRepository;
@@ -46,6 +47,7 @@ public class AuthenticationController {
 
     /**
      * Register a new user via POST request
+     *
      * @param sentApiUser - User to register
      * @return - Saved user
      */
@@ -67,6 +69,7 @@ public class AuthenticationController {
 
     /**
      * Login a user via POST request
+     *
      * @param loginRequest - Request containing username and password
      * @return - JWT Token
      */
@@ -76,7 +79,7 @@ public class AuthenticationController {
         if (apiUserRepository.findAPI_UserByApiUsername(loginRequest.getApiUsername()).isPresent() &&
                 apiUserRepository.findAPI_UserByApiUsername(loginRequest.getApiUsername()).get().getEnabledByAdmin().equals(true)) {
 
-            authenticationManager.authenticate(
+            authenticationManager.authenticate( // Authenticate user with Spring Security Authentication Manager
                     new UsernamePasswordAuthenticationToken(
                             loginRequest.getApiUsername(),
                             loginRequest.getPassword()

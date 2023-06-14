@@ -1,12 +1,12 @@
 package de.mensahub.gateway.Controller;
 
+import com.sun.istack.NotNull;
 import de.mensahub.gateway.JPA.entities.meals.Generic_Meal;
 import de.mensahub.gateway.JPA.entities.meals.Meal;
 import de.mensahub.gateway.JPA.entities.meals.Meals_Schoenauer_Str;
 import de.mensahub.gateway.JPA.entities.mensen.Mensa_Schoenauer_Str;
 import de.mensahub.gateway.JPA.services.meals.Meals_Mensa_Schoenauer_StrService;
 import de.mensahub.gateway.JPA.services.mensen.Mensa_Schoenauer_StrService;
-import com.sun.istack.NotNull;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,8 +26,9 @@ public class ControllerSchoenauerStr {
 
     /**
      * Constructor for ControllerMensaPeterssteinweg
+     *
      * @param meals_mensa_schoenauer_strService Service for meals of the mensa
-     * @param mensa_schoenauer_strService Service for the mensa
+     * @param mensa_schoenauer_strService       Service for the mensa
      */
     public ControllerSchoenauerStr(Meals_Mensa_Schoenauer_StrService meals_mensa_schoenauer_strService, Mensa_Schoenauer_StrService mensa_schoenauer_strService) {
         this.meals_mensa_schoenauer_strService = meals_mensa_schoenauer_strService;
@@ -36,6 +37,7 @@ public class ControllerSchoenauerStr {
 
     /**
      * Get the name of the mensa
+     *
      * @return - the name of the mensa
      */
     @GetMapping("")
@@ -46,8 +48,9 @@ public class ControllerSchoenauerStr {
 
     /**
      * Get all meals of the mensa from startDate until endDate
+     *
      * @param startDate - the start date as string (format: yyyy-MM-dd)
-     * @param enddate - the end date as string (format: yyyy-MM-dd)
+     * @param enddate   - the end date as string (format: yyyy-MM-dd)
      * @return - all meals between the start and end date
      */
     @GetMapping("/getMeals/from/{startDate}/to/{enddate}")
@@ -58,6 +61,7 @@ public class ControllerSchoenauerStr {
 
     /**
      * Get all meals of the mensa for a specific date
+     *
      * @param servingDate - the date as string (format: yyyy-MM-dd)
      * @return - all meals with the specific date
      */
@@ -69,6 +73,7 @@ public class ControllerSchoenauerStr {
 
     /**
      * Get all meals of the mensa for a specific category
+     *
      * @param category - the category as string
      * @return - all meals with the specific category
      */
@@ -80,7 +85,8 @@ public class ControllerSchoenauerStr {
 
     /**
      * Get all meals of the mensa for a specific category and date
-     * @param category - the category as string
+     *
+     * @param category    - the category as string
      * @param servingDate - the date as string (format: yyyy-MM-dd)
      * @return - all meals with the specific category and date
      */
@@ -92,6 +98,7 @@ public class ControllerSchoenauerStr {
 
     /**
      * Get all meals of the mensa where rating is less than a specific value
+     *
      * @param rating - the rating as double (specific value)
      * @return - all meals with rating less than the specific value
      */
@@ -103,6 +110,7 @@ public class ControllerSchoenauerStr {
 
     /**
      * Get all meals of the mensa where rating is higher than a specific value
+     *
      * @param rating - the rating as double (specific value)
      * @return - all meals with rating higher than the specific value
      */
@@ -115,6 +123,7 @@ public class ControllerSchoenauerStr {
     /**
      * Receive a rating for a meal
      * A complete meal object is needed because it will be identified by name, servingDate and id
+     *
      * @param receivedMeal - the meal with the rating
      */
     @PostMapping("/sendRating")

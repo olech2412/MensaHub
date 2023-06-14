@@ -4,7 +4,6 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -14,8 +13,9 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint { /
 
     /**
      * Sends a 401 unauthorized error to the client
-     * @param request The request
-     * @param response The response
+     *
+     * @param request       The request
+     * @param response      The response
      * @param authException The authentication exception
      * @throws IOException if an error occurs
      */

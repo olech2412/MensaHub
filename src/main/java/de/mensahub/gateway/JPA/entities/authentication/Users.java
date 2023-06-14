@@ -33,10 +33,11 @@ public class Users {
     /**
      * Constructor for the Users class.
      * Not used because it is not needed for the API
+     *
      * @param username The username of the user.
      * @param password The password of the user.
-     * @param role The role of the user.
-     * @param enabled Whether the user is enabled or not.
+     * @param role     The role of the user.
+     * @param enabled  Whether the user is enabled or not.
      */
     public Users(String username, String password, String role, Boolean enabled) {
         this.username = username;

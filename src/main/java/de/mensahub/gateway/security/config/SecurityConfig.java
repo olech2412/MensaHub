@@ -27,6 +27,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter { // Class for 
 
     /**
      * Creates a JwtAuthenticationFilter bean
+     *
      * @return JwtAuthenticationFilter
      */
     @Bean
@@ -36,6 +37,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter { // Class for 
 
     /**
      * Creates a PasswordEncoder bean
+     *
      * @return PasswordEncoder
      */
     @Bean
@@ -45,6 +47,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter { // Class for 
 
     /**
      * Creates an AuthenticationManager bean
+     *
      * @return AuthenticationManager
      * @throws Exception if an error occurs
      */
@@ -55,6 +58,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter { // Class for 
 
     /**
      * Configures the HttpSecurity object
+     *
      * @param httpSecurity HttpSecurity object
      * @throws Exception if an error occurs
      */

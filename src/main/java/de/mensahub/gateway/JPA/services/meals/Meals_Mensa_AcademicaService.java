@@ -5,7 +5,6 @@ import de.mensahub.gateway.JPA.entities.meals.Meals_Mensa_Academica;
 import de.mensahub.gateway.JPA.entities.mensen.Mensa;
 import de.mensahub.gateway.JPA.entities.mensen.Mensa_Academica;
 import de.mensahub.gateway.JPA.repository.meals.Meals_Mensa_AcademicaRepository;
-import de.mensahub.gateway.JPA.repository.mensen.Mensa_AcademicaRepository;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -22,6 +21,7 @@ public class Meals_Mensa_AcademicaService extends Meals_Mensa_Service {
 
     /**
      * Find all meals from Mensa Academica
+     *
      * @return All meals Mensa Academica
      */
     @Override
@@ -31,6 +31,7 @@ public class Meals_Mensa_AcademicaService extends Meals_Mensa_Service {
 
     /**
      * Find all meals by serving date greater than or equal to servingDate
+     *
      * @param servingDate The date the meal is served (format: YYYY-MM-DD)
      * @return All meals by serving date greater than or equal to serving date from Mensa Academica
      */
@@ -41,6 +42,7 @@ public class Meals_Mensa_AcademicaService extends Meals_Mensa_Service {
 
     /**
      * Find all meals by serving date
+     *
      * @param servingDate The date the meal is served (format: YYYY-MM-DD)
      * @return All meals by serving date from Mensa Academica
      */
@@ -51,7 +53,8 @@ public class Meals_Mensa_AcademicaService extends Meals_Mensa_Service {
 
     /**
      * Save a meal into the database and set the mensa
-     * @param meal The meal to be saved
+     *
+     * @param meal  The meal to be saved
      * @param mensa The mensa the meal is from
      */
     @Override
@@ -80,7 +83,8 @@ public class Meals_Mensa_AcademicaService extends Meals_Mensa_Service {
 
     /**
      * Delete a meal from the database
-     * @param meal The meal to be deleted
+     *
+     * @param meal  The meal to be deleted
      * @param mensa The mensa the meal is from
      */
     @Override
@@ -110,9 +114,10 @@ public class Meals_Mensa_AcademicaService extends Meals_Mensa_Service {
 
     /**
      * Find all meals by name, serving date and id
-     * @param name The name of the meal
+     *
+     * @param name        The name of the meal
      * @param servingDate The date the meal is served (format: YYYY-MM-DD)
-     * @param id The id of the meal
+     * @param id          The id of the meal
      * @return All meals by name and serving date and id from Mensa Academica
      */
     @Override
@@ -122,6 +127,7 @@ public class Meals_Mensa_AcademicaService extends Meals_Mensa_Service {
 
     /**
      * Find all meals by category
+     *
      * @param category The category of the meal
      * @return All meals by category from Mensa Academica
      */
@@ -132,7 +138,8 @@ public class Meals_Mensa_AcademicaService extends Meals_Mensa_Service {
 
     /**
      * Find all meals by category and serving date
-     * @param category The category of the meal
+     *
+     * @param category    The category of the meal
      * @param servingDate The date the meal is served (format: YYYY-MM-DD)
      * @return All meals by category and serving date from Mensa Academica
      */
@@ -143,6 +150,7 @@ public class Meals_Mensa_AcademicaService extends Meals_Mensa_Service {
 
     /**
      * Find all meals by rating is less than or equal to the given rating
+     *
      * @param rating The rating of the meal as double
      * @return All meals by rating is less than or equal to the given rating from Mensa Academica
      */
@@ -153,6 +161,7 @@ public class Meals_Mensa_AcademicaService extends Meals_Mensa_Service {
 
     /**
      * Find all meals by rating is greater than or equal to the given rating
+     *
      * @param rating The rating of the meal as double
      * @return All meals by rating is greater than or equal to the given rating from Mensa Academica
      */
@@ -163,8 +172,9 @@ public class Meals_Mensa_AcademicaService extends Meals_Mensa_Service {
 
     /**
      * Find all meals by rating is greater than or equal to the given rating and serving date
+     *
      * @param startDate startDate (format: YYYY-MM-DD)
-     * @param endDate endDate (format: YYYY-MM-DD)
+     * @param endDate   endDate (format: YYYY-MM-DD)
      * @return All meals by rating is greater than or equal to the given rating and serving date from Mensa Academica
      */
     @Override

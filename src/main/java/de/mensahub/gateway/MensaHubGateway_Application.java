@@ -8,6 +8,7 @@ public class MensaHubGateway_Application {
 
     /**
      * Starts the application with the given arguments
+     *
      * @param args The arguments
      */
     public static void main(String[] args) {

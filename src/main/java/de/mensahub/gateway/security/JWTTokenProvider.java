@@ -22,6 +22,7 @@ public class JWTTokenProvider { // Provides methods to generate, validate and ge
 
     /**
      * Generates a JWT token for a user
+     *
      * @param userName The user name
      * @return The JWT token
      */
@@ -39,6 +40,7 @@ public class JWTTokenProvider { // Provides methods to generate, validate and ge
 
     /**
      * Gets the user data from a JWT token
+     *
      * @param token The JWT token
      * @return The user data
      */
@@ -54,6 +56,7 @@ public class JWTTokenProvider { // Provides methods to generate, validate and ge
 
     /**
      * Validates a JWT token
+     *
      * @param token The JWT token
      * @return True if the token is valid, false otherwise
      */
@@ -79,6 +82,7 @@ public class JWTTokenProvider { // Provides methods to generate, validate and ge
     /**
      * Gets the signing key
      * Important because the key is used to sign the JWT token
+     *
      * @return
      */
     private Key getSigningKey() {

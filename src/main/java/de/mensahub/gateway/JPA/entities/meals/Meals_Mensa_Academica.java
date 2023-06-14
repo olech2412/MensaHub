@@ -1,7 +1,7 @@
 package de.mensahub.gateway.JPA.entities.meals;
 
-import de.mensahub.gateway.JPA.entities.mensen.Mensa_Academica;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import de.mensahub.gateway.JPA.entities.mensen.Mensa_Academica;
 import lombok.Getter;
 import lombok.Setter;
 

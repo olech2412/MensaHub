@@ -20,6 +20,7 @@ public class CustomUserDetailsService implements UserDetailsService { // This cl
 
     /**
      * Loads the user by username from the database
+     *
      * @param username The username of the user
      * @return The user details
      * @throws UsernameNotFoundException If the user was not found

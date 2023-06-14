@@ -1,9 +1,9 @@
 package de.mensahub.gateway.Controller;
 
+import com.sun.istack.NotNull;
 import de.mensahub.gateway.JPA.entities.meals.Generic_Meal;
 import de.mensahub.gateway.JPA.entities.meals.Meal;
 import de.mensahub.gateway.JPA.entities.mensen.Mensa;
-import com.sun.istack.NotNull;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 

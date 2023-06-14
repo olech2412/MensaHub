@@ -1,8 +1,8 @@
 package de.mensahub.gateway.JPA.entities.mensen;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import de.mensahub.gateway.JPA.entities.MailUser;
 import de.mensahub.gateway.JPA.entities.meals.Meals_Cafeteria_Dittrichring;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
 import java.util.Set;
