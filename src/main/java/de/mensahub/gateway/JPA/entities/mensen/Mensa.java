@@ -10,6 +10,9 @@ import javax.persistence.*;
 @Getter
 @Setter
 @MappedSuperclass
+/**
+ * Used to provide a common base class for all Mensa entities
+ */
 public abstract class Mensa {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -31,13 +34,5 @@ public abstract class Mensa {
         this.id = id;
         this.name = name;
         this.apiUrl = apiUrl;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 }

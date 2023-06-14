@@ -21,7 +21,8 @@ public class Meals_Cafeteria_DittrichringService extends Meals_Mensa_Service {
 
 
     /**
-     * @return Meals Cafeteria Dittrichring
+     * Find all meals from Cafeteria Dittrichring
+     * @return All meals Cafeteria Dittrichring
      */
     @Override
     public Iterable<Meals_Cafeteria_Dittrichring> findAll() {
@@ -29,8 +30,9 @@ public class Meals_Cafeteria_DittrichringService extends Meals_Mensa_Service {
     }
 
     /**
-     * @param servingDate
-     * @return All meals by serving date greater than or equal to serving date from Cafeteria Dittrichring
+     * Find all meals by serving date greater than or equal to servingDate
+     * @param servingDate The date the meal is served (format: YYYY-MM-DD)
+     * @return All meals by serving date greater than or equal to serving date from Mensa Academica
      */
     @Override
     public List<Meals_Cafeteria_Dittrichring> findAllMealsByServingDateGreaterThanEqual(LocalDate servingDate) {
@@ -38,8 +40,9 @@ public class Meals_Cafeteria_DittrichringService extends Meals_Mensa_Service {
     }
 
     /**
-     * @param servingDate
-     * @return All meals by serving date from Cafeteria Dittrichring
+     * Find all meals by serving date
+     * @param servingDate The date the meal is served (format: YYYY-MM-DD)
+     * @return All meals by serving date from Mensa Academica
      */
     @Override
     public List<Meals_Cafeteria_Dittrichring> findAllMealsByServingDate(LocalDate servingDate) {
@@ -47,8 +50,9 @@ public class Meals_Cafeteria_DittrichringService extends Meals_Mensa_Service {
     }
 
     /**
-     * @param meal
-     * @param mensa
+     * Save a meal into the database and set the mensa
+     * @param meal The meal to be saved
+     * @param mensa The mensa the meal is from
      */
     @Override
     public void save(Meal meal, Mensa mensa) {
@@ -75,8 +79,9 @@ public class Meals_Cafeteria_DittrichringService extends Meals_Mensa_Service {
     }
 
     /**
-     * @param meal
-     * @param mensa
+     * Delete a meal from the database
+     * @param meal The meal to be deleted
+     * @param mensa The mensa the meal is from
      */
     @Override
     public void delete(Meal meal, Mensa mensa) {
@@ -104,36 +109,64 @@ public class Meals_Cafeteria_DittrichringService extends Meals_Mensa_Service {
     }
 
     /**
-     * @param name
-     * @param servingDate
-     * @param id
-     * @return
+     * Find all meals by name, serving date and id
+     * @param name The name of the meal
+     * @param servingDate The date the meal is served (format: YYYY-MM-DD)
+     * @param id The id of the meal
+     * @return All meals by name and serving date and id from Mensa Academica
      */
     @Override
     public List<? extends Meal> findByNameAndServingDateAndId(String name, LocalDate servingDate, Long id) {
         return meals_cafeteria_dittrichringRepository.findByNameAndServingDateAndId(name, servingDate, id);
     }
 
+    /**
+     * Find all meals by category
+     * @param category The category of the meal
+     * @return All meals by category from Mensa Academica
+     */
     @Override
     public List<? extends Meal> findAllByCategory(String category) {
         return meals_cafeteria_dittrichringRepository.findAllByCategory(category);
     }
 
+    /**
+     * Find all meals by category and serving date
+     * @param category The category of the meal
+     * @param servingDate The date the meal is served (format: YYYY-MM-DD)
+     * @return All meals by category and serving date from Mensa Academica
+     */
     @Override
     public List<? extends Meal> findAllByCategoryAndServingDate(String category, LocalDate servingDate) {
         return meals_cafeteria_dittrichringRepository.findAllByCategoryAndServingDate(category, servingDate);
     }
 
+    /**
+     * Find all meals by rating is less than or equal to the given rating
+     * @param rating The rating of the meal as double
+     * @return All meals by rating is less than or equal to the given rating from Mensa Academica
+     */
     @Override
     public List<? extends Meal> findAllByRatingLessThanEqual(Double rating) {
         return meals_cafeteria_dittrichringRepository.findAllByRatingLessThanEqual(rating);
     }
 
+    /**
+     * Find all meals by rating is greater than or equal to the given rating
+     * @param rating The rating of the meal as double
+     * @return All meals by rating is greater than or equal to the given rating from Mensa Academica
+     */
     @Override
     public List<? extends Meal> findAllByRatingGreaterThanEqual(Double rating) {
         return meals_cafeteria_dittrichringRepository.findAllByRatingGreaterThanEqual(rating);
     }
 
+    /**
+     * Find all meals by rating is greater than or equal to the given rating and serving date
+     * @param startDate startDate (format: YYYY-MM-DD)
+     * @param endDate endDate (format: YYYY-MM-DD)
+     * @return All meals by rating is greater than or equal to the given rating and serving date from Mensa Academica
+     */
     @Override
     public List<? extends Meal> findAllByServingDateGreaterThanEqualAndServingDateLessThanEqual(LocalDate startDate, LocalDate endDate) {
         return meals_cafeteria_dittrichringRepository.findAllByServingDateGreaterThanEqualAndServingDateLessThanEqualOrderByServingDate(startDate, endDate);

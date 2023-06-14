@@ -27,7 +27,7 @@ public class Mensa_PeterssteinwegService extends Mensa_Service {
     @Override
     public Mensa_Peterssteinweg getMensa() {
         List<Mensa_Peterssteinweg> mensa_peterssteinwegList = (List<Mensa_Peterssteinweg>) mensa_peterssteinwegRepository.findAll();
-        return mensa_peterssteinwegList.get(0);
+        return mensa_peterssteinwegList.get(0); // There is only one Mensa Peterssteinweg
     }
 }
 

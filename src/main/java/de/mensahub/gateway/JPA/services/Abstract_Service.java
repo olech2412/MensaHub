@@ -8,8 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 public abstract class Abstract_Service<T> {
 
     /**
-     * Make sure all subclasses implement this method
-     *
+     * Each service has to implement this method to return the entities
      * @return Iterable of all entities
      */
     public abstract Iterable findAll();

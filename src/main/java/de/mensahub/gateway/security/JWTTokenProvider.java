@@ -15,11 +15,16 @@ import java.util.Date;
 
 @Log4j2
 @Component
-public class JWTTokenProvider {
+public class JWTTokenProvider { // Provides methods to generate, validate and get user data from JWT tokens
 
-    @Value("${api.jwtSecret}")
+    @Value("${api.jwtSecret}") // Value is set in application.properties
     private String jwtSecret;
 
+    /**
+     * Generates a JWT token for a user
+     * @param userName The user name
+     * @return The JWT token
+     */
     public String generateToken(String userName) {
         Instant now = Instant.now();
         Instant expiration = now.plus(2, ChronoUnit.MINUTES);
@@ -32,6 +37,11 @@ public class JWTTokenProvider {
                 .compact();
     }
 
+    /**
+     * Gets the user data from a JWT token
+     * @param token The JWT token
+     * @return The user data
+     */
     public String getUserDataFromToken(String token) {
         Claims claims = Jwts.parserBuilder()
                 .setSigningKey(getSigningKey())
@@ -42,6 +52,11 @@ public class JWTTokenProvider {
         return claims.getSubject();
     }
 
+    /**
+     * Validates a JWT token
+     * @param token The JWT token
+     * @return True if the token is valid, false otherwise
+     */
     public boolean validateToken(String token) {
         try {
             Jwts.parserBuilder().setSigningKey(getSigningKey()).build().parseClaimsJws(token);
@@ -61,8 +76,13 @@ public class JWTTokenProvider {
         return false;
     }
 
+    /**
+     * Gets the signing key
+     * Important because the key is used to sign the JWT token
+     * @return
+     */
     private Key getSigningKey() {
-        byte[] keyBytes = Decoders.BASE64.decode(jwtSecret);
-        return Keys.hmacShaKeyFor(keyBytes);
+        byte[] keyBytes = Decoders.BASE64.decode(jwtSecret); // Decode the secret key from base64
+        return Keys.hmacShaKeyFor(keyBytes); // Create the signing key from the decoded secret key bytes and return it as a Key object (used to sign the JWT token)
     }
 }

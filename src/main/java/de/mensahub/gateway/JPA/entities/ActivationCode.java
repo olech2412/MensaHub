@@ -10,6 +10,9 @@ import javax.persistence.*;
 @Getter
 @Entity
 @Table(name = "activation_codes")
+/**
+ * Used to create an ActivationCode
+ */
 public class ActivationCode {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -23,22 +26,6 @@ public class ActivationCode {
 
     public ActivationCode() {
 
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getCode() {
-        return code;
-    }
-
-    public void setCode(String code) {
-        this.code = code;
     }
 
 

@@ -10,7 +10,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 @Service
-public abstract class Meals_Mensa_Service extends Abstract_Service {
+public abstract class Meals_Mensa_Service extends Abstract_Service { // Meals_Mensa_Service is a subclass of Abstract_Service and provides the following methods for all subclasses
 
     @Override
     public abstract Iterable<? extends Meal> findAll();

@@ -27,6 +27,6 @@ public class Mensa_AcademicaService extends Mensa_Service {
     @Override
     public Mensa_Academica getMensa() {
         List<Mensa_Academica> mensa_academicaList = (List<Mensa_Academica>) mensa_academicaRepository.findAll();
-        return mensa_academicaList.get(0);
+        return mensa_academicaList.get(0); // There is only one Mensa Academica
     }
 }

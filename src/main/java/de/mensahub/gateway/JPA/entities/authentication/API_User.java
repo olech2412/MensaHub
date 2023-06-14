@@ -14,13 +14,16 @@ import java.time.LocalDateTime;
 @Entity
 @Getter
 @Setter
+/**
+ * This class represents the API_User entity in the database.
+ */
 public class API_User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "api_user_id", nullable = false)
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    private Long apiUserId;
+    private Long apiUserId; // primary key
 
     @Column(name = "username", nullable = false, unique = true)
     @NotEmpty(message = "A username is required")
@@ -60,24 +63,24 @@ public class API_User {
     @Column(name = "role", nullable = false)
     @NotEmpty
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    private String role = "ROLE_DEV";
+    private String role = "ROLE_DEV"; // default value
 
     @Column(name = "creationDate", nullable = false)
-    private LocalDate creationDate = LocalDate.now();
+    private LocalDate creationDate = LocalDate.now(); // default value
 
     @Column(name = "blocking_reason")
     private String blockingReason;
 
     @OneToOne
-    private ActivationCode activationCode;
+    private ActivationCode activationCode; // one-to-one relationship with ActivationCode needed for activation
 
     @OneToOne
-    private DeactivationCode deactivationCode;
+    private DeactivationCode deactivationCode; // one-to-one relationship with DeactivationCode needed for deactivation
 
     @Column(name = "last_login")
     private LocalDateTime lastLogin;
 
-    public API_User() {
+    public API_User() { // default constructor
 
     }
 }

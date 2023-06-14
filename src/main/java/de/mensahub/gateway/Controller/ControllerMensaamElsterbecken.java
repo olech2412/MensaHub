@@ -24,54 +24,99 @@ public class ControllerMensaamElsterbecken implements BasicMealController {
 
     private final Mensa_am_ElsterbeckenService mensa_am_elsterbeckenService;
 
-
+    /**
+     * Constructor for ControllerMensaamElsterbecken
+     * @param meals_mensa_am_elsterbeckenService Service for meals of the mensa
+     * @param mensa_am_elsterbeckenService Service for the mensa
+     */
     public ControllerMensaamElsterbecken(Meals_Mensa_am_ElsterbeckenService meals_mensa_am_elsterbeckenService, Mensa_am_ElsterbeckenService mensa_am_elsterbeckenService) {
         this.meals_mensa_am_elsterbeckenService = meals_mensa_am_elsterbeckenService;
         this.mensa_am_elsterbeckenService = mensa_am_elsterbeckenService;
     }
 
+    /**
+     * Get the name of the mensa
+     * @return - the name of the mensa
+     */
     @GetMapping("")
     public Iterable<Mensa_am_Elsterbecken> getMensa() {
         log.debug("Mensa info requested");
         return mensa_am_elsterbeckenService.findAll();
     }
 
+    /**
+     * Get all meals of the mensa from startDate until endDate
+     * @param startDate - the start date as string (format: yyyy-mm-dd)
+     * @param enddate - the end date as string (format: yyyy-mm-dd)
+     * @return - all meals of the mensa from startDate until endDate
+     */
     @GetMapping("/getMeals/from/{startDate}/to/{enddate}")
     public Iterable<? extends Meal> getMealsNextDays(@PathVariable String startDate, @PathVariable String enddate) {
         log.debug("Meals were requested from " + startDate + " until " + enddate);
         return meals_mensa_am_elsterbeckenService.findAllByServingDateGreaterThanEqualAndServingDateLessThanEqual(LocalDate.parse(startDate), LocalDate.parse(enddate));
     }
 
+    /**
+     * Get all meals of the mensa for a specific date
+     * @param servingDate - the date as string (format: yyyy-mm-dd)
+     * @return - all meals of the mensa for a specific date
+     */
     @GetMapping("/servingDate/{servingDate}")
     public Iterable<? extends Meal> getMealByServingDate(@PathVariable(value = "servingDate") @NotNull String servingDate) {
         log.debug("Meals were requested with servingDate: " + servingDate);
         return meals_mensa_am_elsterbeckenService.findAllMealsByServingDate(LocalDate.parse(servingDate));
     }
 
+    /**
+     * Get all meals of the mensa for a specific category
+     * @param category - the category as string
+     * @return - all meals of the mensa for a specific category
+     */
     @GetMapping("/category/{category}")
     public Iterable<? extends Meal> getMealByCategory(@PathVariable("category") @NotNull String category) {
         log.debug("Meals were requested with category: " + category);
         return meals_mensa_am_elsterbeckenService.findAllByCategory(category);
     }
 
+    /**
+     * Get all meals of the mensa for a specific category and date
+     * @param category - the category as string
+     * @param servingDate - the date as string (format: yyyy-mm-dd)
+     * @return - all meals of the mensa for a specific category and date
+     */
     @GetMapping("/category/{category}/servingDate/{servingDate}")
     public Iterable<? extends Meal> getMealByCategoryAndServingDate(@PathVariable("category") @NotNull String category, @PathVariable("servingDate") @NotNull String servingDate) {
         log.debug("Meals were requested with category: " + category + " on " + servingDate);
         return meals_mensa_am_elsterbeckenService.findAllByCategoryAndServingDate(category, LocalDate.parse(servingDate));
     }
 
+    /**
+     * Get all meals of the mensa where rating is less than a specific value
+     * @param rating - the rating as double (specific value)
+     * @return - all meals with rating less than the specific value
+     */
     @GetMapping("/byRatingLessThen/{rating}")
     public Iterable<? extends Meal> getMealByRatingLessThan(@PathVariable("rating") @NotNull Double rating) {
         log.debug("Meals were requested with rating less then: " + rating);
         return meals_mensa_am_elsterbeckenService.findAllByRatingLessThanEqual(rating);
     }
 
+    /**
+     * Get all meals of the mensa where rating is higher than a specific value
+     * @param rating - the rating as double (specific value)
+     * @return - all meals with rating higher than the specific value
+     */
     @GetMapping("/byRatingHigherThen/{rating}")
     public Iterable<? extends Meal> getMealByRatingHigherThan(@PathVariable("rating") @NotNull Double rating) {
         log.debug("Meals were requested with rating higher then: " + rating);
         return meals_mensa_am_elsterbeckenService.findAllByRatingGreaterThanEqual(rating);
     }
 
+    /**
+     * Receive a rating for a meal
+     * A complete meal object is needed because it will be identified by name, servingDate and id
+     * @param receivedMeal - the meal with the rating
+     */
     @PostMapping("/sendRating")
     public void saveRatingForMeal(@RequestBody Generic_Meal receivedMeal) {
         log.info("Meal received: " + receivedMeal);

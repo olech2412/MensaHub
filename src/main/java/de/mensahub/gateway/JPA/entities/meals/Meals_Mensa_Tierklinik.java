@@ -14,12 +14,15 @@ import javax.persistence.Table;
 @Setter
 @Entity
 @Table(name = "meals_mensa_tierklinik")
+/**
+ * Used to create a meal for Mensa Tierklinik
+ */
 public class Meals_Mensa_Tierklinik extends Meal {
 
     @ManyToOne
     @JoinColumn(name = "mensa_tierklinik_id", nullable = false)
     @JsonIgnore
-    private Mensa_Tierklinik mensa_tierklinik;
+    private Mensa_Tierklinik mensa_tierklinik; // Many Meals can be in one Cafeteria
 
     public Meals_Mensa_Tierklinik() {
 

@@ -6,6 +6,9 @@ import org.springframework.data.repository.CrudRepository;
 import java.time.LocalDate;
 import java.util.List;
 
+/**
+ * MealRepositorys are used to create a connection to the database
+ */
 public interface Meals_Mensa_am_ElsterbeckenRepository extends CrudRepository<Meals_Mensa_am_Elsterbecken, Long> {
 
     List<Meals_Mensa_am_Elsterbecken> findAllMealsByServingDateGreaterThanEqual(LocalDate servingDate);

@@ -14,12 +14,15 @@ import javax.persistence.Table;
 @Setter
 @Entity
 @Table(name = "meals_menseria_am_botanischen_garten")
+/**
+ * Used to create a meal for Menseria am Botanischen Garten
+ */
 public class Meals_Menseria_am_Botanischen_Garten extends Meal {
 
     @ManyToOne
     @JoinColumn(name = "menseria_am_botanischen_garten_id", nullable = false)
     @JsonIgnore
-    private Menseria_am_Botanischen_Garten menseria_am_botanischen_garten;
+    private Menseria_am_Botanischen_Garten menseria_am_botanischen_garten; // Many Meals can be in one Cafeteria
 
     public Meals_Menseria_am_Botanischen_Garten() {
 

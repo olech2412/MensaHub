@@ -27,7 +27,7 @@ public class Mensa_am_ParkService extends Mensa_Service {
     @Override
     public Mensa_am_Park getMensa() {
         List<Mensa_am_Park> mensa_am_parkList = (List<Mensa_am_Park>) mensa_am_parkRepository.findAll();
-        return mensa_am_parkList.get(0);
+        return mensa_am_parkList.get(0); // There is only one Mensa am Park
     }
 }
 

@@ -9,6 +9,9 @@ import javax.persistence.*;
 @Getter
 @Entity
 @Table(name = "deactivation_codes")
+/**
+ * Used to create a DeactivationCode
+ */
 public class DeactivationCode {
 
     @Id

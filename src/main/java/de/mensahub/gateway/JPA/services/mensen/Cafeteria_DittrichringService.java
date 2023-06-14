@@ -27,6 +27,6 @@ public class Cafeteria_DittrichringService extends Mensa_Service {
     @Override
     public Cafeteria_Dittrichring getMensa() {
         List<Cafeteria_Dittrichring> cafeteria_dittrichringList = (List<Cafeteria_Dittrichring>) cafeteria_dittrichringRepository.findAll();
-        return cafeteria_dittrichringList.get(0);
+        return cafeteria_dittrichringList.get(0); // There is only one Cafeteria Dittrichring
     }
 }

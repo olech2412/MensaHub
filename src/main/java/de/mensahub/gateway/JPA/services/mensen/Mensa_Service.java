@@ -8,13 +8,8 @@ import org.springframework.stereotype.Service;
 
 @Service
 @Log4j2
-public abstract class Mensa_Service extends Abstract_Service<Mensa> {
+public abstract class Mensa_Service extends Abstract_Service<Mensa> { // Class provides following methods for subclasses:
 
-    /**
-     * Make sure all subclasses implement this method
-     *
-     * @return Any subclass of Mensa
-     */
     @Override
     public abstract Iterable<? extends Mensa> findAll();
 

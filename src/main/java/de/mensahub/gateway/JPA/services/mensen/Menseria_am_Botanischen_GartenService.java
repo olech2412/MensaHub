@@ -27,7 +27,7 @@ public class Menseria_am_Botanischen_GartenService extends Mensa_Service {
     @Override
     public Menseria_am_Botanischen_Garten getMensa() {
         List<Menseria_am_Botanischen_Garten> menseria_am_botanischen_gartenList = (List<Menseria_am_Botanischen_Garten>) menseria_am_botanischen_gartenRepository.findAll();
-        return menseria_am_botanischen_gartenList.get(0);
+        return menseria_am_botanischen_gartenList.get(0); // There is only one Menseria am Botanischen Garten
     }
 }
 
