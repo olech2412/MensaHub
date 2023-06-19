@@ -93,7 +93,7 @@ public class MensaamMedizincampusControllerTest {
                 .getResponse()
                 .getContentAsString(StandardCharsets.UTF_8);
 
-        Assertions.assertEquals(content, "[{\"name\":\"" + mensaAmMedizincampusService.getMensa().getName() + "\"}]");
+        Assertions.assertEquals("[{\"name\":\"" + mensaAmMedizincampusService.getMensa().getName() + "\"}]", content);
     }
 
     @Test

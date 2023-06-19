@@ -8,6 +8,8 @@ import de.mensahub.gateway.JPA.entities.mensen.Mensa_Schoenauer_Str;
 import de.mensahub.gateway.JPA.services.meals.Meals_Mensa_Schoenauer_StrService;
 import de.mensahub.gateway.JPA.services.mensen.Mensa_Schoenauer_StrService;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.RoundingMode;
@@ -18,7 +20,7 @@ import java.time.LocalDate;
 @Log4j2
 @RequestMapping("/mensa_schoenauerstr")
 @CrossOrigin(origins = "*")
-public class ControllerSchoenauerStr {
+public class ControllerSchoenauerStr implements BasicMealController {
 
     private final Meals_Mensa_Schoenauer_StrService meals_mensa_schoenauer_strService;
 
@@ -41,6 +43,7 @@ public class ControllerSchoenauerStr {
      * @return - the name of the mensa
      */
     @GetMapping("")
+    @Cacheable("mensa_schoenauer_str")
     public Iterable<Mensa_Schoenauer_Str> getMensa() {
         log.debug("Mensa info requested");
         return mensa_schoenauer_strService.findAll();

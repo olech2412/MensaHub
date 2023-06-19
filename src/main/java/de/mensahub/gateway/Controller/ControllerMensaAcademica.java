@@ -8,6 +8,8 @@ import de.mensahub.gateway.JPA.entities.mensen.Mensa_Academica;
 import de.mensahub.gateway.JPA.services.meals.Meals_Mensa_AcademicaService;
 import de.mensahub.gateway.JPA.services.mensen.Mensa_AcademicaService;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.RoundingMode;
@@ -41,6 +43,7 @@ public class ControllerMensaAcademica implements BasicMealController {
      * @return - the name of the mensa
      */
     @GetMapping("")
+    @Cacheable("mensa_academica")
     public Iterable<Mensa_Academica> getMensa() {
         log.debug("Mensa info requested");
         return mensa_academicaService.findAll();

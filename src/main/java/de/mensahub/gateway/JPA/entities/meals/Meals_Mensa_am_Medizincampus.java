@@ -5,10 +5,7 @@ import de.mensahub.gateway.JPA.entities.mensen.Mensa_am_Medizincampus;
 import lombok.Getter;
 import lombok.Setter;
 
-import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 @Getter
 @Setter
@@ -19,7 +16,7 @@ import javax.persistence.Table;
  */
 public class Meals_Mensa_am_Medizincampus extends Meal {
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "mensa_am_medizincampus_id", nullable = false)
     @JsonIgnore
     private Mensa_am_Medizincampus mensa_am_medizincampus; // Many Meals can be in one Cafeteria

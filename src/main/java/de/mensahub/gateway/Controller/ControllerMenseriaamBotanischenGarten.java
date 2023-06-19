@@ -8,6 +8,8 @@ import de.mensahub.gateway.JPA.entities.mensen.Menseria_am_Botanischen_Garten;
 import de.mensahub.gateway.JPA.services.meals.Meals_Menseria_am_Botanischen_GartenServices;
 import de.mensahub.gateway.JPA.services.mensen.Menseria_am_Botanischen_GartenService;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.RoundingMode;
@@ -18,7 +20,7 @@ import java.time.LocalDate;
 @Log4j2
 @RequestMapping("/menseria_am_botanischen_garten")
 @CrossOrigin(origins = "*")
-public class ControllerMenseriaamBotanischenGarten {
+public class ControllerMenseriaamBotanischenGarten implements BasicMealController {
 
     private final Meals_Menseria_am_Botanischen_GartenServices meals_menseria_am_botanischen_gartenServices;
 
@@ -41,6 +43,7 @@ public class ControllerMenseriaamBotanischenGarten {
      * @return - the name of the mensa
      */
     @GetMapping("")
+    @Cacheable("mensa_menseria_am_botanischen_garten")
     public Iterable<Menseria_am_Botanischen_Garten> getMensa() {
         log.debug("Mensa info requested");
         return menseria_am_botanischen_gartenService.findAll();

@@ -93,7 +93,7 @@ public class SchoenauerStrControllerTest {
                 .getResponse()
                 .getContentAsString(StandardCharsets.UTF_8);
 
-        Assertions.assertEquals(content, "[{\"name\":\"" + mensaSchoenauerStrService.getMensa().getName() + "\"}]");
+        Assertions.assertEquals("[{\"name\":\"" + mensaSchoenauerStrService.getMensa().getName() + "\"}]", content);
     }
 
     @Test

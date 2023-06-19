@@ -26,7 +26,6 @@ public class Mensa_am_MedizincampusService extends Mensa_Service {
      */
     @Override
     public Mensa_am_Medizincampus getMensa() {
-        List<Mensa_am_Medizincampus> mensa_am_medizincampusList = (List<Mensa_am_Medizincampus>) mensa_am_medizincampusRepository.findAll();
-        return mensa_am_medizincampusList.get(0); // There is only one Mensa am Medizincampus
+        return mensa_am_medizincampusRepository.findMensa_am_MedizincampusById(1L); // There is only one Mensa am Medizincampus
     }
 }

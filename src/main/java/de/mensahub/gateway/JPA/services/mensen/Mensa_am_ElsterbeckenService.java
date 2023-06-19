@@ -26,8 +26,7 @@ public class Mensa_am_ElsterbeckenService extends Mensa_Service {
      */
     @Override
     public Mensa_am_Elsterbecken getMensa() {
-        List<Mensa_am_Elsterbecken> mensa_am_elsterbeckenList = (List<Mensa_am_Elsterbecken>) mensa_am_elsterbeckenRepository.findAll();
-        return mensa_am_elsterbeckenList.get(0); // There is only one Mensa am Elsterbecken
+        return mensa_am_elsterbeckenRepository.findMensa_am_ElsterbeckenById(1L); // There is only one Mensa am Elsterbecken
     }
 }
 

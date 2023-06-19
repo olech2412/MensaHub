@@ -94,7 +94,7 @@ public class CafeteriaDittrichringControllerTest {
                 .getResponse()
                 .getContentAsString(StandardCharsets.UTF_8);
 
-        Assertions.assertEquals(content, "[{\"name\":\"" + cafeteria_dittrichringService.getMensa().getName() + "\"}]");
+        Assertions.assertEquals("[{\"name\":\"" + cafeteria_dittrichringService.getMensa().getName() + "\"}]", content);
     }
 
     @Test

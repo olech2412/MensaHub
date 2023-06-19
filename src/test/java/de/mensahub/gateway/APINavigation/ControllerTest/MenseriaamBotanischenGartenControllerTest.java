@@ -93,7 +93,7 @@ public class MenseriaamBotanischenGartenControllerTest {
                 .getResponse()
                 .getContentAsString(StandardCharsets.UTF_8);
 
-        Assertions.assertEquals(content, "[{\"name\":\"" + menseriaAmBotanischenGartenService.getMensa().getName() + "\"}]");
+        Assertions.assertEquals("[{\"name\":\"" + menseriaAmBotanischenGartenService.getMensa().getName() + "\"}]", content);
     }
 
     @Test

@@ -8,6 +8,8 @@ import de.mensahub.gateway.JPA.entities.mensen.Mensa_Tierklinik;
 import de.mensahub.gateway.JPA.services.meals.Meals_Mensa_TierklinikService;
 import de.mensahub.gateway.JPA.services.mensen.Mensa_TierklinikService;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.RoundingMode;
@@ -18,7 +20,7 @@ import java.time.LocalDate;
 @Log4j2
 @RequestMapping("/mensa_tierklinik")
 @CrossOrigin(origins = "*")
-public class ControllerMensaTierklinik {
+public class ControllerMensaTierklinik implements BasicMealController {
 
     private final Meals_Mensa_TierklinikService meals_mensa_tierklinikService;
 
@@ -41,6 +43,7 @@ public class ControllerMensaTierklinik {
      * @return - the name of the mensa
      */
     @GetMapping("")
+    @Cacheable("mensa_tierklinik")
     public Iterable<Mensa_Tierklinik> getMensa() {
         log.debug("Mensa info requested");
         return mensa_tierklinikService.findAll();

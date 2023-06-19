@@ -26,8 +26,7 @@ public class Mensa_TierklinikService extends Mensa_Service {
      */
     @Override
     public Mensa_Tierklinik getMensa() {
-        List<Mensa_Tierklinik> mensa_tierklinikList = (List<Mensa_Tierklinik>) mensa_tierklinikRepository.findAll();
-        return mensa_tierklinikList.get(0); // There is only one Mensa Tierklinik
+        return mensa_tierklinikRepository.findMensa_TierklinikById(1L); // There is only one Mensa Tierklinik
     }
 }
 

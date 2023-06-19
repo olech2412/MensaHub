@@ -66,8 +66,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter { // Class for 
     public void configure(HttpSecurity httpSecurity) throws Exception {
         httpSecurity.cors()
                 .and()
-                .csrf().csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()) // CSRF protection to prevent Cross-Site Request Forgery
-                .and()
+                .csrf()
+                .disable()
                 .exceptionHandling()
                 .authenticationEntryPoint(jwtAuthenticationEntryPoint) // Exception handling for unauthorized requests
                 .and()

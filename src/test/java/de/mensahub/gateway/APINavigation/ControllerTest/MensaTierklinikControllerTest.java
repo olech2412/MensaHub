@@ -93,7 +93,7 @@ public class MensaTierklinikControllerTest {
                 .getResponse()
                 .getContentAsString(StandardCharsets.UTF_8);
 
-        Assertions.assertEquals(content, "[{\"name\":\"" + mensaTierklinikService.getMensa().getName() + "\"}]");
+        Assertions.assertEquals("[{\"name\":\"" + mensaTierklinikService.getMensa().getName() + "\"}]", content);
     }
 
     @Test

@@ -13,6 +13,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
@@ -74,26 +76,29 @@ public class AuthenticationController {
      * @return - JWT Token
      */
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody LoginRequest loginRequest) { // Post has to contain username and password
-
-        if (apiUserRepository.findAPI_UserByApiUsername(loginRequest.getApiUsername()).isPresent() &&
-                apiUserRepository.findAPI_UserByApiUsername(loginRequest.getApiUsername()).get().getEnabledByAdmin().equals(true)) {
-
-            authenticationManager.authenticate( // Authenticate user with Spring Security Authentication Manager
-                    new UsernamePasswordAuthenticationToken(
-                            loginRequest.getApiUsername(),
-                            loginRequest.getPassword()
-                    )
-            );
-
-            API_User apiUser = apiUserRepository.findAPI_UserByApiUsername(loginRequest.getApiUsername()).get();
-            apiUser.setLastLogin(LocalDateTime.now()); // Set last login to current time
-            apiUserRepository.save(apiUser); // Save changes
-            return ResponseEntity.ok(jwtTokenProvider.generateToken(loginRequest.getApiUsername())); // Return JWT Token
+    public ResponseEntity<String> login(@RequestBody @NotNull @NotEmpty LoginRequest loginRequest) { // Post has to contain username and password
+        Optional<API_User> userOptional = apiUserRepository.findAPI_UserByApiUsername(loginRequest.getApiUsername()); // Find user by username
+        if (userOptional.isEmpty()) {
+            log.warn("Username not found: " + loginRequest.getApiUsername());
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED); // Return 401 if user is not found
         } else {
-            log.warn("Username not found or user tried to access without permission by admin: " + loginRequest.getApiUsername());
-            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED); // Return 401 if user is not found or not enabled by admin
+            API_User apiUser = userOptional.get();
+            if (apiUser.getEnabledByAdmin().equals(true)) {
+
+                authenticationManager.authenticate( // Authenticate user with Spring Security Authentication Manager
+                        new UsernamePasswordAuthenticationToken(
+                                loginRequest.getApiUsername(),
+                                loginRequest.getPassword()
+                        )
+                );
+
+                apiUser.setLastLogin(LocalDateTime.now()); // Set last login to current time
+                apiUserRepository.save(apiUser); // Save changes
+                return ResponseEntity.ok(jwtTokenProvider.generateToken(loginRequest.getApiUsername())); // Return JWT Token
+            }
         }
+        log.warn("User tried to login but is not enabled by admin: " + loginRequest.getApiUsername());
+        return new ResponseEntity<>(HttpStatus.UNAUTHORIZED); // Return 401 if user is not enabled by admin
     }
 
 }
