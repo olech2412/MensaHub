@@ -7,6 +7,7 @@ import de.mensahub.gateway.JPA.entities.meals.Meals_Cafeteria_Dittrichring;
 import de.mensahub.gateway.JPA.entities.mensen.Cafeteria_Dittrichring;
 import de.mensahub.gateway.JPA.services.meals.Meals_Cafeteria_DittrichringService;
 import de.mensahub.gateway.JPA.services.mensen.Cafeteria_DittrichringService;
+import io.micrometer.core.annotation.Timed;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -20,6 +21,7 @@ import java.time.LocalDate;
 @Log4j2
 @RequestMapping("/cafeteria_dittrichring")
 @CrossOrigin(origins = "*")
+@Timed
 public class ControllerCafeteriaDittrichring implements BasicMealController{
 
     private final Meals_Cafeteria_DittrichringService meals_cafeteria_dittrichringService;

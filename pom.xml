@@ -10,9 +10,9 @@
     </parent>
     <groupId>de.mensahub.gateway</groupId>
     <artifactId>MensaHub-Gateway</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.1</version>
     <name>MensaHub-Gateway</name>
-    <description>API die Daten des EssensGetter für weitere Programmierprojekte bereitstellt</description>
+    <description>API die Daten des MensaHub-DataDispatchers für weitere Programmierprojekte bereitstellt</description>
     <properties>
         <java.version>11</java.version>
     </properties>
@@ -58,9 +58,12 @@
             <version>2.16.0</version>
         </dependency>
         <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+        <dependency>
             <groupId>io.micrometer</groupId>
-            <artifactId>micrometer-registry-atlas</artifactId>
-            <version>1.11.0</version>
+            <artifactId>micrometer-registry-prometheus</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>

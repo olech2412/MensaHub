@@ -74,7 +74,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter { // Class for 
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS) // Session management for stateless requests (REST API)
                 .and()
                 .authorizeRequests()
-                .antMatchers("/auth/**")
+                .antMatchers("/auth/**", "/actuator/**")
                 .permitAll() // Allow access to the authentication endpoint
                 .anyRequest()
                 .authenticated(); // All other requests need to be authenticated

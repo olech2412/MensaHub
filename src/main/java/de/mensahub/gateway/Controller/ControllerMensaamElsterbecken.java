@@ -7,6 +7,7 @@ import de.mensahub.gateway.JPA.entities.meals.Meals_Mensa_am_Elsterbecken;
 import de.mensahub.gateway.JPA.entities.mensen.Mensa_am_Elsterbecken;
 import de.mensahub.gateway.JPA.services.meals.Meals_Mensa_am_ElsterbeckenService;
 import de.mensahub.gateway.JPA.services.mensen.Mensa_am_ElsterbeckenService;
+import io.micrometer.core.annotation.Timed;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -20,6 +21,7 @@ import java.time.LocalDate;
 @Log4j2
 @RequestMapping("/mensa_am_elsterbecken")
 @CrossOrigin(origins = "*")
+@Timed
 public class ControllerMensaamElsterbecken implements BasicMealController {
 
     private final Meals_Mensa_am_ElsterbeckenService meals_mensa_am_elsterbeckenService;
