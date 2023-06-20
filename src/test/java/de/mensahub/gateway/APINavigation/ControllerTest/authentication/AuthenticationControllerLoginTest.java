@@ -95,7 +95,7 @@ public class AuthenticationControllerLoginTest {
     @Test
     public void controllerShouldAllowOnlyValidCredentials() throws Exception {
         this.mockMvc.perform(MockMvcRequestBuilders.post("/auth/login").contentType(MediaType.APPLICATION_JSON)
-                        .content(invalidCredentials).with(csrf()))
+                        .content(invalidCredentials))
                 .andDo(print())
                 .andExpect(status().isUnauthorized())
                 .andExpect(content().string(""));
