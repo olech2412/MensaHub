@@ -1,7 +1,7 @@
 package de.mensahub.gateway.security.config;
 
-import de.mensahub.gateway.security.JwtAuthenticationEntryPoint;
-import de.mensahub.gateway.security.JwtAuthenticationFilter;
+import de.mensahub.gateway.security.JWTAuthenticationEntryPoint;
+import de.mensahub.gateway.security.JWTAuthenticationFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -14,7 +14,6 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.stereotype.Component;
 
 @Configuration
@@ -23,7 +22,7 @@ import org.springframework.stereotype.Component;
 public class SecurityConfig extends WebSecurityConfigurerAdapter { // Class for configuring Spring Security
 
     @Autowired
-    private JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
+    private JWTAuthenticationEntryPoint jwtAuthenticationEntryPoint;
 
     /**
      * Creates a JwtAuthenticationFilter bean
@@ -31,8 +30,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter { // Class for 
      * @return JwtAuthenticationFilter
      */
     @Bean
-    public JwtAuthenticationFilter jwtAuthenticationFilter() {
-        return new JwtAuthenticationFilter();
+    public JWTAuthenticationFilter jwtAuthenticationFilter() {
+        return new JWTAuthenticationFilter();
     }
 
     /**

@@ -14,7 +14,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-public class JwtAuthenticationFilter extends OncePerRequestFilter { // This class is used to filter the requests and validate the JWT token
+public class JWTAuthenticationFilter extends OncePerRequestFilter { // This class is used to filter the requests and validate the JWT token
 
     @Autowired
     private CustomUserDetailsService customUserDetailsService;
@@ -33,7 +33,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter { // This clas
      */
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        String jwt = getJwtFroMRequest(request); // Get the JWT token from the request
+        String jwt = getJwtFromRequest(request); // Get the JWT token from the request
 
         if (StringUtils.hasText(jwt) && jwtTokenProvider.validateToken(jwt)) { // If the token is valid, authenticate the user
             String userName = jwtTokenProvider.getUserDataFromToken(jwt); // Get the user data from the token
@@ -53,7 +53,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter { // This clas
      * @param request The request
      * @return The JWT token
      */
-    private String getJwtFroMRequest(HttpServletRequest request) {
+    private String getJwtFromRequest(HttpServletRequest request) {
         String bearerToken = request.getHeader("Authorization");
 
         if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {

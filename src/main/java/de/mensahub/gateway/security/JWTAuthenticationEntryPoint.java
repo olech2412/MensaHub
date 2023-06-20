@@ -9,7 +9,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 @Component
-public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint { // This class is used to return a 401 unauthorized error to clients that try to access a protected resource without proper authentication
+public class JWTAuthenticationEntryPoint implements AuthenticationEntryPoint { // This class is used to return a 401 unauthorized error to clients that try to access a protected resource without proper authentication
 
     /**
      * Sends a 401 unauthorized error to the client
