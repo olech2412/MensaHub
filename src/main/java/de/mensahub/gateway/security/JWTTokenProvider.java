@@ -4,6 +4,7 @@ import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SignatureException;
+import io.micrometer.core.annotation.Timed;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -15,6 +16,7 @@ import java.util.Date;
 
 @Log4j2
 @Component
+@Timed
 public class JWTTokenProvider { // Provides methods to generate, validate and get user data from JWT tokens
 
     @Value("${api.jwtSecret}") // Value is set in application.properties
@@ -26,6 +28,7 @@ public class JWTTokenProvider { // Provides methods to generate, validate and ge
      * @param userName The user name
      * @return The JWT token
      */
+    @Timed(value = "generateToken", description = "Time taken to generate a JWT token")
     public String generateToken(String userName) {
         Instant now = Instant.now();
         Instant expiration = now.plus(2, ChronoUnit.MINUTES);
@@ -44,6 +47,7 @@ public class JWTTokenProvider { // Provides methods to generate, validate and ge
      * @param token The JWT token
      * @return The user data
      */
+    @Timed(value = "getUserDataFromToken", description = "Time taken to get user data from a JWT token")
     public String getUserDataFromToken(String token) {
         Claims claims = Jwts.parserBuilder()
                 .setSigningKey(getSigningKey())
@@ -60,6 +64,7 @@ public class JWTTokenProvider { // Provides methods to generate, validate and ge
      * @param token The JWT token
      * @return True if the token is valid, false otherwise
      */
+    @Timed(value = "validateToken", description = "Time taken to validate a JWT token")
     public boolean validateToken(String token) {
         try {
             Jwts.parserBuilder().setSigningKey(getSigningKey()).build().parseClaimsJws(token);
