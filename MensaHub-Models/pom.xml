@@ -18,12 +18,20 @@
         <maven.compiler.target>17</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
-         
+
     <distributionManagement>
         <repository>
-               <id>github</id>
-               <name>GitHub Packages olech2412</name>
-               <url>https://maven.pkg.github.com/olech2412/MensaHub</url>
+            <id>github</id>
+            <name>GitHub Packages</name>
+            <url>https://maven.pkg.github.com/olech2412/MensaHub</url>
+            <snapshots>
+                <enabled>true</enabled>
+                <updatePolicy>always</updatePolicy>
+            </snapshots>
+            <releases>
+                <enabled>true</enabled>
+                <updatePolicy>always</updatePolicy>
+            </releases>
         </repository>
     </distributionManagement>
 
