@@ -25,6 +25,6 @@ jobs:
       - name: Build and Publish MensaHub-Models
         run: |
           cd MensaHub-Models
-          mvn clean package
+          mvn --batch-mode deploy
         env:
           GITHUB_TOKEN: ${{ secrets.DEPLOY_PACKAGE }}
