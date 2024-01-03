@@ -1,4 +1,4 @@
-package de.olech2412.mensahub.datadispatcher.JPA.entities.authentification;
+package de.olech2412.mensahub.models.authentification;
 
 import jakarta.persistence.*;
 import lombok.Getter;

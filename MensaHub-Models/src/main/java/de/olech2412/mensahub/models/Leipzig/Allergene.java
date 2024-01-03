@@ -1,4 +1,4 @@
-package de.olech2412.mensahub.datadispatcher.JPA.entities.Leipzig;
+package de.olech2412.mensahub.models.Leipzig;
 
 import lombok.Getter;
 import lombok.Setter;
