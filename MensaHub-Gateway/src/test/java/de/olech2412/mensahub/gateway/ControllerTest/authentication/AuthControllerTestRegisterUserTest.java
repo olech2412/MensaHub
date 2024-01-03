@@ -1,6 +1,6 @@
 package de.olech2412.mensahub.gateway.ControllerTest.authentication;
 
-import de.mensahub.gateway.JPA.repository.API_UserRepository;
+import de.olech2412.mensahub.gateway.JPA.repository.API_UserRepository;
 import net.bytebuddy.utility.RandomString;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;

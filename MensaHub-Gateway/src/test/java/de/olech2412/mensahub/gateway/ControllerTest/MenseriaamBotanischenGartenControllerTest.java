@@ -1,8 +1,8 @@
 package de.olech2412.mensahub.gateway.ControllerTest;
 
-import de.mensahub.gateway.JPA.entities.meals.Meals_Menseria_am_Botanischen_Garten;
-import de.mensahub.gateway.JPA.services.meals.Meals_Menseria_am_Botanischen_GartenServices;
-import de.mensahub.gateway.JPA.services.mensen.Menseria_am_Botanischen_GartenService;
+import de.olech2412.mensahub.gateway.JPA.services.meals.Meals_Menseria_am_Botanischen_GartenServices;
+import de.olech2412.mensahub.gateway.JPA.services.mensen.Menseria_am_Botanischen_GartenService;
+import de.olech2412.mensahub.models.Leipzig.meals.Meals_Menseria_am_Botanischen_Garten;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

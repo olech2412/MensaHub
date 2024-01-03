@@ -1,5 +1,6 @@
 package de.olech2412.mensahub.gateway.security;
 
+import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SignatureException;

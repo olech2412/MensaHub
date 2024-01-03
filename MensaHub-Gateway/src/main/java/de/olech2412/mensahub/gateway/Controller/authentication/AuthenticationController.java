@@ -3,6 +3,7 @@ package de.olech2412.mensahub.gateway.Controller.authentication;
 import de.olech2412.mensahub.gateway.JPA.repository.API_UserRepository;
 import de.olech2412.mensahub.gateway.requests.LoginRequest;
 import de.olech2412.mensahub.gateway.security.JWTTokenProvider;
+import de.olech2412.mensahub.models.authentification.API_User;
 import io.micrometer.core.annotation.Timed;
 import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.composite.CompositeMeterRegistry;

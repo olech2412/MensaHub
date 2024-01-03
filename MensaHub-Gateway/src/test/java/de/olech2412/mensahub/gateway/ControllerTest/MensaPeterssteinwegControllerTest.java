@@ -1,8 +1,8 @@
 package de.olech2412.mensahub.gateway.ControllerTest;
 
-import de.mensahub.gateway.JPA.entities.meals.Meals_Mensa_Peterssteinweg;
-import de.mensahub.gateway.JPA.services.meals.Meals_Mensa_PeterssteinwegService;
-import de.mensahub.gateway.JPA.services.mensen.Mensa_PeterssteinwegService;
+import de.olech2412.mensahub.gateway.JPA.services.meals.Meals_Mensa_PeterssteinwegService;
+import de.olech2412.mensahub.gateway.JPA.services.mensen.Mensa_PeterssteinwegService;
+import de.olech2412.mensahub.models.Leipzig.meals.Meals_Mensa_Peterssteinweg;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

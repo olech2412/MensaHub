@@ -1,7 +1,7 @@
 package de.olech2412.mensahub.gateway.security.config;
 
-import de.mensahub.gateway.security.JWTAuthenticationEntryPoint;
-import de.mensahub.gateway.security.JWTAuthenticationFilter;
+import de.olech2412.mensahub.gateway.security.JWTAuthenticationEntryPoint;
+import de.olech2412.mensahub.gateway.security.JWTAuthenticationFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

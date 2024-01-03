@@ -1,7 +1,7 @@
 package de.olech2412.mensahub.gateway.security;
 
-import de.mensahub.gateway.JPA.entities.authentication.API_User;
-import de.mensahub.gateway.JPA.repository.API_UserRepository;
+import de.olech2412.mensahub.gateway.JPA.repository.API_UserRepository;
+import de.olech2412.mensahub.models.authentification.API_User;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

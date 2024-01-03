@@ -1,7 +1,7 @@
 package de.olech2412.mensahub.gateway.ControllerTest.authentication;
 
-import de.mensahub.gateway.JPA.repository.API_UserRepository;
-import de.mensahub.gateway.security.JWTTokenProvider;
+import de.olech2412.mensahub.gateway.JPA.repository.API_UserRepository;
+import de.olech2412.mensahub.gateway.security.JWTTokenProvider;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
