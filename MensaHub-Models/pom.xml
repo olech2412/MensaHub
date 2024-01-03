@@ -23,7 +23,7 @@
         <repository>
                <id>github</id>
                <name>GitHub Packages</name>
-               <url>https://maven.pkg.github.com/devopshint/mensahub-models</url>
+               <url>https://maven.pkg.github.com/olech2412/MensaHub</url>
         </repository>
     </distributionManagement>
 
