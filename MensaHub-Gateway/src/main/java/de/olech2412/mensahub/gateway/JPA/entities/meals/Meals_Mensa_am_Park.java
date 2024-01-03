@@ -1,0 +1,26 @@
+package de.olech2412.mensahub.gateway.JPA.entities.meals;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import de.mensahub.gateway.JPA.entities.mensen.Mensa_am_Park;
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
+@Entity
+@Table(name = "meals_mensa_am_park")
+/**
+ * Used to create a meal for Mensa am Park
+ */
+public class Meals_Mensa_am_Park extends Meal {
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "mensa_am_park_id", nullable = false)
+    @JsonIgnore
+    private Mensa_am_Park mensa_am_park; // Many Meals can be in one Cafeteria
+
+    public Meals_Mensa_am_Park() {
+
+    }
+
+}

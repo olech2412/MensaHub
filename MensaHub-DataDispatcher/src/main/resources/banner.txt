@@ -1,0 +1,12 @@
+  _____                         ____      _   _              ____    ___
+ | ____|___ ___  ___ _ __  ___ / ___| ___| |_| |_ ___ _ __  |___ \  / _ \
+ |  _| / __/ __|/ _ \ '_ \/ __| |  _ / _ \ __| __/ _ \ '__|   __) || | | |
+ | |___\__ \__ \  __/ | | \__ \ |_| |  __/ |_| ||  __/ |     / __/ | |_| |
+ |_____|___/___/\___|_| |_|___/\____|\___|\__|\__\___|_|    |_____(_)___/
+
+Developed by: christopho
+${AnsiColor.BRIGHT_GREEN}Powered by: Spring Boot${spring-boot.formatted-version} ${AnsiColor.DEFAULT}
+More Information: https://github.com/olech2412/EssensGetter-2.0
+Report an issue: https://github.com/olech2412/EssensGetter-2.0/issues
+Visit <EGR>: https://egr.olech2412.de
+${AnsiColor.BRIGHT_GREEN}EssensGetter2.0 is running${AnsiColor.DEFAULT}
