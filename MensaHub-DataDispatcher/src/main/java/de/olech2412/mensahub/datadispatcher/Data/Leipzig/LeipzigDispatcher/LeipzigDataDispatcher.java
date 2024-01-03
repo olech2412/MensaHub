@@ -6,6 +6,7 @@ import de.olech2412.mensahub.datadispatcher.JPA.services.Leipzig.meals.*;
 import de.olech2412.mensahub.datadispatcher.JPA.services.Leipzig.mensen.*;
 import de.olech2412.mensahub.datadispatcher.JPA.services.MailUserService;
 import de.olech2412.mensahub.datadispatcher.email.Mailer;
+import de.olech2412.mensahub.models.Leipzig.Allergene;
 import de.olech2412.mensahub.models.MailUser;
 import de.olech2412.mensahub.models.Meal;
 import de.olech2412.mensahub.models.Mensa;
@@ -169,7 +170,7 @@ public class LeipzigDataDispatcher {
     protected void insertNewAllergenes(Map<String, String> dataMap) {
         allergeneRepository.deleteAll();
             for (Map.Entry<String, String> entry : dataMap.entrySet()) {
-                Aller allergene = new Allergene();
+                Allergene allergene = new Allergene();
                 allergene.setAllergen(entry.getValue());
                 allergene.setToken(entry.getKey());
                 allergeneRepository.save(allergene);

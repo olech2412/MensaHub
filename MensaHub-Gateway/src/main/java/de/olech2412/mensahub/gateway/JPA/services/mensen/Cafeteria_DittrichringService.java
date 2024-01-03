@@ -1,7 +1,7 @@
 package de.olech2412.mensahub.gateway.JPA.services.mensen;
 
-import de.mensahub.gateway.JPA.entities.mensen.Cafeteria_Dittrichring;
-import de.mensahub.gateway.JPA.repository.mensen.Cafeteria_DittrichringRepository;
+import de.olech2412.mensahub.gateway.JPA.repository.mensen.Cafeteria_DittrichringRepository;
+import de.olech2412.mensahub.models.Leipzig.mensen.Cafeteria_Dittrichring;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

@@ -1,16 +1,17 @@
 package de.olech2412.mensahub.gateway.Controller.Leipzig;
 
 import com.sun.istack.NotNull;
-import de.mensahub.gateway.Controller.BasicMealController;
-import de.mensahub.gateway.JPA.entities.meals.Generic_Meal;
-import de.mensahub.gateway.JPA.entities.meals.Meal;
-import de.mensahub.gateway.JPA.entities.meals.Meals_Cafeteria_Dittrichring;
-import de.mensahub.gateway.JPA.entities.mensen.Mensa;
-import de.mensahub.gateway.JPA.services.meals.Meals_Cafeteria_DittrichringService;
-import de.mensahub.gateway.JPA.services.mensen.Cafeteria_DittrichringService;
+import de.olech2412.mensahub.gateway.Controller.BasicMealController;
+import de.olech2412.mensahub.gateway.JPA.services.meals.Meals_Cafeteria_DittrichringService;
+import de.olech2412.mensahub.gateway.JPA.services.mensen.Cafeteria_DittrichringService;
+import de.olech2412.mensahub.models.Generic_Meal;
+import de.olech2412.mensahub.models.Leipzig.meals.Meal;
+import de.olech2412.mensahub.models.Leipzig.meals.Meals_Cafeteria_Dittrichring;
+import de.olech2412.mensahub.models.Leipzig.mensen.Mensa;
 import io.micrometer.core.annotation.Timed;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.web.bind.annotation.*;
 
 import java.math.RoundingMode;
 import java.text.DecimalFormat;

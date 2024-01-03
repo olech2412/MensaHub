@@ -1,7 +1,7 @@
 package de.olech2412.mensahub.gateway.JPA.services.mensen;
 
-import de.mensahub.gateway.JPA.entities.mensen.Mensa_am_Park;
-import de.mensahub.gateway.JPA.repository.mensen.Mensa_am_ParkRepository;
+import de.olech2412.mensahub.gateway.JPA.repository.mensen.Mensa_am_ParkRepository;
+import de.olech2412.mensahub.models.Leipzig.mensen.Mensa_am_Park;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

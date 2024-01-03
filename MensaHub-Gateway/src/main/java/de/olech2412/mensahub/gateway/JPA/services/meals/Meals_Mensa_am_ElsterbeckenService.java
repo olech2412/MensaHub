@@ -1,11 +1,10 @@
 package de.olech2412.mensahub.gateway.JPA.services.meals;
 
-
-import de.mensahub.gateway.JPA.entities.meals.Meal;
-import de.mensahub.gateway.JPA.entities.meals.Meals_Mensa_am_Elsterbecken;
-import de.mensahub.gateway.JPA.entities.mensen.Mensa;
-import de.mensahub.gateway.JPA.entities.mensen.Mensa_am_Elsterbecken;
-import de.mensahub.gateway.JPA.repository.meals.Meals_Mensa_am_ElsterbeckenRepository;
+import de.olech2412.mensahub.gateway.JPA.repository.meals.Meals_Mensa_am_ElsterbeckenRepository;
+import de.olech2412.mensahub.models.Leipzig.meals.Meal;
+import de.olech2412.mensahub.models.Leipzig.meals.Meals_Mensa_am_Elsterbecken;
+import de.olech2412.mensahub.models.Leipzig.mensen.Mensa;
+import de.olech2412.mensahub.models.Leipzig.mensen.Mensa_am_Elsterbecken;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

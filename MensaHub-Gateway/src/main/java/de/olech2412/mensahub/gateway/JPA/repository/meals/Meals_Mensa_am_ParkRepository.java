@@ -1,6 +1,6 @@
 package de.olech2412.mensahub.gateway.JPA.repository.meals;
 
-import de.mensahub.gateway.JPA.entities.meals.Meals_Mensa_am_Park;
+import de.olech2412.mensahub.models.Leipzig.meals.Meals_Mensa_am_Park;
 import org.springframework.data.repository.CrudRepository;
 
 import java.time.LocalDate;

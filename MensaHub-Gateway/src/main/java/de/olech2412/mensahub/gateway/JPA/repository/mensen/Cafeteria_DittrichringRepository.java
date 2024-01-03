@@ -1,6 +1,6 @@
 package de.olech2412.mensahub.gateway.JPA.repository.mensen;
 
-import de.mensahub.gateway.JPA.entities.mensen.Cafeteria_Dittrichring;
+import de.olech2412.mensahub.models.Leipzig.mensen.Cafeteria_Dittrichring;
 import org.springframework.data.repository.CrudRepository;
 
 /**

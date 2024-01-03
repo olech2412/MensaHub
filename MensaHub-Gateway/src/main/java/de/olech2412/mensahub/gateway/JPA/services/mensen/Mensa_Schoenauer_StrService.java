@@ -1,7 +1,7 @@
 package de.olech2412.mensahub.gateway.JPA.services.mensen;
 
-import de.mensahub.gateway.JPA.entities.mensen.Mensa_Schoenauer_Str;
-import de.mensahub.gateway.JPA.repository.mensen.Mensa_Schoenauer_StrRepository;
+import de.olech2412.mensahub.gateway.JPA.repository.mensen.Mensa_Schoenauer_StrRepository;
+import de.olech2412.mensahub.models.Leipzig.mensen.Mensa_Schoenauer_Str;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

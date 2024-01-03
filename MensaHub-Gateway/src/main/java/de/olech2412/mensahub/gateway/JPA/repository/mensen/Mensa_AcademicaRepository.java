@@ -1,6 +1,6 @@
 package de.olech2412.mensahub.gateway.JPA.repository.mensen;
 
-import de.mensahub.gateway.JPA.entities.mensen.Mensa_Academica;
+import de.olech2412.mensahub.models.Leipzig.mensen.Mensa_Academica;
 import org.springframework.data.repository.CrudRepository;
 
 /**

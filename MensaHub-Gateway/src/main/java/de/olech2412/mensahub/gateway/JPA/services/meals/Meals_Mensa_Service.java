@@ -1,9 +1,8 @@
 package de.olech2412.mensahub.gateway.JPA.services.meals;
 
-
-import de.mensahub.gateway.JPA.entities.meals.Meal;
-import de.mensahub.gateway.JPA.entities.mensen.Mensa;
-import de.mensahub.gateway.JPA.services.Abstract_Service;
+import de.olech2412.mensahub.gateway.JPA.services.Abstract_Service;
+import de.olech2412.mensahub.models.Leipzig.meals.Meal;
+import de.olech2412.mensahub.models.Leipzig.mensen.Mensa;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;

@@ -1,6 +1,5 @@
 package de.olech2412.mensahub.gateway.JPA.repository;
 
-import de.mensahub.gateway.JPA.entities.authentication.API_User;
 import org.springframework.data.repository.CrudRepository;
 
 import java.util.Optional;

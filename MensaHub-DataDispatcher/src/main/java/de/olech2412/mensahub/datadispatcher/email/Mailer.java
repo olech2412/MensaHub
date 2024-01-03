@@ -1,7 +1,7 @@
 package de.olech2412.mensahub.datadispatcher.email;
 
 import de.olech2412.mensahub.datadispatcher.Data.Tools.AllergeneComparator;
-import de.olech2412.mensahub.datadispatcher.JPA.entities.Leipzig.Allergene;
+import de.olech2412.mensahub.models.Leipzig.Allergene;
 import de.olech2412.mensahub.models.MailUser;
 import de.olech2412.mensahub.models.Meal;
 import de.olech2412.mensahub.models.Mensa;

@@ -1,7 +1,7 @@
 package de.olech2412.mensahub.gateway.JPA.services.mensen;
 
-import de.mensahub.gateway.JPA.entities.mensen.Menseria_am_Botanischen_Garten;
-import de.mensahub.gateway.JPA.repository.mensen.Menseria_am_Botanischen_GartenRepository;
+import de.olech2412.mensahub.gateway.JPA.repository.mensen.Menseria_am_Botanischen_GartenRepository;
+import de.olech2412.mensahub.models.Leipzig.mensen.Menseria_am_Botanischen_Garten;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

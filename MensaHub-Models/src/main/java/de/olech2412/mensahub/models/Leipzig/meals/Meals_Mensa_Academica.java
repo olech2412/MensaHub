@@ -1,7 +1,6 @@
 package de.olech2412.mensahub.models.Leipzig.meals;
 
 import de.olech2412.mensahub.models.Leipzig.mensen.Mensa_Academica;
-import de.olech2412.mensahub.models.Meal;
 import lombok.Getter;
 import lombok.Setter;
 

@@ -1,9 +1,8 @@
 package de.olech2412.mensahub.gateway.Controller.authentication;
 
-import de.mensahub.gateway.JPA.entities.authentication.API_User;
-import de.mensahub.gateway.JPA.repository.API_UserRepository;
-import de.mensahub.gateway.requests.LoginRequest;
-import de.mensahub.gateway.security.JWTTokenProvider;
+import de.olech2412.mensahub.gateway.JPA.repository.API_UserRepository;
+import de.olech2412.mensahub.gateway.requests.LoginRequest;
+import de.olech2412.mensahub.gateway.security.JWTTokenProvider;
 import io.micrometer.core.annotation.Timed;
 import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.composite.CompositeMeterRegistry;
@@ -13,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;

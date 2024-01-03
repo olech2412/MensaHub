@@ -1,8 +1,7 @@
 package de.olech2412.mensahub.gateway.JPA.services.mensen;
 
-
-import de.mensahub.gateway.JPA.entities.mensen.Mensa;
-import de.mensahub.gateway.JPA.services.Abstract_Service;
+import de.olech2412.mensahub.gateway.JPA.services.Abstract_Service;
+import de.olech2412.mensahub.models.Leipzig.mensen.Mensa;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 
