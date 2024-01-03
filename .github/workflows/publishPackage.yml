@@ -1,18 +1,30 @@
 name: Publish package to GitHub Packages
-on: push
+
+on:
+  push:
+    branches:
+      - main
+
 jobs:
   publish:
-    runs-on: ubuntu-latest 
-    permissions: 
+    runs-on: ubuntu-latest
+    permissions:
       contents: read
-      packages: write 
+      packages: write
+
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-java@v3
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v2
         with:
-          java-version: '17'
           distribution: 'adopt'
-      - name: Publish package
-        run: mvn clean package
+          java-version: '17'
+
+      - name: Build and Publish MensaHub-Models
+        run: |
+          cd MensaHub-Models
+          mvn clean package
         env:
           GITHUB_TOKEN: ${{ secrets.DEPLOY_PACKAGE }}
