@@ -1,6 +1,9 @@
 name: Publish package to GitHub Packages
 
 on:
+  pull_request:
+    branches:
+      - master
   push:
     branches:
       - master
@@ -22,7 +25,13 @@ jobs:
           distribution: 'adopt'
           java-version: '17'
 
-      - name: Build and Publish MensaHub-Models
+      - name: Check for changes in MensaHub-Models
+        uses: actions/changed-files@v2
+        with:
+          paths: 'MensaHub-Models/**'
+
+      - name: Build and Publish MensaHub-Models if changed
+        if: steps.changed-files-in-MensaHub-Models.outputs.changed
         run: |
           cd MensaHub-Models
           mvn --batch-mode deploy
