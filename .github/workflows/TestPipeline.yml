@@ -24,7 +24,7 @@ jobs:
           cache: maven
 
       - name: Build and Test MensaHub-Gateway
-        run: 'cd MensaHub-Gateway && mvn -s $GITHUB_WORKSPACE/.github/Config/maven-settings.xml clean test'
+        run: 'cd MensaHub-Gateway && mvn -s $GITHUB_WORKSPACE/.github/config/maven-settings.xml clean test'
 
       - name: Generate Test Report
         run: mvn surefire-report:report
