@@ -29,8 +29,8 @@ jobs:
             [
               {
                 "id": "github",
-                "username": "${env.USER}",
-                "password": "${env.PACKAGE_KEY_READ}",
+                "username": "${{ env.USER }}",
+                "password": "${{ env.PACKAGE_KEY_READ }}",
                 "configuration": {
                   "httpConfiguration": {
                     "all": {
