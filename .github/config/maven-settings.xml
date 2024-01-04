@@ -9,7 +9,7 @@
     <server>
       <id>github</id>
       <username>${env.USER}</username>
-      <password>${env.PACKAGE_KEY_READ}</password>
+      <password>${PACKAGE_READ}</password>
     </server>
   </servers>
   <mirrors/>
