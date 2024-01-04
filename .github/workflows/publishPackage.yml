@@ -20,8 +20,7 @@ jobs:
           distribution: 'adopt'
           java-version: '17'
 
-      - name: Build and Publish MensaHub-Models if changed
-        if: steps.changed-files-in-MensaHub-Models.outputs.changed
+      - name: Build and Publish MensaHub-Models
         run: |
           cd MensaHub-Models
           mvn --batch-mode deploy
