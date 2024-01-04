@@ -21,7 +21,6 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
-          cache: maven
 
       - name: maven-settings-xml-action
         uses: whelk-io/maven-settings-xml-action@v20
@@ -30,7 +29,7 @@ jobs:
             [
               {
                 "id": "github",
-                "username": "olech2512",
+                "username": "olech2412",
                 "password": "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"
               }
             ]
