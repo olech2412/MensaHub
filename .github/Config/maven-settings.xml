@@ -9,7 +9,7 @@
     <server>
       <id>github</id>
       <username>olech2412</username>
-      <password>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</password>
+      <password>${{ secrets.DEPLOY_PACKAGE }}</password>
     </server>
   </servers>
   <mirrors/>
