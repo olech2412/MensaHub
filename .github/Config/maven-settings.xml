@@ -12,15 +12,7 @@
       <password>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</password>
     </server>
   </servers>
-  <mirrors>
-    <mirror>
-      <id>maven-default-http-blocker</id>
-      <mirrorOf>external:http:*</mirrorOf>
-      <name>Pseudo repository to mirror external repositories initially using HTTP.</name>
-      <url>http://0.0.0.0/</url>
-      <blocked>true</blocked>
-    </mirror>
-  </mirrors>
+  <mirrors/>
   <proxies/>
   <profiles/>
 </settings>
