@@ -9,9 +9,9 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>de.olech2412.mensahub</groupId>
-    <artifactId>MensaHub-Gateway</artifactId>
+    <artifactId>mensahub-gateway</artifactId>
     <version>1.0.1</version>
-    <name>MensaHub-Gateway</name>
+    <name>gensaHub-gateway</name>
     <description>API die Daten des MensaHub-DataDispatchers für weitere Programmierprojekte bereitstellt</description>
     <properties>
         <java.version>17</java.version>
