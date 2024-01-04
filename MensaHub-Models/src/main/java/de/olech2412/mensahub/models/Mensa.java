@@ -9,7 +9,7 @@ import jakarta.persistence.*;
 @Getter
 @Setter
 @MappedSuperclass
-public abstract class Mensa {
+public class Mensa {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @EqualsAndHashCode.Exclude
@@ -28,13 +28,5 @@ public abstract class Mensa {
         this.id = id;
         this.name = name;
         this.apiUrl = apiUrl;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 }

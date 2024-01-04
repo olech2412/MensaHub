@@ -11,7 +11,7 @@ import java.time.LocalDate;
 @Setter
 @EqualsAndHashCode
 @MappedSuperclass
-public abstract class Meal {
+public class Meal {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
