@@ -1,6 +1,6 @@
 package de.olech2412.mensahub.datadispatcher.JPA.repository;
 
-import de.olech2412.mensahub.models.DeactivationCode;
+import de.olech2412.mensahub.models.authentification.DeactivationCode;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 

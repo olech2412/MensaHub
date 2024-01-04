@@ -1,13 +1,17 @@
 package de.olech2412.mensahub.datadispatcher.JPA.services.Leipzig.mensen;
 
 import de.olech2412.mensahub.datadispatcher.JPA.repository.Leipzig.mensen.Cafeteria_DittrichringRepository;
+import de.olech2412.mensahub.models.Leipzig.meals.Meals_Cafeteria_Dittrichring;
 import de.olech2412.mensahub.models.Leipzig.mensen.Cafeteria_Dittrichring;
+import de.olech2412.mensahub.models.Meal;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Import;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
+@Import({Meals_Cafeteria_Dittrichring.class, Meal.class})
 public class Cafeteria_DittrichringService extends Mensa_Service {
 
     @Autowired

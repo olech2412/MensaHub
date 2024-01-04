@@ -1,4 +1,4 @@
-package de.olech2412.mensahub.models;
+package de.olech2412.mensahub.models.authentification;
 
 import lombok.Getter;
 import lombok.Setter;

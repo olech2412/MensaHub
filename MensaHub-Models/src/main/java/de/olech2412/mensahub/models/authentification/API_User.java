@@ -1,8 +1,6 @@
 package de.olech2412.mensahub.models.authentification;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import de.olech2412.mensahub.models.ActivationCode;
-import de.olech2412.mensahub.models.DeactivationCode;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;

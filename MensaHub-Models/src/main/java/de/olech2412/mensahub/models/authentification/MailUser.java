@@ -1,7 +1,9 @@
-package de.olech2412.mensahub.models;
+package de.olech2412.mensahub.models.authentification;
 
 
 import de.olech2412.mensahub.models.Leipzig.mensen.*;
+import de.olech2412.mensahub.models.authentification.ActivationCode;
+import de.olech2412.mensahub.models.authentification.DeactivationCode;
 import lombok.Getter;
 import lombok.Setter;
 
