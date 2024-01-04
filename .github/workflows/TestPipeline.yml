@@ -31,6 +31,13 @@ jobs:
                 "id": "github",
                 "username": "olech2412",
                 "password": "${env.PACKAGE_KEY_READ}",
+                "configuration": {
+                  "httpConfiguration": {
+                    "all": {
+                      "usePreemptive": "true"
+                    }
+                  }
+                }
               }
             ]
 
