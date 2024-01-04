@@ -29,7 +29,7 @@ jobs:
             [
               {
                 "id": "github",
-                "username": "olech2412",
+                "username": "${env.USER}",
                 "password": "${env.PACKAGE_KEY_READ}",
                 "configuration": {
                   "httpConfiguration": {
