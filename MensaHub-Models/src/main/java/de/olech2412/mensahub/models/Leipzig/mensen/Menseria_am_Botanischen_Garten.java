@@ -3,6 +3,7 @@ package de.olech2412.mensahub.models.Leipzig.mensen;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import de.olech2412.mensahub.models.Leipzig.meals.Meals_Menseria_am_Botanischen_Garten;
 import de.olech2412.mensahub.models.MailUser;
+import de.olech2412.mensahub.models.Mensa;
 import jakarta.persistence.*;
 import java.util.Set;
 

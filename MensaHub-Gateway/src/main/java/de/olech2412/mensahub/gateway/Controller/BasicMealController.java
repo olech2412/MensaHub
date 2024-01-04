@@ -2,8 +2,8 @@ package de.olech2412.mensahub.gateway.Controller;
 
 import com.sun.istack.NotNull;
 import de.olech2412.mensahub.models.Generic_Meal;
-import de.olech2412.mensahub.models.Leipzig.meals.Meal;
-import de.olech2412.mensahub.models.Leipzig.mensen.Mensa;
+import de.olech2412.mensahub.models.Meal;
+import de.olech2412.mensahub.models.Mensa;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 

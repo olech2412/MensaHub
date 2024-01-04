@@ -1,12 +1,7 @@
-name: Publish package to GitHub Packages
+name: Publish package to GitHub Packages (Manually Triggered)
 
 on:
-  pull_request:
-    branches:
-      - master
-  push:
-    branches:
-      - master
+  workflow_dispatch:
 
 jobs:
   publish:
@@ -24,11 +19,6 @@ jobs:
         with:
           distribution: 'adopt'
           java-version: '17'
-
-      - name: Check for changes in MensaHub-Models
-        uses: actions/changed-files@v2
-        with:
-          paths: 'MensaHub-Models/**'
 
       - name: Build and Publish MensaHub-Models if changed
         if: steps.changed-files-in-MensaHub-Models.outputs.changed

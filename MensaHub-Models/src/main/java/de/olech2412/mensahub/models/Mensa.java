@@ -1,4 +1,4 @@
-package de.olech2412.mensahub.models.Leipzig.mensen;
+package de.olech2412.mensahub.models;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
