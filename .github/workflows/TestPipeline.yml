@@ -30,7 +30,7 @@ jobs:
               {
                 "id": "github",
                 "username": "olech2412",
-                "password": "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"
+                "password": "${PACKAGE_READ}"
               }
             ]
 
