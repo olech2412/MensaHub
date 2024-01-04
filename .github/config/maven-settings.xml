@@ -8,8 +8,8 @@
   <servers>
     <server>
       <id>github</id>
-      <username>${{ USER }}</username>
-      <password>${{ PACKAGE_KEY_READ }}</password>
+      <username>olech2412</username>
+      <password>${package.publicKey}</password>
     </server>
   </servers>
   <mirrors/>

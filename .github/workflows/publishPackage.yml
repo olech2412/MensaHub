@@ -26,3 +26,8 @@ jobs:
           mvn --batch-mode deploy
         env:
           GITHUB_TOKEN: ${{ secrets.DEPLOY_PACKAGE }}
+
+      - name: Output Maven Version from settings.xml
+        run: |
+          # Read the Maven version from settings.xml
+          mvn --version
