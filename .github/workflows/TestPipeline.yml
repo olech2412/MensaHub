@@ -21,31 +21,10 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
-
-      - name: maven-settings-xml-action
-        uses: whelk-io/maven-settings-xml-action@v20
-        with:
-          servers: >
-            [
-              {
-                "id": "github",
-                "username": "${{ env.USER }}",
-                "password": "${{ env.PACKAGE_KEY_READ }}",
-                "configuration": {
-                  "httpConfiguration": {
-                    "all": {
-                      "usePreemptive": "true"
-                    }
-                  }
-                }
-              }
-            ]
-
-      - name: Display settings.xml
-        run: cat $HOME/.m2/settings.xml
+          cache: maven
 
       - name: Build and Test MensaHub-Gateway
-        run: 'cd MensaHub-Gateway && mvn clean test'
+        run: 'cd MensaHub-Gateway && mvn -s $GITHUB_WORKSPACE/.github/config/maven-settings.xml clean test'
 
       - name: Generate Test Report
         run: mvn surefire-report:report
