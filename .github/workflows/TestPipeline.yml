@@ -28,7 +28,7 @@ jobs:
           servers: >
             [
               {
-                "id": "github",
+                "id": "github_packages",
                 "username": "olech2412",
                 "password": "${PACKAGE_READ}"
               }
