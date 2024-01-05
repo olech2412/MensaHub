@@ -25,11 +25,11 @@ public class UserDataDispatcher {
     }
 
     @Scheduled(cron = "0 0 * * * *")
-    public void checkForDeactivatedUsers(){
+    public void checkForDeactivatedUsers() {
         Iterable<MailUser> deactivatedMailUsers = mailUserRepository.findUsersByEnabled(false);
         for (MailUser deactivatedMailUser : deactivatedMailUsers) {
-            if (deactivatedMailUser.getDeactviatedUntil() != null){
-                if (deactivatedMailUser.getDeactviatedUntil().isEqual(LocalDate.now())){
+            if (deactivatedMailUser.getDeactviatedUntil() != null) {
+                if (deactivatedMailUser.getDeactviatedUntil().isEqual(LocalDate.now())) {
                     log.info("Activating user: " + deactivatedMailUser.getEmail());
                     deactivatedMailUser.setEnabled(true);
                     deactivatedMailUser.setDeactviatedUntil(null);

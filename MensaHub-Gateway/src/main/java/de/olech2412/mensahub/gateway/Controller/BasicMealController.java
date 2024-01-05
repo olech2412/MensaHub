@@ -1,9 +1,9 @@
 package de.olech2412.mensahub.gateway.Controller;
 
-import com.sun.istack.NotNull;
 import de.olech2412.mensahub.models.Generic_Meal;
 import de.olech2412.mensahub.models.Meal;
 import de.olech2412.mensahub.models.Mensa;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 

@@ -1,10 +1,10 @@
 package de.olech2412.mensahub.gateway.JPA.services.meals;
 
 import de.olech2412.mensahub.gateway.JPA.repository.meals.Meals_Menseria_am_Botanischen_GartenRepository;
-import de.olech2412.mensahub.models.Meal;
 import de.olech2412.mensahub.models.Leipzig.meals.Meals_Menseria_am_Botanischen_Garten;
-import de.olech2412.mensahub.models.Mensa;
 import de.olech2412.mensahub.models.Leipzig.mensen.Menseria_am_Botanischen_Garten;
+import de.olech2412.mensahub.models.Meal;
+import de.olech2412.mensahub.models.Mensa;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

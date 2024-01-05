@@ -1,13 +1,13 @@
 package de.olech2412.mensahub.gateway.Controller.Leipzig;
 
-import com.sun.istack.NotNull;
 import de.olech2412.mensahub.gateway.Controller.BasicMealController;
 import de.olech2412.mensahub.gateway.JPA.services.meals.Meals_Menseria_am_Botanischen_GartenServices;
 import de.olech2412.mensahub.gateway.JPA.services.mensen.Menseria_am_Botanischen_GartenService;
 import de.olech2412.mensahub.models.Generic_Meal;
-import de.olech2412.mensahub.models.Meal;
 import de.olech2412.mensahub.models.Leipzig.meals.Meals_Menseria_am_Botanischen_Garten;
+import de.olech2412.mensahub.models.Meal;
 import de.olech2412.mensahub.models.Mensa;
+import jakarta.validation.constraints.NotNull;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.web.bind.annotation.*;

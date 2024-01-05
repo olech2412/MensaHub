@@ -2,9 +2,9 @@ package de.olech2412.mensahub.datadispatcher.email;
 
 import de.olech2412.mensahub.datadispatcher.Data.Tools.AllergeneComparator;
 import de.olech2412.mensahub.models.Leipzig.Allergene;
-import de.olech2412.mensahub.models.authentification.MailUser;
 import de.olech2412.mensahub.models.Meal;
 import de.olech2412.mensahub.models.Mensa;
+import de.olech2412.mensahub.models.authentification.MailUser;
 import lombok.extern.log4j.Log4j2;
 
 import javax.mail.*;

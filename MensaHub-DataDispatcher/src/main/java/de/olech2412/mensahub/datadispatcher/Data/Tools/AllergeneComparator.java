@@ -1,6 +1,7 @@
 package de.olech2412.mensahub.datadispatcher.Data.Tools;
 
 import de.olech2412.mensahub.models.Leipzig.Allergene;
+
 import java.util.Comparator;
 
 public class AllergeneComparator implements Comparator<Allergene> {

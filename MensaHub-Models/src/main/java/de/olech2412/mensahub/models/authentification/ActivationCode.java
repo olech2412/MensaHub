@@ -1,11 +1,15 @@
 package de.olech2412.mensahub.models.authentification;
 
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
-import jakarta.persistence.*;
-
-
+/**
+ * This class represents the activation code for a user.
+ *
+ * @since 1.0.0
+ * @author olech2412
+ */
 @Setter
 @Getter
 @Entity
@@ -15,31 +19,20 @@ public class ActivationCode {
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id", nullable = false)
     private Long id;
-    private String code;
+    private String code; // the code is a random string
 
+    /**
+     * Constructor for the activation code.
+     * @param code the code
+     */
     public ActivationCode(String code) {
         this.code = code;
     }
 
+    /**
+     * Default constructor for the activation code.
+     */
     public ActivationCode() {
 
     }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getCode() {
-        return code;
-    }
-
-    public void setCode(String code) {
-        this.code = code;
-    }
-
-
 }

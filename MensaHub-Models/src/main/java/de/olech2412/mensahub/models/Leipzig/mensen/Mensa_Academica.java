@@ -2,13 +2,15 @@ package de.olech2412.mensahub.models.Leipzig.mensen;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import de.olech2412.mensahub.models.Leipzig.meals.Meals_Mensa_Academica;
-import de.olech2412.mensahub.models.authentification.MailUser;
 import de.olech2412.mensahub.models.Mensa;
-import jakarta.persistence.OneToMany;
-
+import de.olech2412.mensahub.models.authentification.MailUser;
 import jakarta.persistence.*;
+
 import java.util.Set;
 
+/**
+ * This class represents the mensa_academica entity in the database.
+ */
 @Entity
 @Table(name = "mensa_academica")
 public class Mensa_Academica extends Mensa {

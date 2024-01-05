@@ -1,85 +1,75 @@
 package de.olech2412.mensahub.gateway.security.config;
 
-import de.olech2412.mensahub.gateway.security.JWTAuthenticationEntryPoint;
-import de.olech2412.mensahub.gateway.security.JWTAuthenticationFilter;
+import de.olech2412.mensahub.gateway.security.JwtAuthFilter;
+import de.olech2412.mensahub.gateway.security.UserDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.BeanIds;
+import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.stereotype.Component;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 @Configuration
-@Component
 @EnableWebSecurity
-public class SecurityConfig extends WebSecurityConfigurerAdapter { // Class for configuring Spring Security
+@EnableMethodSecurity
+public class SecurityConfig {
 
     @Autowired
-    private JWTAuthenticationEntryPoint jwtAuthenticationEntryPoint;
+    JwtAuthFilter jwtAuthFilter;
 
-    /**
-     * Creates a JwtAuthenticationFilter bean
-     *
-     * @return JwtAuthenticationFilter
-     */
     @Bean
-    public JWTAuthenticationFilter jwtAuthenticationFilter() {
-        return new JWTAuthenticationFilter();
+    public UserDetailsService userDetailsService() {
+        return new UserDetailsServiceImpl();
     }
 
-    /**
-     * Creates a PasswordEncoder bean
-     *
-     * @return PasswordEncoder
-     */
+    @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        http.sessionManagement(httpSecuritySessionManagementConfigurer -> httpSecuritySessionManagementConfigurer
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+
+        http.authorizeHttpRequests(auth -> {
+            auth.requestMatchers(AntPathRequestMatcher.antMatcher(HttpMethod.POST, "/mensaHub/auth/")).permitAll()
+                    .anyRequest()
+                    .authenticated();
+        });
+
+        http.addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+        http.cors(AbstractHttpConfigurer::disable);
+        http.csrf(AbstractHttpConfigurer::disable);
+        http.authenticationProvider(authenticationProvider());
+
+        return http.build();
+    }
+
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
-    /**
-     * Creates an AuthenticationManager bean
-     *
-     * @return AuthenticationManager
-     * @throws Exception if an error occurs
-     */
-    @Bean(BeanIds.AUTHENTICATION_MANAGER)
-    public AuthenticationManager authenticationManagerBean() throws Exception {
-        return super.authenticationManagerBean();
+    @Bean
+    public AuthenticationProvider authenticationProvider() {
+        DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
+        authenticationProvider.setUserDetailsService(userDetailsService());
+        authenticationProvider.setPasswordEncoder(passwordEncoder());
+        return authenticationProvider;
+
     }
 
-    /**
-     * Configures the HttpSecurity object
-     *
-     * @param httpSecurity HttpSecurity object
-     * @throws Exception if an error occurs
-     */
-    @Override
-    public void configure(HttpSecurity httpSecurity) throws Exception {
-        httpSecurity.cors()
-                .and()
-                .csrf()
-                .disable()
-                .exceptionHandling()
-                .authenticationEntryPoint(jwtAuthenticationEntryPoint) // Exception handling for unauthorized requests
-                .and()
-                .sessionManagement()
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS) // Session management for stateless requests (REST API)
-                .and()
-                .authorizeRequests()
-                .antMatchers("/auth/**", "/actuator/**")
-                .permitAll() // Allow access to the authentication endpoint
-                .anyRequest()
-                .authenticated(); // All other requests need to be authenticated
-
-        httpSecurity.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
+        return config.getAuthenticationManager();
     }
-
 }

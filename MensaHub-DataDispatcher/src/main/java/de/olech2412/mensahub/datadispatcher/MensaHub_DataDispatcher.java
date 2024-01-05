@@ -7,14 +7,12 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
 import javax.mail.MessagingException;
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.stream.Collectors;
 
 @SpringBootApplication
 @Log4j2
@@ -32,12 +30,15 @@ public class MensaHub_DataDispatcher {
         ConfigurableApplicationContext configurableApplicationContext = SpringApplication.run(MensaHub_DataDispatcher.class, args);
         LeipzigDataDispatcher leipzigDataDispatcher = configurableApplicationContext.getBean(LeipzigDataDispatcher.class);
 
-        if(Arrays.stream(args).toList().contains("sendMailManual")){
+        if (Arrays.stream(args).toList().contains("sendMailManual")) {
             log.debug("sendMailManual is true");
             sendMailManual = true;
         }
-        
-        if (sendMailManual){
+
+        leipzigDataDispatcher.callData();
+        leipzigDataDispatcher.fetchAllergenes();
+
+        if (sendMailManual) {
             leipzigDataDispatcher.sendEmails();
         }
     }

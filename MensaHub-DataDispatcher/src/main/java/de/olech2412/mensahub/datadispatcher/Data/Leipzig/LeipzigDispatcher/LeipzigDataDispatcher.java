@@ -7,9 +7,9 @@ import de.olech2412.mensahub.datadispatcher.JPA.services.Leipzig.mensen.*;
 import de.olech2412.mensahub.datadispatcher.JPA.services.MailUserService;
 import de.olech2412.mensahub.datadispatcher.email.Mailer;
 import de.olech2412.mensahub.models.Leipzig.Allergene;
-import de.olech2412.mensahub.models.authentification.MailUser;
 import de.olech2412.mensahub.models.Meal;
 import de.olech2412.mensahub.models.Mensa;
+import de.olech2412.mensahub.models.authentification.MailUser;
 import io.micrometer.core.instrument.Timer;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -147,7 +147,6 @@ public class LeipzigDataDispatcher {
 
                 if (date.getDayOfWeek() != DayOfWeek.SUNDAY) {
                     url = url.replace("$date", date.toString());
-                    Meals_Mensa_Service meals_mensa_service = mensa_meals_serviceHashMap.get(mensa_service);
                     log.info("Calling data for " + mensa_service.getMensa().getName() + " on " + date);
                     checkTheData(dataCaller.callDataFromStudentenwerk(url), mensa_service, mensa_meals_serviceHashMap);
                     url = url.replace(date.toString(), "$date");
@@ -167,12 +166,12 @@ public class LeipzigDataDispatcher {
 
     protected void insertNewAllergenes(Map<String, String> dataMap) {
         allergeneRepository.deleteAll();
-            for (Map.Entry<String, String> entry : dataMap.entrySet()) {
-                Allergene allergene = new Allergene();
-                allergene.setAllergen(entry.getValue());
-                allergene.setToken(entry.getKey());
-                allergeneRepository.save(allergene);
-            }
+        for (Map.Entry<String, String> entry : dataMap.entrySet()) {
+            Allergene allergene = new Allergene();
+            allergene.setAllergen(entry.getValue());
+            allergene.setToken(entry.getKey());
+            allergeneRepository.save(allergene);
+        }
     }
 
 
@@ -353,15 +352,15 @@ public class LeipzigDataDispatcher {
         Meals_Mensa_Service meals_mensa_service = mensa_meals_serviceHashMap.get(mensa_service);
         for (Meal newMeal : data) {
             List<? extends Meal> databaseMeals = meals_mensa_service.findAllMealsByServingDate(newMeal.getServingDate());
-            if(databaseMeals.isEmpty()) {
+            if (databaseMeals.isEmpty()) {
                 meals_mensa_service.save(newMeal, mensa_service.getMensa());
                 log.info("New meal saved: " + newMeal);
             } else {
-                if(!databaseMeals.contains(newMeal) || databaseMeals.size() != data.size()) {
+                if (!databaseMeals.contains(newMeal) || databaseMeals.size() != data.size()) {
                     for (Meal databaseMeal : databaseMeals) {
-                        if(databaseMeal.getVotes() != 0){
+                        if (databaseMeal.getVotes() != 0) {
                             for (Meal newMeal1 : data) {
-                                if(newMeal1.getName().equals(databaseMeal.getName())){
+                                if (newMeal1.getName().equals(databaseMeal.getName())) {
                                     newMeal1.setVotes(databaseMeal.getVotes());
                                     newMeal1.setStarsTotal(databaseMeal.getStarsTotal());
                                     newMeal1.setRating(databaseMeal.getRating());
@@ -372,7 +371,7 @@ public class LeipzigDataDispatcher {
                     meals_mensa_service.deleteAllByServingDate(newMeal.getServingDate());
                     meals_mensa_service.saveAll(data, mensa_service.getMensa());
 
-                   if(newMeal.getServingDate().isEqual(LocalDate.now())) sendUpdate(mensa_service.getMensa());
+                    if (newMeal.getServingDate().isEqual(LocalDate.now())) sendUpdate(mensa_service.getMensa());
 
                     log.info("Meal updated: " + newMeal);
                 }
