@@ -21,8 +21,6 @@ import java.util.Arrays;
 @EntityScan(basePackages = {"de.olech2412.mensahub.models.authentification", "de.olech2412.mensahub.models.Leipzig"})
 public class MensaHub_DataDispatcher {
 
-    private static boolean sendMailManual = false;
-
     @Autowired
     LeipzigDataDispatcher leipzigDataDispatcher;
 
@@ -31,15 +29,11 @@ public class MensaHub_DataDispatcher {
         LeipzigDataDispatcher leipzigDataDispatcher = configurableApplicationContext.getBean(LeipzigDataDispatcher.class);
 
         if (Arrays.stream(args).toList().contains("sendMailManual")) {
-            log.debug("sendMailManual is true");
-            sendMailManual = true;
+            log.info("Sending emails manually");
+            leipzigDataDispatcher.sendEmails();
         }
 
         leipzigDataDispatcher.callData();
         leipzigDataDispatcher.fetchAllergenes();
-
-        if (sendMailManual) {
-            leipzigDataDispatcher.sendEmails();
-        }
     }
 }
