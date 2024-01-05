@@ -23,6 +23,9 @@ jobs:
           distribution: 'temurin'
           cache: maven
 
+      - name: Submit Dependency Snapshot
+        uses: advanced-security/maven-dependency-submission-action@v3
+
       - name: Build and Test MensaHub-Gateway
         run: 'cd MensaHub-Gateway && mvn -s $GITHUB_WORKSPACE/.github/config/maven-settings.xml -Dpackage.publicKey=$PACKAGE_READ clean test'
         env:
