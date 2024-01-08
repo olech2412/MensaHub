@@ -9,7 +9,7 @@
         <relativePath/>
     </parent>
     <groupId>de.olech2412.mensahub</groupId>
-    <artifactId>MensaHub-DataDispatcher</artifactId>
+    <artifactId>mensaHub-dataDispatcher</artifactId>
     <version>1.0.0</version>
     <name>MensaHub-DataDispatcher</name>
     <description>MensaHub-DataDispatcher</description>
@@ -99,6 +99,21 @@
                     <source>17</source>
                     <target>17</target>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.owasp</groupId>
+                <artifactId>dependency-check-maven</artifactId>
+                <version>9.0.7</version>
+                <configuration>
+                    <failBuildOnCVSS>8</failBuildOnCVSS>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
