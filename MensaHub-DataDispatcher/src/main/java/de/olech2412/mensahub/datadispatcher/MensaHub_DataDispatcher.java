@@ -1,6 +1,6 @@
 package de.olech2412.mensahub.datadispatcher;
 
-import de.olech2412.mensahub.datadispatcher.Data.Leipzig.LeipzigDispatcher.LeipzigDataDispatcher;
+import de.olech2412.mensahub.datadispatcher.data.leipzig.leipzigDispatcher.LeipzigDataDispatcher;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;

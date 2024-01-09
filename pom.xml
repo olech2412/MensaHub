@@ -11,6 +11,7 @@
     <modules>
         <module>MensaHub-DataDispatcher</module>
         <module>MensaHub-Gateway</module>
+        <module>MensaHub-Junction</module>
     </modules>
 
     <build>

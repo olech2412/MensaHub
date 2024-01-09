@@ -1,6 +1,7 @@
 package de.olech2412.mensahub.datadispatcher.email;
 
-import de.olech2412.mensahub.datadispatcher.Data.Tools.AllergeneComparator;
+import de.olech2412.mensahub.datadispatcher.config.Config;
+import de.olech2412.mensahub.datadispatcher.data.tools.AllergeneComparator;
 import de.olech2412.mensahub.models.Leipzig.Allergene;
 import de.olech2412.mensahub.models.Meal;
 import de.olech2412.mensahub.models.Mensa;
@@ -30,13 +31,13 @@ public class Mailer {
      */
     public void sendSpeiseplan(MailUser emailTarget, List<? extends Meal> menu, Mensa mensa, Iterable<Allergene> allergenes, boolean update) throws MessagingException, IOException {
         Properties prop = new Properties();
-        prop.put("mail.smtp.auth", false);
-        prop.put("mail.smtp.host", "localhost");
-        prop.put("mail.smtp.port", "25");
+        prop.put("mail.smtp.auth", Boolean.getBoolean(Config.getInstance().getProperty("mensaHub.junction.mail.smtpAuth")));
+        prop.put("mail.smtp.host", Config.getInstance().getProperty("mensaHub.junction.mail.smtpHost"));
+        prop.put("mail.smtp.port", Config.getInstance().getProperty("mensaHub.junction.mail.smtpPort"));
 
-        String deactivateUrl = "https://mensahub.olech2412.de/deactivate?code=" + emailTarget.getDeactivationCode().getCode();
+        String deactivateUrl = Config.getInstance().getProperty("mensaHub.dataDispatcher.junction.address") + "/deactivate?code=" + emailTarget.getDeactivationCode().getCode();
         Message message = new MimeMessage(Session.getInstance(prop));
-        message.setFrom(new InternetAddress("noreply_mensahub@olech2412.de"));
+        message.setFrom(new InternetAddress(Config.getInstance().getProperty("mensaHub.dataDispatcher.mail.senderMail")));
         message.setRecipients(
                 Message.RecipientType.TO, InternetAddress.parse(emailTarget.getEmail()));
 
@@ -63,7 +64,7 @@ public class Mailer {
 
     }
 
-    private String createUpdateEmail(List<? extends Meal> menu, String firstname, String deactivateUrl, Mensa mensa, Iterable<Allergene> allergenes) {
+    private String createUpdateEmail(List<? extends Meal> menu, String firstname, String deactivateUrl, Mensa mensa, Iterable<Allergene> allergenes) throws IOException {
         StringBuilder menuText = new StringBuilder();
 
         if (!menu.isEmpty()) {
@@ -92,12 +93,12 @@ public class Mailer {
                     categoryString = createCategoryString(meals, categoryString);
                     menuString = menuString.replaceFirst("%s", meals.get(0).getName() +
                             " (" + meals.get(0).getDescription() + ")" + " - " + meals.get(0).getPrice());
-                    if (meals.get(0).getAllergens().equals("N/A") && meals.get(0).getAdditives().equals("N/A")) {
+                    if (meals.get(0).getAllergens().equals(Config.getInstance().getProperty("mensaHub.dataDispatcher.notAvailable.sign")) && meals.get(0).getAdditives().equals(Config.getInstance().getProperty("mensaHub.dataDispatcher.notAvailable.sign"))) {
                         menuString = menuString.replaceFirst("%s", "Keine Allergene oder Zusatzstoffe enthalten (kontaktiere bitte die Mensa/Cafeteria, falls du dir unsicher bist)");
                     } else {
-                        if (meals.get(0).getAllergens().equals("N/A") && !meals.get(0).getAdditives().isEmpty())
+                        if (meals.get(0).getAllergens().equals(Config.getInstance().getProperty("mensaHub.dataDispatcher.notAvailable.sign")) && !meals.get(0).getAdditives().isEmpty())
                             menuString = menuString.replaceFirst("%s", "Keine Allergene - Zusatzstoffe: " + meals.get(0).getAdditives());
-                        else if (meals.get(0).getAdditives().equals("N/A"))
+                        else if (meals.get(0).getAdditives().equals(Config.getInstance().getProperty("mensaHub.dataDispatcher.notAvailable.sign")))
                             menuString = menuString.replaceFirst("%s", "Allergene: " + meals.get(0).getAllergens() + " - Keine Zusatzstoffe");
                         else
                             menuString = menuString.replaceFirst("%s", "Allergene: " + meals.get(0).getAllergens() + " - Zusatzstoffe: " + meals.get(0).getAdditives());
@@ -109,12 +110,12 @@ public class Mailer {
                     for (Meal meal : meals) {
                         String groupMeal = menuString.replaceFirst("%s", meal.getName() +
                                 " (" + meal.getDescription() + ")" + " - " + meal.getPrice());
-                        if (meals.get(0).getAllergens().equals("N/A") && meals.get(0).getAdditives().equals("N/A")) {
+                        if (meals.get(0).getAllergens().equals(Config.getInstance().getProperty("mensaHub.dataDispatcher.notAvailable.sign")) && meals.get(0).getAdditives().equals(Config.getInstance().getProperty("mensaHub.dataDispatcher.notAvailable.sign"))) {
                             groupMeal = groupMeal.replaceFirst("%s", "Keine Allergene oder Zusatzstoffe enthalten (kontaktiere bitte die Mensa/Cafeteria, falls du dir unsicher bist)");
                         } else {
-                            if (meals.get(0).getAllergens().equals("N/A") && !meals.get(0).getAdditives().isEmpty())
+                            if (meals.get(0).getAllergens().equals(Config.getInstance().getProperty("mensaHub.dataDispatcher.notAvailable.sign")) && !meals.get(0).getAdditives().isEmpty())
                                 groupMeal = groupMeal.replaceFirst("%s", "Keine Allergene - Zusatzstoffe: " + meals.get(0).getAdditives());
-                            else if (meals.get(0).getAdditives().equals("N/A"))
+                            else if (meals.get(0).getAdditives().equals(Config.getInstance().getProperty("mensaHub.dataDispatcher.notAvailable.sign")))
                                 groupMeal = groupMeal.replaceFirst("%s", "Allergene: " + meals.get(0).getAllergens() + " - Keine Zusatzstoffe");
                             else
                                 groupMeal = groupMeal.replaceFirst("%s", "Allergene: " + meals.get(0).getAllergens() + " - Zusatzstoffe: " + meals.get(0).getAdditives());
@@ -169,7 +170,7 @@ public class Mailer {
         return msg;
     }
 
-    private String createEmail(List<? extends Meal> menu, String firstName, String deactivateUrl, Mensa mensa, Iterable<Allergene> allergenes) {
+    private String createEmail(List<? extends Meal> menu, String firstName, String deactivateUrl, Mensa mensa, Iterable<Allergene> allergenes) throws IOException {
         StringBuilder menuText = new StringBuilder();
 
         if (!menu.isEmpty()) {
@@ -198,12 +199,12 @@ public class Mailer {
                     categoryString = createCategoryString(meals, categoryString);
                     menuString = menuString.replaceFirst("%s", meals.get(0).getName() +
                             " (" + meals.get(0).getDescription() + ")" + " - " + meals.get(0).getPrice());
-                    if (meals.get(0).getAllergens().equals("N/A") && meals.get(0).getAdditives().equals("N/A")) {
+                    if (meals.get(0).getAllergens().equals(Config.getInstance().getProperty("mensaHub.dataDispatcher.notAvailable.sign")) && meals.get(0).getAdditives().equals(Config.getInstance().getProperty("mensaHub.dataDispatcher.notAvailable.sign"))) {
                         menuString = menuString.replaceFirst("%s", "Keine Allergene oder Zusatzstoffe enthalten (kontaktiere bitte die Mensa/Cafeteria, falls du dir unsicher bist)");
                     } else {
-                        if (meals.get(0).getAllergens().equals("N/A") && !meals.get(0).getAdditives().isEmpty())
+                        if (meals.get(0).getAllergens().equals(Config.getInstance().getProperty("mensaHub.dataDispatcher.notAvailable.sign")) && !meals.get(0).getAdditives().isEmpty())
                             menuString = menuString.replaceFirst("%s", "Keine Allergene - Zusatzstoffe: " + meals.get(0).getAdditives());
-                        else if (meals.get(0).getAdditives().equals("N/A"))
+                        else if (meals.get(0).getAdditives().equals(Config.getInstance().getProperty("mensaHub.dataDispatcher.notAvailable.sign")))
                             menuString = menuString.replaceFirst("%s", "Allergene: " + meals.get(0).getAllergens() + " - Keine Zusatzstoffe");
                         else
                             menuString = menuString.replaceFirst("%s", "Allergene: " + meals.get(0).getAllergens() + " - Zusatzstoffe: " + meals.get(0).getAdditives());
@@ -215,12 +216,12 @@ public class Mailer {
                     for (Meal meal : meals) {
                         String groupMeal = menuString.replaceFirst("%s", meal.getName() +
                                 " (" + meal.getDescription() + ")" + " - " + meal.getPrice());
-                        if (meals.get(0).getAllergens().equals("N/A") && meals.get(0).getAdditives().equals("N/A")) {
+                        if (meals.get(0).getAllergens().equals(Config.getInstance().getProperty("mensaHub.dataDispatcher.notAvailable.sign")) && meals.get(0).getAdditives().equals(Config.getInstance().getProperty("mensaHub.dataDispatcher.notAvailable.sign"))) {
                             groupMeal = groupMeal.replaceFirst("%s", "Keine Allergene oder Zusatzstoffe enthalten (kontaktiere bitte die Mensa/Cafeteria, falls du dir unsicher bist)");
                         } else {
-                            if (meals.get(0).getAllergens().equals("N/A") && !meals.get(0).getAdditives().isEmpty())
+                            if (meals.get(0).getAllergens().equals(Config.getInstance().getProperty("mensaHub.dataDispatcher.notAvailable.sign")) && !meals.get(0).getAdditives().isEmpty())
                                 groupMeal = groupMeal.replaceFirst("%s", "Keine Allergene - Zusatzstoffe: " + meals.get(0).getAdditives());
-                            else if (meals.get(0).getAdditives().equals("N/A"))
+                            else if (meals.get(0).getAdditives().equals(Config.getInstance().getProperty("mensaHub.dataDispatcher.notAvailable.sign")))
                                 groupMeal = groupMeal.replaceFirst("%s", "Allergene: " + meals.get(0).getAllergens() + " - Keine Zusatzstoffe");
                             else
                                 groupMeal = groupMeal.replaceFirst("%s", "Allergene: " + meals.get(0).getAllergens() + " - Zusatzstoffe: " + meals.get(0).getAdditives());
