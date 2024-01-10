@@ -79,7 +79,7 @@ interface Message {
 export declare class VaadinDevTools extends LitElement {
     static MAX_LOG_ROWS: number;
     unhandledMessages: ServerMessage[];
-    unreadErrors: boolean;
+    static get styles(): import("lit").CSSResult[];
     static DISMISSED_NOTIFICATIONS_IN_LOCAL_STORAGE: string;
     static ACTIVE_KEY_IN_SESSION_STORAGE: string;
     static TRIGGERED_KEY_IN_SESSION_STORAGE: string;
@@ -89,8 +89,8 @@ export declare class VaadinDevTools extends LitElement {
     static JREBEL: string;
     static SPRING_BOOT_DEVTOOLS: string;
     static BACKEND_DISPLAY_NAME: Record<string, string>;
-    componentPickActive: boolean;
-    themeEditorState: ThemeEditorState;
+    static get isActive(): boolean;
+    static notificationDismissed(persistentId: string): boolean;
     url?: string;
     liveReloadDisabled?: boolean;
     backend?: string;
@@ -104,13 +104,11 @@ export declare class VaadinDevTools extends LitElement {
     private tabs;
     private activeTab;
     private features;
-    private renderFeatures;
+    unreadErrors: boolean;
     private root;
     private componentPicker;
-
-    constructor();
-
-    static get styles(): import("lit").CSSResult[];
+    componentPickActive: boolean;
+    themeEditorState: ThemeEditorState;
     private javaConnection?;
     private frontendConnection?;
     private nextMessageId;
@@ -122,8 +120,7 @@ export declare class VaadinDevTools extends LitElement {
     handleFrontendMessage(message: ServerMessage): void;
     getDedicatedWebSocketUrl(): string | undefined;
     getSpringBootWebSocketUrl(location: any): string;
-
-    static get isActive(): boolean;
+    constructor();
     connectedCallback(): void;
     initPlugin(plugin: DevToolsPlugin): Promise<void>;
     format(o: any): string;
@@ -142,11 +139,9 @@ export declare class VaadinDevTools extends LitElement {
     getStatusColor(status: ConnectionStatus | undefined): "none" | "var(--dev-tools-green-color)" | "var(--dev-tools-grey-color)" | "var(--dev-tools-yellow-hsl)" | "var(--dev-tools-red-color)";
     renderMessage(messageObject: Message): TemplateResult<1>;
     render(): TemplateResult<1>;
-
-    static notificationDismissed(persistentId: string): boolean;
-    renderCode(): TemplateResult<1>;
-
     protected updated(_changedProperties: PropertyValueMap<any> | Map<PropertyKey, unknown>): void;
+    renderCode(): TemplateResult<1>;
+    private renderFeatures;
     disableJavaLiveReload(): void;
     enableJavaLiveReload(): void;
     renderThemeEditor(): TemplateResult<1>;

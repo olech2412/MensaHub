@@ -45,9 +45,7 @@ export declare class Flow {
     private baseRegex;
     private appShellTitle;
     private navigation;
-
     constructor(config?: FlowConfig);
-
     /**
      * Return a `route` object for vaadin-router in an one-element array.
      *
@@ -58,12 +56,9 @@ export declare class Flow {
      * This is a specific API for its use with `vaadin-router`.
      */
     get serverSideRoutes(): [FlowRoute];
-
-    private get action();
-
     loadingStarted(): void;
-
     loadingFinished(): void;
+    private get action();
     private flowLeave;
     private flowNavigate;
     private getFlowRoutePath;

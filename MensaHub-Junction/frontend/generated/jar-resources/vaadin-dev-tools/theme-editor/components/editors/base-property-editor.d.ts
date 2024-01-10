@@ -17,7 +17,6 @@ export declare abstract class BasePropertyEditor extends LitElement {
     protected propertyValue?: ThemePropertyValue;
     protected value: string;
     protected update(changedProperties: PropertyValues): void;
-
     render(): TemplateResult<1>;
     protected abstract renderEditor(): TemplateResult;
     protected updateValueFromTheme(): void;
@@ -30,7 +29,6 @@ export declare class PropertyPresets {
     get rawValues(): {
         [key: string]: string;
     };
-
     constructor(propertyMetadata?: CssPropertyMetadata);
     tryMapToRawValue(presetOrValue: string): string;
     tryMapToPreset(value: string): string;
@@ -45,10 +43,8 @@ export declare class TextInput extends LitElement {
     static get styles(): import("lit").CSSResult;
     value: string;
     showClearButton: boolean;
-
-    render(): TemplateResult<1>;
-
     protected update(changedProperties: PropertyValues): void;
+    render(): TemplateResult<1>;
     private handleInputChange;
     private handleClearClick;
 }

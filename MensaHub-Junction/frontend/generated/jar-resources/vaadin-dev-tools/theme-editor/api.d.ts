@@ -41,8 +41,7 @@ export declare class ThemeEditorApi {
     private pendingRequests;
     private requestCounter;
     private globalUiId;
-
-    private getGlobalUiId;
+    constructor(wrappedConnection: Connection);
     private sendRequest;
     private handleResponse;
     loadComponentMetadata(componentRef: ComponentReference): Promise<LoadComponentMetadataResponse>;
@@ -53,6 +52,5 @@ export declare class ThemeEditorApi {
     undo(requestId: string): Promise<BaseResponse>;
     redo(requestId: string): Promise<BaseResponse>;
     openCss(selector: string): Promise<BaseResponse>;
-
-    constructor(wrappedConnection: Connection);
+    private getGlobalUiId;
 }

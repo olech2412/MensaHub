@@ -5,7 +5,6 @@ declare class ThemePreview {
     add(css: string): void;
     clear(): void;
     previewLocalClassName(element?: HTMLElement, className?: string): void;
-
     private ensureStylesheet;
 }
 export declare const themePreview: ThemePreview;

@@ -32,18 +32,14 @@ export interface ThemePropertyValue {
 export declare class ComponentTheme {
     private _metadata;
     private _properties;
-
     constructor(metadata: ComponentMetadata);
-
     get metadata(): ComponentMetadata;
     get properties(): ThemePropertyValue[];
     getPropertyValue(elementSelector: string, propertyName: string): ThemePropertyValue;
     updatePropertyValue(elementSelector: string, propertyName: string, value: string, modified?: boolean): void;
     addPropertyValues(values: ThemePropertyValue[]): void;
     getPropertyValuesForElement(elementSelector: string): ThemePropertyValue[];
-
     static combine(...themes: ComponentTheme[]): ComponentTheme;
-
     static fromServerRules(metadata: ComponentMetadata, scope: SelectorScope, rules: ServerCssRule[]): ComponentTheme;
 }
 export declare function createScopedSelector(element: ComponentElementMetadata, scope: SelectorScope): string;

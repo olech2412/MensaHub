@@ -33,28 +33,17 @@ export declare class ThemeEditor extends LitElement {
     private effectiveTheme;
     private markedAsUsed;
     private undoRedoListener;
-
     static get styles(): import("lit").CSSResult;
-
-    disconnectedCallback(): void;
-
-    render(): TemplateResult<1>;
-
-    renderMissingThemeNotice(): TemplateResult<1>;
-
-    renderPropertyList(): TemplateResult<1> | null;
-
-    handleShowComponent(): void;
-
-    handleOpenCss(event: OpenCssEvent): Promise<void>;
-
-    renderPicker(): TemplateResult<1>;
-
-    renderLocalClassNameEditor(): TemplateResult<1> | null;
-
     protected firstUpdated(): void;
-
     protected update(changedProperties: PropertyValues): void;
+    disconnectedCallback(): void;
+    render(): TemplateResult<1>;
+    renderMissingThemeNotice(): TemplateResult<1>;
+    renderPropertyList(): TemplateResult<1> | null;
+    handleShowComponent(): void;
+    handleOpenCss(event: OpenCssEvent): Promise<void>;
+    renderPicker(): TemplateResult<1>;
+    renderLocalClassNameEditor(): TemplateResult<1> | null;
     private handleClassNameChange;
     private pickComponent;
     private handleScopeChange;

@@ -18,17 +18,17 @@ import VectorSource from 'ol/source/Vector';
  * weak references and finalization registry.
  */
 class SimpleLookup {
-    constructor() {
-        this.map = new Map();
-    }
+  constructor() {
+    this.map = new Map();
+  }
 
-    get(id) {
-        return this.map.get(id);
-    }
+  get(id) {
+    return this.map.get(id);
+  }
 
-    put(id, instance) {
-        this.map.set(id, instance);
-    }
+  put(id, instance) {
+    this.map.set(id, instance);
+  }
 }
 
 /**
@@ -39,29 +39,29 @@ class SimpleLookup {
  * instances are garbage collected.
  */
 class WeakReferenceLookup {
-    constructor() {
-        this.map = new Map();
-        // Create registry that notifies when a reference is garbage collected,
-        // the callback removes the WeakRef entry from the map
-        this.registry = new FinalizationRegistry((id) => {
-            this.map.delete(id);
-        });
-    }
+  constructor() {
+    this.map = new Map();
+    // Create registry that notifies when a reference is garbage collected,
+    // the callback removes the WeakRef entry from the map
+    this.registry = new FinalizationRegistry((id) => {
+      this.map.delete(id);
+    });
+  }
 
-    get(id) {
-        const weakRef = this.map.get(id);
-        return weakRef ? weakRef.deref() : undefined;
-    }
+  get(id) {
+    const weakRef = this.map.get(id);
+    return weakRef ? weakRef.deref() : undefined;
+  }
 
-    put(id, instance) {
-        // Skip if reference is already tracked
-        if (this.map.has(id)) return;
-        // Store weak reference in map
-        const ref = new WeakRef(instance);
-        this.map.set(id, ref);
-        // Track reference for garbage collection, so that we can clean up the map entry
-        this.registry.register(instance, id);
-    }
+  put(id, instance) {
+    // Skip if reference is already tracked
+    if (this.map.has(id)) return;
+    // Store weak reference in map
+    const ref = new WeakRef(instance);
+    this.map.set(id, ref);
+    // Track reference for garbage collection, so that we can clean up the map entry
+    this.registry.register(instance, id);
+  }
 }
 
 const supportsWeakReferenceLookup = window.WeakRef && window.FinalizationRegistry;
@@ -71,7 +71,7 @@ const supportsWeakReferenceLookup = window.WeakRef && window.FinalizationRegistr
  * @returns {WeakReferenceLookup|SimpleLookup}
  */
 export function createLookup() {
-    return supportsWeakReferenceLookup ? new WeakReferenceLookup() : new SimpleLookup();
+  return supportsWeakReferenceLookup ? new WeakReferenceLookup() : new SimpleLookup();
 }
 
 /**
@@ -81,10 +81,10 @@ export function createLookup() {
  * @returns {*} the layer that contains the feature, or undefined
  */
 export function getLayerForFeature(layers, feature) {
-    return layers.find((layer) => {
-        const source = layer.getSource && layer.getSource();
-        const isVectorSource = source && source instanceof VectorSource;
+  return layers.find((layer) => {
+    const source = layer.getSource && layer.getSource();
+    const isVectorSource = source && source instanceof VectorSource;
 
-        return isVectorSource && source.getFeatures().includes(feature);
-    });
+    return isVectorSource && source.getFeatures().includes(feature);
+  });
 }

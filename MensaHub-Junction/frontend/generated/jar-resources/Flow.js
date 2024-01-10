@@ -78,7 +78,8 @@ export class Flow {
                     this.navigation = 'link';
                     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
                     // @ts-ignore
-                } else if (_e.composedPath().some((node) => node.nodeName === 'A')) {
+                }
+                else if (_e.composedPath().some((node) => node.nodeName === 'A')) {
                     this.navigation = 'client';
                 }
             }
@@ -86,7 +87,6 @@ export class Flow {
             capture: true
         });
     }
-
     get action() {
         // Return a function which is bound to the flow instance, thus we can use
         // the syntax `...serverSideRoutes` in vaadin-router.
@@ -96,16 +96,19 @@ export class Flow {
             if ($wnd.Vaadin.connectionState.online) {
                 try {
                     await this.flowInit();
-                } catch (error) {
+                }
+                catch (error) {
                     if (error instanceof FlowUiInitializationError) {
                         // error initializing Flow: assume connection lost
                         $wnd.Vaadin.connectionState.state = ConnectionState.CONNECTION_LOST;
                         return this.offlineStubAction();
-                    } else {
+                    }
+                    else {
                         throw error;
                     }
                 }
-            } else {
+            }
+            else {
                 // insert an offline stub
                 return this.offlineStubAction();
             }
@@ -120,7 +123,7 @@ export class Flow {
     // whether navigation has to be cancelled.
     async flowLeave(ctx, cmd) {
         // server -> server, viewing offline stub, or browser is offline
-        const {connectionState} = $wnd.Vaadin;
+        const { connectionState } = $wnd.Vaadin;
         if (this.pathname === ctx.pathname || !this.isFlowClientLoaded() || connectionState.offline) {
             return Promise.resolve({});
         }
@@ -146,9 +149,11 @@ export class Flow {
                 this.container.serverConnected = (cancel, redirectContext) => {
                     if (cmd && cancel) {
                         resolve(cmd.prevent());
-                    } else if (cmd && cmd.redirect && redirectContext) {
+                    }
+                    else if (cmd && cmd.redirect && redirectContext) {
                         resolve(cmd.redirect(redirectContext.pathname));
-                    } else {
+                    }
+                    else {
                         this.container.style.display = '';
                         resolve(this.container);
                     }
@@ -163,7 +168,8 @@ export class Flow {
                 // Link and client cases are handled by click listener in loadingFinished().
                 this.navigation = 'history';
             });
-        } else {
+        }
+        else {
             // No server response => offline or erroneous connection
             return Promise.resolve(this.container);
         }
@@ -182,11 +188,11 @@ export class Flow {
             this.loadingStarted();
             // Initialize server side UI
             this.response = await this.flowInitUi();
-            const {pushScript, appConfig} = this.response;
+            const { pushScript, appConfig } = this.response;
             if (typeof pushScript === 'string') {
                 await this.loadScript(pushScript);
             }
-            const {appId} = appConfig;
+            const { appId } = appConfig;
             // Load bootstrap script with server side parameters
             const bootstrapMod = await import('./FlowBootstrap');
             await bootstrapMod.init(this.response);
@@ -200,7 +206,8 @@ export class Flow {
             const serverCreatedContainer = document.querySelector(tag);
             if (serverCreatedContainer) {
                 this.container = serverCreatedContainer;
-            } else {
+            }
+            else {
                 this.container = document.createElement(tag);
                 this.container.id = appId;
             }
@@ -275,7 +282,8 @@ export class Flow {
                 const contentType = httpRequest.getResponseHeader('content-type');
                 if (contentType && contentType.indexOf('application/json') !== -1) {
                     resolve(JSON.parse(httpRequest.responseText));
-                } else {
+                }
+                else {
                     httpRequest.onerror();
                 }
             };

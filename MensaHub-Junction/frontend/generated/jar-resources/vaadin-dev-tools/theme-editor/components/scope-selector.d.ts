@@ -12,10 +12,8 @@ export declare class ScopeSelector extends LitElement {
     value: ThemeScope;
     metadata?: ComponentMetadata;
     private select?;
-
-    render(): import("lit").TemplateResult<1>;
-
     protected update(changedProperties: PropertyValues): void;
+    render(): import("lit").TemplateResult<1>;
     private selectRenderer;
     private handleValueChange;
 }

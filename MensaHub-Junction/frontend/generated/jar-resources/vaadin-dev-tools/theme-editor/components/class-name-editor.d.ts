@@ -7,13 +7,11 @@ export declare class ClassNameChangeEvent extends CustomEvent<{
     constructor(value: string);
 }
 export declare class ClassNameEditor extends LitElement {
-    private handleInputChange;
+    static get styles(): import("lit").CSSResult[];
     className: string;
     private editedClassName;
     private invalid;
-
-    static get styles(): import("lit").CSSResult[];
-    render(): import("lit").TemplateResult<1>;
-
     protected update(changedProperties: PropertyValues): void;
+    render(): import("lit").TemplateResult<1>;
+    private handleInputChange;
 }

@@ -12,12 +12,9 @@ export declare class ColorPicker extends LitElement {
     private toggle;
     private overlay;
     private commitValue;
-
-    render(): import("lit").TemplateResult<1>;
-
     protected update(changedProperties: PropertyValues): void;
-
     protected firstUpdated(): void;
+    render(): import("lit").TemplateResult<1>;
     private open;
     private renderOverlayContent;
     private handleColorChange;
@@ -30,7 +27,6 @@ export declare class ColorPickerOverlayContent extends LitElement {
     static get styles(): import("lit").CSSResult[];
     render(): import("lit").TemplateResult<1>;
     renderSwatches(): import("lit").TemplateResult<1> | undefined;
-
     private handlePickerChange;
     private selectPreset;
 }

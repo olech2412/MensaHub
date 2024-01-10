@@ -6,8 +6,6 @@
                             
 Developed by: christopho
 ${AnsiColor.BRIGHT_GREEN}Powered by: Spring Boot${spring-boot.formatted-version} ${AnsiColor.DEFAULT}
-More Information: https://github.com/olech2412/MensaHub-Junction
-Report an issue: https://github.com/olech2412/MensaHub-Junction/issues
-Visit <EGR>: https://mensaHub.olech2412.de
-${AnsiColor.BRIGHT_GREEN}MensaHub-Junction
- is running!${AnsiColor.DEFAULT}
+More Information: https://github.com/olech2412/MensaHub
+Report an issue: https://github.com/olech2412/MensaHub/issues
+${AnsiColor.BRIGHT_GREEN}MensaHub-Junction is running!${AnsiColor.DEFAULT}

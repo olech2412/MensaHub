@@ -19,7 +19,6 @@ export declare class ThemeEditorHistory {
     push(requestId: string, execute?: HistoryCustomizerFn, rollback?: HistoryCustomizerFn): ThemeEditorHistoryActions;
     undo(): Promise<ThemeEditorHistoryActions>;
     redo(): Promise<ThemeEditorHistoryActions>;
-
     static clear(): void;
 }
 export {};
