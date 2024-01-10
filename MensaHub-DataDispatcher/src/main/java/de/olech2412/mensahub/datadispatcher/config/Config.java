@@ -7,7 +7,15 @@ import java.util.Properties;
 public class Config {
 
     private static final String CONFIG_FILE_PATH = System.getProperty("user.home") + "/mensaHub/mensaHub.settings";
-    private static final long RELOAD_INTERVAL = 3600000; // 1 Stunde in Millisekunden
+    private static final long RELOAD_INTERVAL; // 1 Stunde in Millisekunden
+
+    static {
+        try {
+            RELOAD_INTERVAL = Long.parseLong(Config.getInstance().getProperty("mensaHub.dataDispatcher.config.reloadInterval"));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
     private static Config instance;
     private Properties properties;
     private long lastAccessTime;
