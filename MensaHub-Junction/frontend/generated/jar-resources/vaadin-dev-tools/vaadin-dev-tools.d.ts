@@ -12,14 +12,11 @@ import './vaadin-dev-tools-info';
  */
 export interface DevToolsInterface {
     send(command: string, data: any): void;
-
     addTab(id: string, tag: string): void;
 }
-
 export interface MessageHandler {
     handleMessage(message: ServerMessage): boolean;
 }
-
 export interface ServerMessage {
     /**
      * The command
@@ -30,7 +27,6 @@ export interface ServerMessage {
      */
     data: any;
 }
-
 /**
  * To create and register a plugin, use e.g.
  * @example
@@ -57,7 +53,6 @@ export interface DevToolsPlugin {
      */
     init(devToolsInterface: DevToolsInterface): void;
 }
-
 interface Feature {
     id: string;
     title: string;
@@ -65,14 +60,12 @@ interface Feature {
     requiresServerRestart: boolean;
     enabled: boolean;
 }
-
 export declare enum MessageType {
     LOG = "log",
     INFORMATION = "information",
     WARNING = "warning",
     ERROR = "error"
 }
-
 interface Message {
     id: number;
     type: MessageType;
@@ -83,9 +76,10 @@ interface Message {
     dontShowAgain: boolean;
     deleted: boolean;
 }
-
 export declare class VaadinDevTools extends LitElement {
     static MAX_LOG_ROWS: number;
+    unhandledMessages: ServerMessage[];
+    unreadErrors: boolean;
     static DISMISSED_NOTIFICATIONS_IN_LOCAL_STORAGE: string;
     static ACTIVE_KEY_IN_SESSION_STORAGE: string;
     static TRIGGERED_KEY_IN_SESSION_STORAGE: string;
@@ -95,7 +89,8 @@ export declare class VaadinDevTools extends LitElement {
     static JREBEL: string;
     static SPRING_BOOT_DEVTOOLS: string;
     static BACKEND_DISPLAY_NAME: Record<string, string>;
-    unhandledMessages: ServerMessage[];
+    componentPickActive: boolean;
+    themeEditorState: ThemeEditorState;
     url?: string;
     liveReloadDisabled?: boolean;
     backend?: string;
@@ -106,88 +101,55 @@ export declare class VaadinDevTools extends LitElement {
     notifications: Message[];
     frontendStatus: ConnectionStatus;
     javaStatus: ConnectionStatus;
-    unreadErrors: boolean;
-    componentPickActive: boolean;
-    themeEditorState: ThemeEditorState;
     private tabs;
     private activeTab;
     private features;
+    private renderFeatures;
     private root;
     private componentPicker;
+
+    constructor();
+
+    static get styles(): import("lit").CSSResult[];
     private javaConnection?;
     private frontendConnection?;
     private nextMessageId;
     private disableEventListener?;
     private transitionDuration;
-    private renderFeatures;
-
-    constructor();
-
-    static get styles(): import("lit").CSSResult[];
-
-    static get isActive(): boolean;
-
-    static notificationDismissed(persistentId: string): boolean;
-
     elementTelemetry(): void;
-
     openWebSocketConnection(): void;
-
     tabHandleMessage(tabElement: HTMLElement, message: ServerMessage): boolean;
-
     handleFrontendMessage(message: ServerMessage): void;
-
     getDedicatedWebSocketUrl(): string | undefined;
-
     getSpringBootWebSocketUrl(location: any): string;
 
+    static get isActive(): boolean;
     connectedCallback(): void;
-
     initPlugin(plugin: DevToolsPlugin): Promise<void>;
-
     format(o: any): string;
-
     catchErrors(): void;
-
     disconnectedCallback(): void;
-
     toggleExpanded(): void;
-
     showSplashMessage(msg: string | undefined): void;
-
     demoteSplashMessage(): void;
-
     checkLicense(productInfo: Product): void;
-
     log(type: MessageType, message: string, details?: string, link?: string): void;
-
     showNotification(type: MessageType, message: string, details?: string, link?: string, persistentId?: string): void;
-
     dismissNotification(id: number): void;
-
     findNotificationIndex(id: number): number;
-
     toggleDontShowAgain(id: number): void;
-
     setActive(yes: boolean): void;
-
     getStatusColor(status: ConnectionStatus | undefined): "none" | "var(--dev-tools-green-color)" | "var(--dev-tools-grey-color)" | "var(--dev-tools-yellow-hsl)" | "var(--dev-tools-red-color)";
-
     renderMessage(messageObject: Message): TemplateResult<1>;
-
     render(): TemplateResult<1>;
 
+    static notificationDismissed(persistentId: string): boolean;
     renderCode(): TemplateResult<1>;
 
-    disableJavaLiveReload(): void;
-
-    enableJavaLiveReload(): void;
-
-    renderThemeEditor(): TemplateResult<1>;
-
-    toggleFeatureFlag(e: Event, feature: Feature): void;
-
     protected updated(_changedProperties: PropertyValueMap<any> | Map<PropertyKey, unknown>): void;
+    disableJavaLiveReload(): void;
+    enableJavaLiveReload(): void;
+    renderThemeEditor(): TemplateResult<1>;
+    toggleFeatureFlag(e: Event, feature: Feature): void;
 }
-
 export {};

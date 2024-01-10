@@ -7,17 +7,15 @@ export declare class ScopeChangeEvent extends CustomEvent<{
 }> {
     constructor(value: ThemeScope);
 }
-
 export declare class ScopeSelector extends LitElement {
+    static get styles(): import("lit").CSSResult;
     value: ThemeScope;
     metadata?: ComponentMetadata;
     private select?;
-    private selectRenderer;
-    private handleValueChange;
-
-    static get styles(): import("lit").CSSResult;
 
     render(): import("lit").TemplateResult<1>;
 
     protected update(changedProperties: PropertyValues): void;
+    private selectRenderer;
+    private handleValueChange;
 }

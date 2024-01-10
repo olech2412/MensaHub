@@ -31,8 +31,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 import javax.mail.MessagingException;
 import java.io.IOException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.util.List;
 import java.util.Map;
 
@@ -108,7 +113,9 @@ public class ActivationView extends Composite implements BeforeEnterObserver {
                                 Notification notification = new Notification("Anfrage angenommen! Nutzer ist freigeschaltet und wird benachrichtigt", 6000);
                                 notification.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
                                 notification.open();
-                            } catch (MessagingException | IOException e) {
+                            } catch (MessagingException | IOException | NoSuchPaddingException |
+                                     IllegalBlockSizeException | NoSuchAlgorithmException | BadPaddingException |
+                                     InvalidKeyException e) {
                                 throw new RuntimeException(e);
                             }
                             decline.setEnabled(false);
@@ -126,7 +133,9 @@ public class ActivationView extends Composite implements BeforeEnterObserver {
                                 Notification notification = new Notification("Ablehnung wurde gespeichert und der User informiert! Alle Daten des Nutzers werden gelöscht", 6000);
                                 notification.addThemeVariants(NotificationVariant.LUMO_ERROR);
                                 notification.open();
-                            } catch (MessagingException | IOException e) {
+                            } catch (MessagingException | IOException | NoSuchPaddingException |
+                                     IllegalBlockSizeException | NoSuchAlgorithmException | BadPaddingException |
+                                     InvalidKeyException e) {
                                 throw new RuntimeException(e);
                             }
                             decline.setEnabled(false);
@@ -160,7 +169,8 @@ public class ActivationView extends Composite implements BeforeEnterObserver {
         } catch (NullPointerException nullPointerException) {
             logger.warn("User tried to navigate to ActivationView but there is no code");
             UI.getCurrent().navigate("login");
-        } catch (MessagingException | IOException e) {
+        } catch (MessagingException | IOException | NoSuchPaddingException | IllegalBlockSizeException |
+                 NoSuchAlgorithmException | BadPaddingException | InvalidKeyException e) {
             throw new RuntimeException(e);
         }
 

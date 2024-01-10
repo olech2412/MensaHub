@@ -7,7 +7,6 @@ export declare enum EditorType {
     range = "range",
     color = "color"
 }
-
 export interface CssPropertyMetadata {
     propertyName: string;
     displayName: string;
@@ -18,7 +17,6 @@ export interface CssPropertyMetadata {
     icon?: string;
     checkedValue?: string;
 }
-
 export interface ComponentElementMetadata {
     selector: string;
     stateAttribute?: string;
@@ -27,7 +25,6 @@ export interface ComponentElementMetadata {
     description?: string;
     properties: CssPropertyMetadata[];
 }
-
 export interface ComponentMetadata {
     tagName: string;
     displayName: string;

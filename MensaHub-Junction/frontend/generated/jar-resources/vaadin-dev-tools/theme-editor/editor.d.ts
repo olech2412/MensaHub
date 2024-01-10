@@ -33,17 +33,6 @@ export declare class ThemeEditor extends LitElement {
     private effectiveTheme;
     private markedAsUsed;
     private undoRedoListener;
-    private handleClassNameChange;
-    private pickComponent;
-    private handleScopeChange;
-    private handlePropertyChange;
-    private handleUndo;
-    private handleRedo;
-    private ensureLocalClassName;
-    private refreshComponentAndTheme;
-    private refreshTheme;
-    private highlightElement;
-    private removeElementHighlight;
 
     static get styles(): import("lit").CSSResult;
 
@@ -66,4 +55,15 @@ export declare class ThemeEditor extends LitElement {
     protected firstUpdated(): void;
 
     protected update(changedProperties: PropertyValues): void;
+    private handleClassNameChange;
+    private pickComponent;
+    private handleScopeChange;
+    private handlePropertyChange;
+    private handleUndo;
+    private handleRedo;
+    private ensureLocalClassName;
+    private refreshComponentAndTheme;
+    private refreshTheme;
+    private highlightElement;
+    private removeElementHighlight;
 }

@@ -201,5 +201,4 @@ class FlowComponentRenderer extends PolymerElement {
         }
     }
 }
-
 window.customElements.define(FlowComponentRenderer.is, FlowComponentRenderer);

@@ -30,8 +30,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 import javax.mail.MessagingException;
 import java.io.IOException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
@@ -121,7 +126,8 @@ public class MailSettingsView extends Composite implements BeforeEnterObserver {
         deactivate.addClickListener(buttonClickEvent -> {
             try {
                 deleteAccount(mailUser);
-            } catch (MessagingException | IOException e) {
+            } catch (MessagingException | IOException | NoSuchPaddingException | IllegalBlockSizeException |
+                     NoSuchAlgorithmException | BadPaddingException | InvalidKeyException e) {
                 throw new RuntimeException(e);
             }
         });
@@ -162,7 +168,8 @@ public class MailSettingsView extends Composite implements BeforeEnterObserver {
                 Mailer mailer = null;
                 try {
                     mailer = new Mailer();
-                } catch (IOException e) {
+                } catch (IOException | IllegalBlockSizeException | NoSuchPaddingException | BadPaddingException |
+                         NoSuchAlgorithmException | InvalidKeyException e) {
                     throw new RuntimeException(e);
                 }
                 try {
@@ -173,6 +180,9 @@ public class MailSettingsView extends Composite implements BeforeEnterObserver {
                     notification_error_mail.addThemeVariants(NotificationVariant.LUMO_ERROR);
                     notification_error_mail.setPosition(Notification.Position.BOTTOM_START);
                     notification_error_mail.open();
+                    throw new RuntimeException(e);
+                } catch (NoSuchPaddingException | IllegalBlockSizeException | NoSuchAlgorithmException |
+                         BadPaddingException | InvalidKeyException e) {
                     throw new RuntimeException(e);
                 }
             } else {
@@ -197,7 +207,7 @@ public class MailSettingsView extends Composite implements BeforeEnterObserver {
         content.add(explanation, deleteInfo, selection);
     }
 
-    private void deleteAccount(MailUser activatedUser) throws MessagingException, IOException {
+    private void deleteAccount(MailUser activatedUser) throws MessagingException, IOException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
         mailUserRepository.delete(activatedUser);
         deactivationCodeRepository.delete(activatedUser.getDeactivationCode());
 

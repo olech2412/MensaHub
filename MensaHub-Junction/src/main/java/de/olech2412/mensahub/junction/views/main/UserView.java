@@ -40,8 +40,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 import javax.mail.MessagingException;
 import java.io.IOException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -86,7 +91,7 @@ public class UserView extends HorizontalLayout implements BeforeEnterObserver {
     private Menseria_am_Botanischen_GartenService menseria_am_botanischen_gartenService;
 
 
-    public UserView(Mensa_AcademicaService mensa_academicaService, Cafeteria_DittrichringService cafeteria_dittrichringService, Mensa_am_ElsterbeckenService mensa_am_elsterbeckenService, Mensa_am_MedizincampusService mensa_am_medizincampusService, Mensa_am_ParkService mensa_am_parkService, Mensa_PeterssteinwegService mensa_peterssteinwegService, Mensa_Schoenauer_StrService mensa_schoenauer_strService, Mensa_TierklinikService mensa_tierklinikService, Menseria_am_Botanischen_GartenService menseria_am_botanischen_gartenService) throws IOException {
+    public UserView(Mensa_AcademicaService mensa_academicaService, Cafeteria_DittrichringService cafeteria_dittrichringService, Mensa_am_ElsterbeckenService mensa_am_elsterbeckenService, Mensa_am_MedizincampusService mensa_am_medizincampusService, Mensa_am_ParkService mensa_am_parkService, Mensa_PeterssteinwegService mensa_peterssteinwegService, Mensa_Schoenauer_StrService mensa_schoenauer_strService, Mensa_TierklinikService mensa_tierklinikService, Menseria_am_Botanischen_GartenService menseria_am_botanischen_gartenService) throws IOException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
         this.mensa_academicaService = mensa_academicaService;
         this.cafeteria_dittrichringService = cafeteria_dittrichringService;
         this.mensa_am_elsterbeckenService = mensa_am_elsterbeckenService;
@@ -108,7 +113,8 @@ public class UserView extends HorizontalLayout implements BeforeEnterObserver {
             messages.setSessionExpiredNotificationEnabled(true);
             try {
                 messages.setSessionExpiredURL(Config.getInstance().getProperty("mensaHub.junction.address") + "/login");
-            } catch (IOException e) {
+            } catch (IOException | IllegalBlockSizeException | NoSuchPaddingException | BadPaddingException |
+                     NoSuchAlgorithmException | InvalidKeyException e) {
                 throw new RuntimeException(e);
             }
             return messages;
@@ -122,7 +128,7 @@ public class UserView extends HorizontalLayout implements BeforeEnterObserver {
         add(mainLayout);
     }
 
-    private VerticalLayout init() throws IOException {
+    private VerticalLayout init() throws IOException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
         List<Mensa> mensas = new ArrayList<>();
         mensas.add(mensa_academicaService.getMensa());
         mensas.add(cafeteria_dittrichringService.getMensa());
@@ -203,7 +209,7 @@ public class UserView extends HorizontalLayout implements BeforeEnterObserver {
         return mainLayout;
     }
 
-    private Component createFooter() throws IOException {
+    private Component createFooter() throws IOException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
         Button privacy = new Button("Datenschutzerklärung");
         privacy.addClickListener(e -> {
             logger.info("Privacy button clicked");

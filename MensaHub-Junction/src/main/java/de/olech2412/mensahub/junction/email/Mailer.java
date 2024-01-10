@@ -4,12 +4,17 @@ import de.olech2412.mensahub.junction.config.Config;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 import javax.mail.*;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 import java.io.IOException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Properties;
@@ -23,7 +28,7 @@ public class Mailer {
     private String adminMail;
 
 
-    public Mailer() throws IOException {
+    public Mailer() throws IOException, IllegalBlockSizeException, NoSuchPaddingException, BadPaddingException, NoSuchAlgorithmException, InvalidKeyException {
     }
 
     /**
@@ -36,7 +41,7 @@ public class Mailer {
      * @param deactivationCode
      * @throws MessagingException
      */
-    public void sendActivationEmail(String firstName, String emailTarget, String activationCode, String deactivationCode) throws MessagingException, IOException {
+    public void sendActivationEmail(String firstName, String emailTarget, String activationCode, String deactivationCode) throws MessagingException, IOException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
         Properties prop = new Properties();
         prop.put("mail.smtp.auth", Boolean.getBoolean(Config.getInstance().getProperty("mensaHub.junction.mail.smtpAuth")));
         prop.put("mail.smtp.host", Config.getInstance().getProperty("mensaHub.junction.mail.smtpHost"));
@@ -61,7 +66,7 @@ public class Mailer {
         Transport.send(message);
     }
 
-    public void sendAPIActivationEmail(String username, String emailTarget, String activationCode, String deactivationCode) throws MessagingException, IOException {
+    public void sendAPIActivationEmail(String username, String emailTarget, String activationCode, String deactivationCode) throws MessagingException, IOException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
         Properties prop = new Properties();
         prop.put("mail.smtp.auth", Boolean.getBoolean(Config.getInstance().getProperty("mensaHub.junction.mail.smtpAuth")));
         prop.put("mail.smtp.host", Config.getInstance().getProperty("mensaHub.junction.mail.smtpHost"));
@@ -86,7 +91,7 @@ public class Mailer {
         Transport.send(message);
     }
 
-    public void sendAPIAdminRequest(String activationCode) throws MessagingException, IOException {
+    public void sendAPIAdminRequest(String activationCode) throws MessagingException, IOException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
         Properties prop = new Properties();
         prop.put("mail.smtp.auth", Boolean.getBoolean(Config.getInstance().getProperty("mensaHub.junction.mail.smtpAuth")));
         prop.put("mail.smtp.host", Config.getInstance().getProperty("mensaHub.junction.mail.smtpHost"));
@@ -111,7 +116,7 @@ public class Mailer {
         Transport.send(message);
     }
 
-    public void sendAPIAdminRequestSuccess(String username, String emailTarget, String deactivationCode) throws MessagingException, IOException {
+    public void sendAPIAdminRequestSuccess(String username, String emailTarget, String deactivationCode) throws MessagingException, IOException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
         Properties prop = new Properties();
         prop.put("mail.smtp.auth", Boolean.getBoolean(Config.getInstance().getProperty("mensaHub.junction.mail.smtpAuth")));
         prop.put("mail.smtp.host", Config.getInstance().getProperty("mensaHub.junction.mail.smtpHost"));
@@ -136,7 +141,7 @@ public class Mailer {
         Transport.send(message);
     }
 
-    public void sendAPIAdminRequestDecline(String username, String emailTarget) throws MessagingException, IOException {
+    public void sendAPIAdminRequestDecline(String username, String emailTarget) throws MessagingException, IOException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
         Properties prop = new Properties();
         prop.put("mail.smtp.auth", Boolean.getBoolean(Config.getInstance().getProperty("mensaHub.junction.mail.smtpAuth")));
         prop.put("mail.smtp.host", Config.getInstance().getProperty("mensaHub.junction.mail.smtpHost"));
@@ -169,7 +174,7 @@ public class Mailer {
      * @param emailTarget
      * @throws MessagingException
      */
-    public void sendDeactivationEmail(String firstName, String emailTarget) throws MessagingException, IOException {
+    public void sendDeactivationEmail(String firstName, String emailTarget) throws MessagingException, IOException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
         Properties prop = new Properties();
         prop.put("mail.smtp.auth", Boolean.getBoolean(Config.getInstance().getProperty("mensaHub.junction.mail.smtpAuth")));
         prop.put("mail.smtp.host", Config.getInstance().getProperty("mensaHub.junction.mail.smtpHost"));
@@ -202,7 +207,7 @@ public class Mailer {
      * @param emailTarget
      * @throws MessagingException
      */
-    public void sendTemporaryDeactivationEmail(String firstName, String emailTarget, String deactivationCode, LocalDate deactivateUntil) throws MessagingException, IOException {
+    public void sendTemporaryDeactivationEmail(String firstName, String emailTarget, String deactivationCode, LocalDate deactivateUntil) throws MessagingException, IOException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
         Properties prop = new Properties();
         prop.put("mail.smtp.auth", Boolean.getBoolean(Config.getInstance().getProperty("mensaHub.junction.mail.smtpAuth")));
         prop.put("mail.smtp.host", Config.getInstance().getProperty("mensaHub.junction.mail.smtpHost"));

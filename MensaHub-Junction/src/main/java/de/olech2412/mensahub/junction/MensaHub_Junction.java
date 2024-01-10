@@ -5,11 +5,17 @@ import com.vaadin.flow.component.page.AppShellConfigurator;
 import com.vaadin.flow.server.PWA;
 import com.vaadin.flow.theme.Theme;
 import de.olech2412.mensahub.junction.config.Config;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 import java.io.IOException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 
 /**
  * The entry point of the Spring Boot application.
@@ -22,14 +28,23 @@ import java.io.IOException;
 @NpmPackage(value = "line-awesome", version = "1.3.0")
 @PWA(name = "MensaHub-Junction", shortName = "MensaHub")
 @EntityScan(basePackages = {"de.olech2412.mensahub.models.authentification", "de.olech2412.mensahub.models.Leipzig"})
+@Slf4j
 public class MensaHub_Junction implements AppShellConfigurator {
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
         configureEnvironment();
         SpringApplication.run(MensaHub_Junction.class, args);
     }
 
-    private static void configureEnvironment() throws IOException {
+    private static void configureEnvironment() throws IOException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
+        String encryptionKey = System.getenv("encryption.key");
+        if (encryptionKey == null) {
+            log.error("No encryption key provided. Exiting...");
+            log.error("Please provide the encryption key as environment variable 'encryption.key' by using the -D flag.");
+            log.error("if you are using docker, please use the --env flag.");
+            System.exit(1);
+        }
+
         // configure settings for the server
         System.setProperty("server.port", Config.getInstance().getProperty("mensaHub.junction.port"));
         System.setProperty("server.servlet.context-path", Config.getInstance().getProperty("mensaHub.junction.contextPath"));
