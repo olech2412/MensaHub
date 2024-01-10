@@ -1,3 +1,10 @@
+# ---------------General MensaHub---------------
+mensaHub.database.location=127.0.0.1:3306
+mensaHub.database.name=mensaHub
+mensaHub.database.username=root
+mensaHub.database.password=password
+# ---------------General MensaHub End---------------
+
 # ---------------MensaHub-Gateway---------------
 ## server
 mensaHub.api.port=8083
@@ -52,10 +59,3 @@ mensaHub.dataDispatcher.mail.senderMail=noreply_mensahub@olech2412.de
 ## MensaHub Junction
 mensaHub.dataDispatcher.junction.address=https://mensahub.olech2412.de
 # ---------------MensaHub-DataDispatcher End---------------
-
-# ---------------General MensaHub---------------
-mensaHub.database.location=127.0.0.1:3306
-mensaHub.database.name=mensaHub
-mensaHub.database.username=root
-mensaHub.database.password=password
-# ---------------General MensaHub End---------------
