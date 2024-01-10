@@ -23,19 +23,10 @@ jobs:
           distribution: 'temurin'
           cache: maven
 
-      - name: Submit Dependency Snapshot
-        uses: advanced-security/maven-dependency-submission-action@v3
-
-      - name: Build and Test MensaHub-Gateway
-        run: 'cd MensaHub-Gateway && mvn -s $GITHUB_WORKSPACE/.github/config/maven-settings.xml -Dpackage.publicKey=$PACKAGE_READ clean test'
+      - name: Build MensaHub
+        run: 'mvn -s $GITHUB_WORKSPACE/.github/config/maven-settings.xml -Dpackage.publicKey=$PACKAGE_READ clean install'
         env:
           PACKAGE_READ: ${{ secrets.PACKAGE_READ }}
 
       - name: Generate Test Report
         run: mvn surefire-report:report
-
-      - name: Upload Test Report
-        uses: actions/upload-artifact@v2
-        with:
-          name: Test Report
-          path: target/site/surefire-report.html
