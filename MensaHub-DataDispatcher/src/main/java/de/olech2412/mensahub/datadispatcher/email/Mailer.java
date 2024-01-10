@@ -8,12 +8,17 @@ import de.olech2412.mensahub.models.Mensa;
 import de.olech2412.mensahub.models.authentification.MailUser;
 import lombok.extern.log4j.Log4j2;
 
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 import javax.mail.*;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 import java.io.IOException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -29,7 +34,8 @@ public class Mailer {
     static {
         try {
             notAvailableSign = Config.getInstance().getProperty("mensaHub.dataDispatcher.notAvailable.sign");
-        } catch (IOException e) {
+        } catch (IOException | IllegalBlockSizeException | NoSuchPaddingException | BadPaddingException |
+                 NoSuchAlgorithmException | InvalidKeyException e) {
             throw new RuntimeException(e);
         }
     }
@@ -39,7 +45,7 @@ public class Mailer {
      *
      * @throws MessagingException
      */
-    public void sendSpeiseplan(MailUser emailTarget, List<? extends Meal> menu, Mensa mensa, Iterable<Allergene> allergenes, boolean update) throws MessagingException, IOException {
+    public void sendSpeiseplan(MailUser emailTarget, List<? extends Meal> menu, Mensa mensa, Iterable<Allergene> allergenes, boolean update) throws MessagingException, IOException, NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
         Properties prop = new Properties();
         prop.put("mail.smtp.auth", Boolean.getBoolean(Config.getInstance().getProperty("mensaHub.junction.mail.smtpAuth")));
         prop.put("mail.smtp.host", Config.getInstance().getProperty("mensaHub.junction.mail.smtpHost"));

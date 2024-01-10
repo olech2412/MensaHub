@@ -2,11 +2,9 @@ import {ConnectionIndicator, ConnectionState} from '@vaadin/common-frontend';
 
 class FlowUiInitializationError extends Error {
 }
-
 // flow uses body for keeping references
 const flowRoot = window.document.body;
 const $wnd = window;
-
 /**
  * Client API for flow UI operations.
  */
@@ -32,13 +30,12 @@ export class Flow {
         // Regular expression used to remove the app-context
         const elm = document.head.querySelector('base');
         this.baseRegex = new RegExp(`^${
-            // IE11 does not support document.baseURI
-            (document.baseURI || (elm && elm.href) || '/').replace(/^https?:\/\/[^/]+/i, '')}`);
+        // IE11 does not support document.baseURI
+        (document.baseURI || (elm && elm.href) || '/').replace(/^https?:\/\/[^/]+/i, '')}`);
         this.appShellTitle = document.title;
         // Put a vaadin-connection-indicator in the dom
         this.addConnectionIndicator();
     }
-
     /**
      * Return a `route` object for vaadin-router in an one-element array.
      *
@@ -55,6 +52,39 @@ export class Flow {
                 action: this.action
             }
         ];
+    }
+    loadingStarted() {
+        // Make Testbench know that server request is in progress
+        this.isActive = true;
+        $wnd.Vaadin.connectionState.loadingStarted();
+    }
+    loadingFinished() {
+        // Make Testbench know that server request has finished
+        this.isActive = false;
+        $wnd.Vaadin.connectionState.loadingFinished();
+        if ($wnd.Vaadin.listener) {
+            // Listeners registered, do not register again.
+            return;
+        }
+        $wnd.Vaadin.listener = {};
+        // Listen for click on router-links -> 'link' navigation trigger
+        // and on <a> nodes -> 'client' navigation trigger.
+        // Use capture phase to detect prevented / stopped events.
+        document.addEventListener('click', (_e) => {
+            if (_e.target) {
+                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                // @ts-ignore
+                if (_e.target.hasAttribute('router-link')) {
+                    this.navigation = 'link';
+                    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                    // @ts-ignore
+                } else if (_e.composedPath().some((node) => node.nodeName === 'A')) {
+                    this.navigation = 'client';
+                }
+            }
+        }, {
+            capture: true
+        });
     }
 
     get action() {
@@ -86,44 +116,7 @@ export class Flow {
             return this.container;
         };
     }
-
-    loadingStarted() {
-        // Make Testbench know that server request is in progress
-        this.isActive = true;
-        $wnd.Vaadin.connectionState.loadingStarted();
-    }
-
-    loadingFinished() {
-        // Make Testbench know that server request has finished
-        this.isActive = false;
-        $wnd.Vaadin.connectionState.loadingFinished();
-        if ($wnd.Vaadin.listener) {
-            // Listeners registered, do not register again.
-            return;
-        }
-        $wnd.Vaadin.listener = {};
-        // Listen for click on router-links -> 'link' navigation trigger
-        // and on <a> nodes -> 'client' navigation trigger.
-        // Use capture phase to detect prevented / stopped events.
-        document.addEventListener('click', (_e) => {
-            if (_e.target) {
-                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                // @ts-ignore
-                if (_e.target.hasAttribute('router-link')) {
-                    this.navigation = 'link';
-                    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                    // @ts-ignore
-                } else if (_e.composedPath().some((node) => node.nodeName === 'A')) {
-                    this.navigation = 'client';
-                }
-            }
-        }, {
-            capture: true
-        });
-    }
-
     // Send a remote call to `JavaScriptBootstrapUI` to check
-
     // whether navigation has to be cancelled.
     async flowLeave(ctx, cmd) {
         // server -> server, viewing offline stub, or browser is offline
@@ -143,7 +136,6 @@ export class Flow {
             flowRoot.$server.leaveNavigation(this.getFlowRoutePath(ctx), this.getFlowRouteQuery(ctx));
         });
     }
-
     // Send the remote call to `JavaScriptBootstrapUI` to render the flow
     // route specified by the context
     async flowNavigate(ctx, cmd) {
@@ -176,15 +168,12 @@ export class Flow {
             return Promise.resolve(this.container);
         }
     }
-
     getFlowRoutePath(context) {
         return decodeURIComponent(context.pathname).replace(this.baseRegex, '');
     }
-
     getFlowRouteQuery(context) {
         return (context.search && context.search.substring(1)) || '';
     }
-
     // import flow client modules and initialize UI in server side.
     async flowInit() {
         // Do not start flow twice
@@ -231,7 +220,6 @@ export class Flow {
         }
         return this.response;
     }
-
     async loadScript(url) {
         return new Promise((resolve, reject) => {
             const script = document.createElement('script');
@@ -241,7 +229,6 @@ export class Flow {
             document.body.appendChild(script);
         });
     }
-
     injectAppIdScript(appId) {
         const appIdWithoutHashCode = appId.substring(0, appId.lastIndexOf('-'));
         const scriptAppId = document.createElement('script');
@@ -249,7 +236,6 @@ export class Flow {
         scriptAppId.setAttribute('data-app-id', appIdWithoutHashCode);
         document.body.append(scriptAppId);
     }
-
     // After the flow-client javascript module has been loaded, this initializes flow UI
     // in the browser.
     async flowInitClient(clientMod) {
@@ -268,7 +254,6 @@ export class Flow {
             }, 5);
         });
     }
-
     // Returns the `appConfig` object
     async flowInitUi() {
         // appConfig was sent in the index.html request
@@ -297,7 +282,6 @@ export class Flow {
             httpRequest.send();
         });
     }
-
     // Create shared connection state store and connection indicator
     addConnectionIndicator() {
         // add connection indicator to DOM
@@ -331,7 +315,6 @@ export class Flow {
             }
         });
     }
-
     async offlineStubAction() {
         const offlineStub = document.createElement('iframe');
         const offlineStubPath = './offline-stub.html';
@@ -359,10 +342,8 @@ export class Flow {
         };
         return offlineStub;
     }
-
     isFlowClientLoaded() {
         return this.response !== undefined;
     }
 }
-
 //# sourceMappingURL=Flow.js.map

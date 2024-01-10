@@ -9,7 +9,6 @@ export declare class ComponentOverlayManager {
     hideOverlay: () => void;
     reset: () => void;
 }
-
 export declare const componentOverlayManager: ComponentOverlayManager;
 export declare const defaultShowOverlay: (component: ComponentReference) => void;
 export declare const defaultHideOverlay: (component: ComponentReference) => void;

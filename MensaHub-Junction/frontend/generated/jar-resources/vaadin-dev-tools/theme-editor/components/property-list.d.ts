@@ -11,15 +11,13 @@ export declare class OpenCssEvent extends CustomEvent<{
 }> {
     constructor(element: ComponentElementMetadata);
 }
-
 export declare class PropertyList extends LitElement {
+    static get styles(): import("lit").CSSResult;
     metadata: ComponentMetadata;
     theme: ComponentTheme;
+
+    render(): import("lit").TemplateResult<1>;
     private renderSection;
     private handleOpenCss;
     private renderPropertyEditor;
-
-    static get styles(): import("lit").CSSResult;
-
-    render(): import("lit").TemplateResult<1>;
 }

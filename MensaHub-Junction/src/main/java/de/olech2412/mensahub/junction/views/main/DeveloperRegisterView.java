@@ -37,12 +37,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 import javax.mail.MessagingException;
 import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.time.Duration;
 
 @Route("registerDev")
@@ -68,7 +73,7 @@ public class DeveloperRegisterView extends Composite implements BeforeEnterObser
 
     }
 
-    private VerticalLayout init() throws IOException {
+    private VerticalLayout init() throws IOException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
         apiUsername = new TextField("Dein API Username");
         apiUsername.setMaxLength(100);
         apiUsername.setMinLength(2);
@@ -116,7 +121,9 @@ public class DeveloperRegisterView extends Composite implements BeforeEnterObser
                     notification.addThemeVariants(NotificationVariant.LUMO_ERROR);
                     notification.open();
                 }
-            } catch (IOException | InterruptedException | MessagingException ex) {
+            } catch (IOException | InterruptedException | MessagingException | NoSuchPaddingException |
+                     IllegalBlockSizeException | NoSuchAlgorithmException | BadPaddingException |
+                     InvalidKeyException ex) {
                 throw new RuntimeException(ex);
             }
         });
@@ -148,7 +155,7 @@ public class DeveloperRegisterView extends Composite implements BeforeEnterObser
         return mainLayout;
     }
 
-    private void registerUser() throws IOException, InterruptedException, MessagingException {
+    private void registerUser() throws IOException, InterruptedException, MessagingException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
                 .timeout(Duration.ofSeconds(20))
@@ -178,7 +185,7 @@ public class DeveloperRegisterView extends Composite implements BeforeEnterObser
         }
     }
 
-    private void sendRegistrationMail(String email, String username) throws MessagingException, IOException {
+    private void sendRegistrationMail(String email, String username) throws MessagingException, IOException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
         ActivationCode activationCode = new ActivationCode(RandomStringUtils.randomAlphanumeric(32));
         DeactivationCode deactivationCode = new DeactivationCode(RandomStringUtils.randomAlphanumeric(32));
         activationCodeRepository.save(activationCode);
@@ -220,7 +227,8 @@ public class DeveloperRegisterView extends Composite implements BeforeEnterObser
         VerticalLayout mainLayout = null;
         try {
             mainLayout = init();
-        } catch (IOException e) {
+        } catch (IOException | NoSuchPaddingException | IllegalBlockSizeException | NoSuchAlgorithmException |
+                 BadPaddingException | InvalidKeyException e) {
             throw new RuntimeException(e);
         }
 
@@ -231,7 +239,7 @@ public class DeveloperRegisterView extends Composite implements BeforeEnterObser
         return layout;
     }
 
-    private Component createFooter() throws IOException {
+    private Component createFooter() throws IOException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
         Button privacy = new Button("Datenschutzerklärung");
         privacy.addClickListener(e -> {
             logger.info("Privacy button clicked");

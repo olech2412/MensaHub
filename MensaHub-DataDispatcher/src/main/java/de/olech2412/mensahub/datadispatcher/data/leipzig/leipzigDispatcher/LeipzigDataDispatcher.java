@@ -1,5 +1,6 @@
 package de.olech2412.mensahub.datadispatcher.data.leipzig.leipzigDispatcher;
 
+import de.olech2412.mensahub.datadispatcher.config.Config;
 import de.olech2412.mensahub.datadispatcher.data.leipzig.html_caller.HTML_Caller;
 import de.olech2412.mensahub.datadispatcher.email.Mailer;
 import de.olech2412.mensahub.datadispatcher.jpa.repository.Leipzig.AllergeneRepository;
@@ -10,7 +11,6 @@ import de.olech2412.mensahub.models.Leipzig.Allergene;
 import de.olech2412.mensahub.models.Meal;
 import de.olech2412.mensahub.models.Mensa;
 import de.olech2412.mensahub.models.authentification.MailUser;
-import io.micrometer.core.instrument.Timer;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -18,8 +18,13 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 import javax.mail.MessagingException;
 import java.io.IOException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -126,15 +131,14 @@ public class LeipzigDataDispatcher {
 
     @Scheduled(cron = "0 */5 * * * *")
     @Transactional
-    public void callData() throws IOException, MessagingException {
-        Timer.Sample timerSample = Timer.start();
+    public void callData() throws IOException, MessagingException, IllegalBlockSizeException, NoSuchPaddingException, BadPaddingException, NoSuchAlgorithmException, InvalidKeyException {
         HTML_Caller dataCaller = new HTML_Caller();
         log.info("------------------ Data call for Leipzig ------------------");
         LocalDate currentDate = LocalDate.now();
         for (Mensa_Service mensa_service : mensa_serviceList) {
             String url = mensa_service.getMensa().getApiUrl();
-
-            for (int i = 0; i < 14; i++) {
+            int fetchDays = Integer.parseInt(Config.getInstance().getProperty("mensaHub.dataDispatcher.fetchDays"));
+            for (int i = 0; i < fetchDays; i++) {
                 LocalDate date = currentDate.plusDays(i);
 
                 if (date.getDayOfWeek() != DayOfWeek.SUNDAY) {
@@ -150,7 +154,7 @@ public class LeipzigDataDispatcher {
     }
 
     @Scheduled(cron = "0 0 0 * * *")
-    public void fetchAllergenes() throws IOException {
+    public void fetchAllergenes() throws IOException, IllegalBlockSizeException, NoSuchPaddingException, BadPaddingException, NoSuchAlgorithmException, InvalidKeyException {
         HTML_Caller dataCaller = new HTML_Caller();
         Map<String, String> dataMap = dataCaller.fetchAllergensandAdditives(mensa_serviceList.get(0).getMensa().getApiUrl());
         insertNewAllergenes(dataMap);
@@ -271,7 +275,7 @@ public class LeipzigDataDispatcher {
     }
 
     @Scheduled(cron = "0 00 08 ? * MON-FRI")
-    public void sendEmails() throws MessagingException, IOException {
+    public void sendEmails() throws MessagingException, IOException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
         Mailer mailer = new Mailer();
         LocalDate today = LocalDate.now();
         for (MailUser mailUser : mailUserService.findAll()) {
@@ -340,7 +344,7 @@ public class LeipzigDataDispatcher {
         mensa_meals_serviceHashMap.put(menseria_am_botanischen_gartenService, meals_menseria_am_botanischen_gartenServices);
     }
 
-    protected void checkTheData(List<Meal> data, Mensa_Service mensa_service, HashMap<Mensa_Service, Meals_Mensa_Service> mensa_meals_serviceHashMap) throws MessagingException, IOException {
+    protected void checkTheData(List<Meal> data, Mensa_Service mensa_service, HashMap<Mensa_Service, Meals_Mensa_Service> mensa_meals_serviceHashMap) throws MessagingException, IOException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
         Meals_Mensa_Service meals_mensa_service = mensa_meals_serviceHashMap.get(mensa_service);
         for (Meal newMeal : data) {
             List<? extends Meal> databaseMeals = meals_mensa_service.findAllMealsByServingDate(newMeal.getServingDate());
@@ -371,7 +375,7 @@ public class LeipzigDataDispatcher {
         }
     }
 
-    protected void sendUpdate(Mensa mensa) throws MessagingException, IOException {
+    protected void sendUpdate(Mensa mensa) throws MessagingException, IOException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
         Mailer mailer = new Mailer();
         LocalDate today = LocalDate.now();
 

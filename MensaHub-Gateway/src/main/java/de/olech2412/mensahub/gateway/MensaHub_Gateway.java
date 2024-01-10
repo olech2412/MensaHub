@@ -1,14 +1,21 @@
 package de.olech2412.mensahub.gateway;
 
 import de.olech2412.mensahub.gateway.config.Config;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 import java.io.IOException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 
 @SpringBootApplication
 @EntityScan(basePackages = {"de.olech2412.mensahub.models.authentification", "de.olech2412.mensahub.models.Leipzig"})
+@Slf4j
 public class MensaHub_Gateway {
 
     /**
@@ -16,7 +23,7 @@ public class MensaHub_Gateway {
      *
      * @param args The arguments
      */
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
         configureEnvironment();
         SpringApplication.run(MensaHub_Gateway.class, args);
     }
@@ -26,7 +33,15 @@ public class MensaHub_Gateway {
      *
      * @throws IOException If the configuration file could not be read
      */
-    private static void configureEnvironment() throws IOException {
+    private static void configureEnvironment() throws IOException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
+        String encryptionKey = System.getenv("encryption.key");
+        if (encryptionKey == null) {
+            log.error("No encryption key provided. Exiting...");
+            log.error("Please provide the encryption key as environment variable 'encryption.key' by using the -D flag.");
+            log.error("if you are using docker, please use the --env flag.");
+            System.exit(1);
+        }
+
         // configure settings for the server
         System.setProperty("server.port", Config.getInstance().getProperty("mensaHub.api.port"));
         System.setProperty("server.servlet.context-path", Config.getInstance().getProperty("mensaHub.api.contextPath"));
