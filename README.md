@@ -138,8 +138,7 @@ corresponding module.
 ### Docker Hub 💡
 
 - MensaHub-Gateway: [olech2412/mensahub-gateway](https://hub.docker.com/r/olech2412/mensahub-gateway)
--
-MensaHub-DataDispatcher: [olech2412/mensahub-datadispatcher](https://hub.docker.com/r/olech2412/mensahub-datadispatcher)
+- MensaHub-DataDispatcher: [olech2412/mensahub-datadispatcher](https://hub.docker.com/r/olech2412/mensahub-datadispatcher)
 - MensaHub-Junction: [olech2412/mensahub-junction](https://hub.docker.com/r/olech2412/mensahub-junction)
 
 ## Contribution 🤝
