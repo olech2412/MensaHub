@@ -15,11 +15,11 @@ import Text from 'ol/style/Text';
 import View from 'ol/View';
 import {synchronizeImageLayer, synchronizeTileLayer, synchronizeVectorLayer} from './layers.js';
 import {
-    synchronizeImageWMSSource,
-    synchronizeOSMSource,
-    synchronizeTileWMSSource,
-    synchronizeVectorSource,
-    synchronizeXYZSource
+  synchronizeImageWMSSource,
+  synchronizeOSMSource,
+  synchronizeTileWMSSource,
+  synchronizeVectorSource,
+  synchronizeXYZSource
 } from './sources.js';
 import {synchronizeFill, synchronizeIcon, synchronizeStroke, synchronizeStyle, synchronizeText} from './styles.js';
 import {convertToCoordinateArray, synchronizeCollection} from './util.js';
