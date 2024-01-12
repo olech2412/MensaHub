@@ -1,0 +1,14 @@
+version: '3'
+services:
+  MensaHub-DataDispatcher:
+    image: olech2412/mensahub-datadispatcher:latest
+    volumes:
+      - /home/christopho/mensaHub:/root/mensaHub
+    environment:
+      - encryption.key=S5o3qev2RKxYWNjhXSpuzkmwF3ZqvM!E
+    networks:
+      - mensaHub_network
+
+networks:
+  mensaHub_network:
+    external: true

@@ -1,0 +1,50 @@
+version: '3'
+services:
+
+  mariadb:
+    image: mariadb:latest
+    restart: always
+    environment:
+      MARIADB_ROOT_PASSWORD: password
+    volumes:
+      - /var/lib/mysqlDocker/:/var/lib/mysql/
+    networks:
+      - mensaHub_network
+
+  MensaHub-Gateway:
+    image: olech2412/mensahub-gateway:latest
+    restart: always
+    ports:
+      - "8083:8083"
+    volumes:
+      - /home/christopho/mensaHub:/root/mensaHub
+    environment:
+      - encryption.key=S5o3qev2RKxYWNjhXSpuzkmwF3ZqvM!E
+    networks:
+      - mensaHub_network
+
+  MensaHub-DataDispatcher:
+    image: olech2412/mensahub-datadispatcher:latest
+    restart: always
+    volumes:
+      - /home/christopho/mensaHub:/root/mensaHub
+    environment:
+      - encryption.key=S5o3qev2RKxYWNjhXSpuzkmwF3ZqvM!E
+    networks:
+      - mensaHub_network
+
+  MensaHub-Junction:
+    image: olech2412/mensahub-junction:latest
+    restart: always
+    ports:
+      - "8082:8082"
+    volumes:
+      - /home/christopho/mensaHub:/root/mensaHub
+    environment:
+      - encryption.key=S5o3qev2RKxYWNjhXSpuzkmwF3ZqvM!E
+    networks:
+      - mensaHub_network
+
+networks:
+  mensaHub_network:
+    external: true

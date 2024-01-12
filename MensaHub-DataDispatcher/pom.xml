@@ -10,7 +10,7 @@
     </parent>
     <groupId>de.olech2412.mensahub</groupId>
     <artifactId>mensaHub-dataDispatcher</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.1</version>
     <name>MensaHub-DataDispatcher</name>
     <description>MensaHub-DataDispatcher</description>
     <properties>

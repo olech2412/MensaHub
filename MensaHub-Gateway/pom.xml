@@ -12,7 +12,7 @@
 
     <groupId>de.olech2412.mensahub</groupId>
     <artifactId>mensahub-gateway</artifactId>
-    <version>1.0.0</version>
+    <version>1.1.0</version>
     <name>MensaHub-Gateway</name>
 
     <properties>
@@ -84,6 +84,12 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+            <version>2.2.0</version>
         </dependency>
         <!-- Spring-Dependencies End -->
 

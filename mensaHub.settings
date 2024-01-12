@@ -1,61 +1,38 @@
-# ---------------General MensaHub---------------
-mensaHub.database.location=127.0.0.1:3306
-mensaHub.database.name=mensaHub
-mensaHub.database.username=root
-mensaHub.database.password=password
-# ---------------General MensaHub End---------------
-
-# ---------------MensaHub-Gateway---------------
-## server
-mensaHub.api.port=8083
-mensaHub.api.contextPath=/mensaHub
-
-## logging
 mensaHub.api.log.location=/tmp
+mensaHub.api.security.jwt.secret-key=$YOUR_JWT_SECRET_KEY
+mensaHub.dataDispatcher.log.level=INFO
+mensaHub.database.name=$YOUR_DATABASE_NAME
 mensaHub.api.log.level=INFO
-
-## management endpoint
-mensaHub.api.management.info.enabled=true
-mensaHub.api.management.endpoints.web.exposure.include=health,metrics,prometheus,loggers
-
-## JWT
-mensaHub.api.security.jwt.secret-key=gx//vqnvYMON6EHlGi0wXhWfj15cc6Tn1qmYpqiJZTij8x9CmIREaYb0Gcvd6oupgP5kReXp9SnRHq9CG7E0nDYhSC5YNZ8RitjiLYUFlSQ6TS20Upww4R7lRoGLrgaIBxnjU73/8xHMyh4tk4FsYkmKDLVYBZwpnRrCyIXaubvJ7vDoEQ5abJhaiZ58Z/0LXYef+Cv4HLlZGsnMEvIvhr9TTmd4V6dv5S/C9jRilP7iaGkCNaA1IifXFhtEPJSkLSqlvgIY1lF6EwqQzw2FvGw0dDIszhTiX2tNUlv6sPiO9oWnhdPgJy5+f2fxZYK3a9jGrqegZf2DHD950ocB
-mensaHub.api.security.jwt.expiration-time=3600000
-# ---------------MensaHub-Gateway End---------------
-
-# ---------------MensaHub-Junction---------------
-## server
-mensaHub.junction.port=8082
-mensaHub.junction.contextPath=/mensaHub
-mensaHub.junction.address=https://mensahub.olech2412.de
-
-## logging
-mensaHub.junction.log.location=/tmp
-mensaHub.junction.log.level=INFO
-
-## mail
-mensaHub.junction.mail.adminMail=olechristoph2412@gmail.com
-mensaHub.junction.mail.smtpAuth=false
-mensaHub.junction.mail.smtpHost=localhost
+# for example: 127.0.0.1:3306
+mensaHub.database.location=$YOUR_DATABASE_LOCATION
+mensaHub.database.password=$YOUR_DATABASE_PASSWORD
+mensaHub.junction.config.reloadInterval=3600000
 mensaHub.junction.mail.smtpPort=25
-mensaHub.junction.mail.senderMail=noreply_mensahub@olech2412.de
-
-## MensaHub-Gateway
-mensaHub.junction.gateway.address=https://api.olech2412.de
-
-## footer
-mensaHub.junction.footer.cp=2024-MensaHub
-# ---------------MensaHub-Junction End---------------
-
-# ---------------MensaHub-DataDispatcher---------------
-mensaHub.dataDispatcher.notAvailable.sign=N/A
-
-## mail
-mensaHub.dataDispatcher.mail.smtpAuth=false
+mensaHub.api.management.info.enabled=true
+mensaHub.junction.gateway.address=http://localhost:8083
 mensaHub.dataDispatcher.mail.smtpHost=localhost
+mensaHub.dataDispatcher.mail.smtpAuth=false
+mensaHub.junction.mail.senderMail=noreply_mensahub@olech2412.de
+mensaHub.junction.log.location=/tmp
+mensaHub.junction.mail.smtpAuth=false
+mensaHub.api.config.reloadInterval=3600000
+mensaHub.api.contextPath=/mensaHub
+mensaHub.dataDispatcher.config.reloadInterval=3600000
+mensaHub.junction.mail.smtpHost=localhost
 mensaHub.dataDispatcher.mail.smtpPort=25
+mensaHub.junction.contextPath=/mensaHub
+mensaHub.dataDispatcher.log.location=/tmp
+mensaHub.junction.mail.adminMail=olechristoph2412@gmail.com
+mensaHub.junction.address=https\://mensahub.olech2412.de
+mensaHub.api.management.endpoints.web.exposure.include=health,metrics,prometheus,loggers
 mensaHub.dataDispatcher.mail.senderMail=noreply_mensahub@olech2412.de
-
-## MensaHub Junction
-mensaHub.dataDispatcher.junction.address=https://mensahub.olech2412.de
-# ---------------MensaHub-DataDispatcher End---------------
+mensaHub.junction.port=8082
+mensaHub.database.username=$YOUR_DATABASE_USERNAME
+mensaHub.junction.footer.cp=2024-MensaHub
+mensaHub.dataDispatcher.junction.address=https\://mensahub.olech2412.de
+mensaHub.junction.log.level=INFO
+mensaHub.api.port=8083
+mensaHub.dataDispatcher.fetchDays=14
+mensaHub.dataDispatcher.notAvailable.sign=N/A
+# for example 36000
+mensaHub.api.security.jwt.expiration-time=$YOUR_JWT_EXPIRATION_TIME

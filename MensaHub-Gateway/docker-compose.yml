@@ -1,0 +1,16 @@
+version: '3'
+services:
+  MensaHub-Gateway:
+    image: olech2412/mensahub-gateway:latest
+    ports:
+      - "8083:8083"
+    volumes:
+      - /home/christopho/mensaHub:/root/mensaHub
+    environment:
+      - encryption.key=S5o3qev2RKxYWNjhXSpuzkmwF3ZqvM!E
+    networks:
+      - mensaHub_network
+
+networks:
+  mensaHub_network:
+    external: true
