@@ -14,6 +14,7 @@
     <artifactId>mensahub-gateway</artifactId>
     <version>1.1.0</version>
     <name>MensaHub-Gateway</name>
+    <packaging>jar</packaging>
 
     <properties>
         <java.version>17</java.version>
@@ -109,7 +110,7 @@
         </dependency>
         <!-- Database-Dependencies End -->
 
-        <!-- Json-Dependencies -->
+        <!-- JWT-Dependencies -->
         <!-- https://mvnrepository.com/artifact/io.jsonwebtoken/jjwt-api -->
         <dependency>
             <groupId>io.jsonwebtoken</groupId>
@@ -134,8 +135,9 @@
             <artifactId>modelmapper</artifactId>
             <version>3.2.0</version>
         </dependency>
-        <!-- Json-Dependencies End -->
+        <!-- JWT-Dependencies End -->
 
+        <!-- Other-Dependencies -->
         <dependency>
             <groupId>io.micrometer</groupId>
             <artifactId>micrometer-registry-prometheus</artifactId>
