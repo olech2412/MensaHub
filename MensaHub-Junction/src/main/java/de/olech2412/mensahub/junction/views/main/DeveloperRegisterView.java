@@ -171,8 +171,8 @@ public class DeveloperRegisterView extends Composite implements BeforeEnterObser
                 .header("Content-Type", "application/json")
                 .build();
         HttpResponse<String> futureResponse = client.send(request, HttpResponse.BodyHandlers.ofString());
-        System.out.println(futureResponse);
-        System.out.println(futureResponse.statusCode());
+        logger.info(futureResponse.body());
+        logger.info(String.valueOf(futureResponse.statusCode()));
         if (futureResponse.statusCode() != 200) {
             if (futureResponse.statusCode() == 400) {
                 Notification notification = new Notification("Ungültige Eingaben. Bitte prüfen!", 6000);
