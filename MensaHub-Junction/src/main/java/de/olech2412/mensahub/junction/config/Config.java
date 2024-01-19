@@ -28,6 +28,7 @@ public class Config {
 
     private static final String CONFIG_FILE_PATH = System.getProperty("user.home") + "/mensaHub/mensaHub.settings";
     private static final long RELOAD_INTERVAL; // 1 Stunde in Millisekunden
+    private static Config instance;
 
     // Load reload interval from config file
     static {
@@ -40,7 +41,6 @@ public class Config {
     }
 
     private final String ENCRYPTION_KEY = System.getenv("encryption.key");
-    private static Config instance;
     private Properties properties;
     private long lastAccessTime;
     private Cipher encryptionCipher;
@@ -138,6 +138,7 @@ public class Config {
     /**
      * Checks if the properties file should be reloaded
      * this is the case if the last access time is longer ago than the reload interval
+     *
      * @return True if the properties file should be reloaded, false otherwise
      */
     private boolean shouldReloadProperties() {
@@ -189,6 +190,7 @@ public class Config {
     /**
      * Returns the property value without decrypting it
      * Only use this method if you are sure that the property is encrypted
+     *
      * @param key The key of the property
      * @return The encrypted property value
      */
