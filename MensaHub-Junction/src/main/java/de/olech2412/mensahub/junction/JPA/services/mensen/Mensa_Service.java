@@ -15,7 +15,7 @@ public abstract class Mensa_Service extends Abstract_Service<Mensa> {
      * @return Any subclass of Mensa
      */
     @Override
-    public abstract Iterable<? extends Mensa> findAll();
+    public abstract List<? extends Mensa> findAll();
 
     public abstract Mensa getMensa();
 

@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.time.LocalDate;
+import java.util.List;
 
 @RestController
 @Log4j2
@@ -57,7 +58,7 @@ public class ControllerMensaamPark implements BasicMealController {
      * @return - all meals between the start and end date
      */
     @GetMapping("/getMeals/from/{startDate}/to/{enddate}")
-    public Iterable<? extends Meal> getMealsNextDays(@PathVariable String startDate, @PathVariable String enddate) {
+    public List<? extends Meal> getMealsNextDays(@PathVariable String startDate, @PathVariable String enddate) {
         log.debug("Meals were requested from " + startDate + " until " + enddate);
         return meals_mensa_am_parkService.findAllByServingDateGreaterThanEqualAndServingDateLessThanEqual(LocalDate.parse(startDate), LocalDate.parse(enddate));
     }
@@ -69,7 +70,7 @@ public class ControllerMensaamPark implements BasicMealController {
      * @return - all meals with the specific date
      */
     @GetMapping("/servingDate/{servingDate}")
-    public Iterable<? extends Meal> getMealByServingDate(@PathVariable(value = "servingDate") @NotNull String servingDate) {
+    public List<? extends Meal> getMealByServingDate(@PathVariable(value = "servingDate") @NotNull String servingDate) {
         log.debug("Meals were requested with servingDate: " + servingDate);
         return meals_mensa_am_parkService.findAllMealsByServingDate(LocalDate.parse(servingDate));
     }
@@ -81,7 +82,7 @@ public class ControllerMensaamPark implements BasicMealController {
      * @return - all meals with the specific category
      */
     @GetMapping("/category/{category}")
-    public Iterable<? extends Meal> getMealByCategory(@PathVariable("category") @NotNull String category) {
+    public List<? extends Meal> getMealByCategory(@PathVariable("category") @NotNull String category) {
         log.debug("Meals were requested with category: " + category);
         return meals_mensa_am_parkService.findAllByCategory(category);
     }
@@ -94,7 +95,7 @@ public class ControllerMensaamPark implements BasicMealController {
      * @return - all meals with the specific category and date
      */
     @GetMapping("/category/{category}/servingDate/{servingDate}")
-    public Iterable<? extends Meal> getMealByCategoryAndServingDate(@PathVariable("category") @NotNull String category, @PathVariable("servingDate") @NotNull String servingDate) {
+    public List<? extends Meal> getMealByCategoryAndServingDate(@PathVariable("category") @NotNull String category, @PathVariable("servingDate") @NotNull String servingDate) {
         log.debug("Meals were requested with category: " + category + " on " + servingDate);
         return meals_mensa_am_parkService.findAllByCategoryAndServingDate(category, LocalDate.parse(servingDate));
     }
@@ -106,7 +107,7 @@ public class ControllerMensaamPark implements BasicMealController {
      * @return - all meals with rating less than the specific value
      */
     @GetMapping("/byRatingLessThen/{rating}")
-    public Iterable<? extends Meal> getMealByRatingLessThan(@PathVariable("rating") @NotNull Double rating) {
+    public List<? extends Meal> getMealByRatingLessThan(@PathVariable("rating") @NotNull Double rating) {
         log.debug("Meals were requested with rating less then: " + rating);
         return meals_mensa_am_parkService.findAllByRatingLessThanEqual(rating);
     }
@@ -118,7 +119,7 @@ public class ControllerMensaamPark implements BasicMealController {
      * @return - all meals with rating higher than the specific value
      */
     @GetMapping("/byRatingHigherThen/{rating}")
-    public Iterable<? extends Meal> getMealByRatingHigherThan(@PathVariable("rating") @NotNull Double rating) {
+    public List<? extends Meal> getMealByRatingHigherThan(@PathVariable("rating") @NotNull Double rating) {
         log.debug("Meals were requested with rating higher then: " + rating);
         return meals_mensa_am_parkService.findAllByRatingGreaterThanEqual(rating);
     }

@@ -25,7 +25,7 @@ public class Meals_Menseria_am_Botanischen_GartenServices extends Meals_Mensa_Se
      * @return Meals Menseria am Botanischen Garten
      */
     @Override
-    public Iterable<Meals_Menseria_am_Botanischen_Garten> findAll() {
+    public List<Meals_Menseria_am_Botanischen_Garten> findAll() {
         return meals_menseria_am_botanischen_gartenRepository.findAll();
     }
 

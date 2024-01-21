@@ -18,7 +18,7 @@ public class MailUserService {
      *
      * @return enabled mail users
      */
-    public Iterable<MailUser> findAllUsersThatAreEnabled() {
+    public List<MailUser> findAllUsersThatAreEnabled() {
         return mailUserRepository.findUsersByEnabled(true);
     }
 

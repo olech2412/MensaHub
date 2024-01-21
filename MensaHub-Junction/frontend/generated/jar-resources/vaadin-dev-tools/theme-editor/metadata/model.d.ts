@@ -1,6 +1,5 @@
 import {TemplateResult} from 'lit';
 import {ComponentReference} from '../../component-util';
-
 export declare enum EditorType {
     text = "text",
     checkbox = "checkbox",

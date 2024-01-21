@@ -21,7 +21,7 @@ import {
   synchronizeVectorSource,
   synchronizeXYZSource
 } from './sources.js';
-import {synchronizeFill, synchronizeIcon, synchronizeStroke, synchronizeStyle, synchronizeText} from './styles.js';
+import {synchronizeIcon, synchronizeFill, synchronizeStroke, synchronizeText, synchronizeStyle} from './styles.js';
 import {convertToCoordinateArray, synchronizeCollection} from './util.js';
 
 /**

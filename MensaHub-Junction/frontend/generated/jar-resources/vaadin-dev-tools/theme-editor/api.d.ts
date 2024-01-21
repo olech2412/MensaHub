@@ -1,6 +1,5 @@
 import {Connection} from '../connection';
 import {ComponentReference} from '../component-util';
-
 export declare enum Commands {
     response = "themeEditorResponse",
     loadComponentMetadata = "themeEditorComponentMetadata",

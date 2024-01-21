@@ -16,10 +16,10 @@ public class Mensa_am_MedizincampusService extends Mensa_Service {
     Mensa_am_MedizincampusRepository mensa_am_medizincampusRepository;
 
     /**
-     * @return Mensa am Medizincampus as Iterable
+     * @return Mensa am Medizincampus as List
      */
     @Override
-    public Iterable<? extends Mensa> findAll() {
+    public List<? extends Mensa> findAll() {
         return mensa_am_medizincampusRepository.findAll();
     }
 

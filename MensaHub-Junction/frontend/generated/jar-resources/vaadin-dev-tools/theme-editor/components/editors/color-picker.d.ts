@@ -1,5 +1,4 @@
 import {LitElement, PropertyValues} from 'lit';
-
 export declare class ColorPickerChangeEvent extends CustomEvent<{
     value: string;
 }> {

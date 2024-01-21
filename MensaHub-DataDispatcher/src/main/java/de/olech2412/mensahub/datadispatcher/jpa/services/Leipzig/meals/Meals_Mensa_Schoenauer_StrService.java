@@ -23,7 +23,7 @@ public class Meals_Mensa_Schoenauer_StrService extends Meals_Mensa_Service {
      * @return
      */
     @Override
-    public Iterable<Meals_Schoenauer_Str> findAll() {
+    public List<Meals_Schoenauer_Str> findAll() {
         return meals_schoenauer_strRepository.findAll();
     }
 

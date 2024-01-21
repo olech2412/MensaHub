@@ -1,5 +1,4 @@
 import {ConnectionIndicator, ConnectionState} from '@vaadin/common-frontend';
-
 class FlowUiInitializationError extends Error {
 }
 // flow uses body for keeping references

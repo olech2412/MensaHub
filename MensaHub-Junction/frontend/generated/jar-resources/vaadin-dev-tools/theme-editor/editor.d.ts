@@ -7,7 +7,6 @@ import './components/scope-selector';
 import './components/property-list';
 import '../component-picker.js';
 import {OpenCssEvent} from './components/property-list';
-
 export declare class ThemeEditor extends LitElement {
     expanded: boolean;
     themeEditorState: ThemeEditorState;

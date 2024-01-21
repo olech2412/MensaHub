@@ -1,5 +1,4 @@
 import {ThemeEditorApi} from './api';
-
 type HistoryCustomizerFn = () => void;
 export interface HistoryEntry {
     requestId: string;

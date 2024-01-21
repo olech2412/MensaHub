@@ -14,10 +14,10 @@ public class Mensa_AcademicaService extends Mensa_Service {
     Mensa_AcademicaRepository mensa_academicaRepository;
 
     /**
-     * @return Mensa Academica as Iterable
+     * @return Mensa Academica as List
      */
     @Override
-    public Iterable<Mensa_Academica> findAll() {
+    public List<Mensa_Academica> findAll() {
         return mensa_academicaRepository.findAll();
     }
 

@@ -1,5 +1,4 @@
 import {CssPropertyMetadata, EditorType} from '../model';
-
 export declare const textProperties: {
     textColor: {
         propertyName: string;

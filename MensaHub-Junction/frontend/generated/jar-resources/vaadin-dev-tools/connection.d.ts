@@ -1,6 +1,5 @@
 import {Product} from './License';
 import {ComponentReference} from './component-util';
-
 export declare enum ConnectionStatus {
     ACTIVE = "active",
     INACTIVE = "inactive",

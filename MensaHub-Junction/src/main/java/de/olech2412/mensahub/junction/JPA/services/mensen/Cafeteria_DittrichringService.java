@@ -14,10 +14,10 @@ public class Cafeteria_DittrichringService extends Mensa_Service {
     Cafeteria_DittrichringRepository cafeteria_dittrichringRepository;
 
     /**
-     * @return Cafeteria Dittrichring as Iterable
+     * @return Cafeteria Dittrichring as List
      */
     @Override
-    public Iterable<Cafeteria_Dittrichring> findAll() {
+    public List<Cafeteria_Dittrichring> findAll() {
         return cafeteria_dittrichringRepository.findAll();
     }
 

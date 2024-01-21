@@ -1,7 +1,6 @@
 import {ComponentElementMetadata, ComponentMetadata} from './metadata/model';
 import {ServerCssRule} from './api';
 import {ComponentReference} from '../component-util';
-
 export declare enum ThemeEditorState {
     disabled = "disabled",
     enabled = "enabled",

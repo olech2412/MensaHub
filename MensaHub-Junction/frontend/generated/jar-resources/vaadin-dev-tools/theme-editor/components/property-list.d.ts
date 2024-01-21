@@ -5,7 +5,6 @@ import './editors/checkbox-property-editor';
 import './editors/text-property-editor';
 import './editors/range-property-editor';
 import './editors/color-property-editor';
-
 export declare class OpenCssEvent extends CustomEvent<{
     element: ComponentElementMetadata;
 }> {

@@ -5,6 +5,8 @@ import de.olech2412.mensahub.models.Leipzig.mensen.Cafeteria_Dittrichring;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class Cafeteria_DittrichringService extends Mensa_Service {
 
@@ -12,10 +14,10 @@ public class Cafeteria_DittrichringService extends Mensa_Service {
     Cafeteria_DittrichringRepository cafeteria_dittrichringRepository;
 
     /**
-     * @return Cafeteria Dittrichring as Iterable
+     * @return Cafeteria Dittrichring as List
      */
     @Override
-    public Iterable<Cafeteria_Dittrichring> findAll() {
+    public List<Cafeteria_Dittrichring> findAll() {
         return cafeteria_dittrichringRepository.findAll();
     }
 

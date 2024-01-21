@@ -1,7 +1,7 @@
 package de.olech2412.mensahub.gateway.jpa.repository.meals;
 
 import de.olech2412.mensahub.models.Leipzig.meals.Meals_Mensa_Peterssteinweg;
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.repository.ListCrudRepository;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -9,7 +9,7 @@ import java.util.List;
 /**
  * MealRepositorys are used to create a connection to the database
  */
-public interface Meals_Mensa_PeterssteinwegRepository extends CrudRepository<Meals_Mensa_Peterssteinweg, Long> {
+public interface Meals_Mensa_PeterssteinwegRepository extends ListCrudRepository<Meals_Mensa_Peterssteinweg, Long> {
 
     List<Meals_Mensa_Peterssteinweg> findAllMealsByServingDateGreaterThanEqual(LocalDate servingDate);
 

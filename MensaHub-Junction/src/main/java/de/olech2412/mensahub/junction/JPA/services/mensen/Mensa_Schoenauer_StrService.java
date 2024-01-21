@@ -15,10 +15,10 @@ public class Mensa_Schoenauer_StrService extends Mensa_Service {
     Mensa_Schoenauer_StrRepository mensa_schoenauer_strRepository;
 
     /**
-     * @return Mensa Schoenauer Str as Iterable
+     * @return Mensa Schoenauer Str as List
      */
     @Override
-    public Iterable<? extends Mensa> findAll() {
+    public List<? extends Mensa> findAll() {
         return mensa_schoenauer_strRepository.findAll();
     }
 

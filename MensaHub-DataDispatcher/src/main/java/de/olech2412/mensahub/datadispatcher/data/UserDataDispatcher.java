@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Service
 @Log4j2
@@ -26,7 +27,7 @@ public class UserDataDispatcher {
 
     @Scheduled(cron = "0 0 * * * *")
     public void checkForDeactivatedUsers() {
-        Iterable<MailUser> deactivatedMailUsers = mailUserRepository.findUsersByEnabled(false);
+        List<MailUser> deactivatedMailUsers = mailUserRepository.findUsersByEnabled(false);
         for (MailUser deactivatedMailUser : deactivatedMailUsers) {
             if (deactivatedMailUser.getDeactviatedUntil() != null) {
                 if (deactivatedMailUser.getDeactviatedUntil().isEqual(LocalDate.now())) {

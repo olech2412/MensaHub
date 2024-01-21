@@ -2,7 +2,6 @@ import {LitElement, PropertyValues, TemplateResult} from 'lit';
 import {ComponentReference} from './component-util.js';
 import './shim.js';
 import {Shim} from './shim.js';
-
 export interface PickerOptions {
     infoTemplate: TemplateResult;
     pickCallback: (component: ComponentReference) => void;

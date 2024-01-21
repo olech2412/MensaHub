@@ -1,6 +1,5 @@
 import {LitElement, PropertyValues} from 'lit';
 import './editors/base-property-editor';
-
 export declare class ClassNameChangeEvent extends CustomEvent<{
     value: string;
 }> {

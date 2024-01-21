@@ -15,10 +15,10 @@ public class Mensa_Schoenauer_StrService extends Mensa_Service {
     Mensa_Schoenauer_StrRepository mensa_schoenauer_strRepository;
 
     /**
-     * @return Mensa Schoenauer Str as Iterable
+     * @return Mensa Schoenauer Str as List
      */
     @Override
-    public Iterable<? extends Mensa> findAll() {
+    public List<? extends Mensa> findAll() {
         return mensa_schoenauer_strRepository.findAll();
     }
 
@@ -27,7 +27,7 @@ public class Mensa_Schoenauer_StrService extends Mensa_Service {
      */
     @Override
     public Mensa_Schoenauer_Str getMensa() {
-        List<Mensa_Schoenauer_Str> mensa_schoenauer_strList = (List<Mensa_Schoenauer_Str>) mensa_schoenauer_strRepository.findAll();
+        List<Mensa_Schoenauer_Str> mensa_schoenauer_strList = mensa_schoenauer_strRepository.findAll();
         return mensa_schoenauer_strList.get(0);
     }
 }

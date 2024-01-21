@@ -219,7 +219,7 @@ public class LeipzigDataDispatcher {
         log.info("------------------ Weekly data check for Leipzig finished ------------------");
     }
 
-    public void checkDataValidity(Iterable<? extends Meal> all, Mensa_Service mensa_service, HashMap<Mensa_Service, Meals_Mensa_Service> mensa_meals_serviceHashMap) {
+    public void checkDataValidity(List<? extends Meal> all, Mensa_Service mensa_service, HashMap<Mensa_Service, Meals_Mensa_Service> mensa_meals_serviceHashMap) {
         Meals_Mensa_Service meals_mensa_service = mensa_meals_serviceHashMap.get(mensa_service);
         boolean valid = true;
         int counter = 0;
@@ -383,7 +383,7 @@ public class LeipzigDataDispatcher {
             if (mensa_service.getMensa().equals(mensa)) {
                 Meals_Mensa_Service meals_mensa_service = mensa_meals_serviceHashMap.get(mensa_service);
                 List<? extends Meal> meals = meals_mensa_service.findAllMealsByServingDate(today);
-                Iterable<MailUser> mailUsers = mailUserService.findAllUsersThatAreEnabled();
+                List<MailUser> mailUsers = mailUserService.findAllUsersThatAreEnabled();
                 for (MailUser mailUser : mailUsers) {
                     if (mailUser.getCafeteria_dittrichring() != null && mailUser.getCafeteria_dittrichring().equals(mensa)) {
                         mailer.sendSpeiseplan(mailUser, meals_cafeteria_dittrichringService.findAllMealsByServingDate(today), cafeteria_dittrichringService.getMensa(), allergeneRepository.findAll(), true);

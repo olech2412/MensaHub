@@ -24,7 +24,7 @@ public class Meals_Mensa_am_MedizincampusService extends Meals_Mensa_Service {
      * @return Meals Mensa am Medizincampus
      */
     @Override
-    public Iterable<Meals_Mensa_am_Medizincampus> findAll() {
+    public List<Meals_Mensa_am_Medizincampus> findAll() {
         return meals_mensa_am_medizincampusRepository.findAll();
     }
 
