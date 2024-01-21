@@ -340,9 +340,16 @@ public class UserView extends HorizontalLayout implements BeforeEnterObserver {
             logger.info("Saved new User: " + email + " " + firstname + " " + lastname);
 
             Mailer mailer = new Mailer();
-            mailer.sendActivationEmail(firstname, email,
-                    activationCode.getCode(), deactivationCode.getCode());
-            logger.info("Mail was sent successfully");
+            try {
+                mailer.sendActivationEmail(firstname, email,
+                        activationCode.getCode(), deactivationCode.getCode());
+                logger.info("Mail was sent successfully");
+            } catch (Exception exception) {
+                logger.error("Error while sending mail: ", exception);
+                Notification notification = new Notification("Es ist ein Fehler beim versenden der Mail aufgetreten. Bitte wende dich an den Administrator", 3000);
+                notification.addThemeVariants(NotificationVariant.LUMO_WARNING);
+                notification.open();
+            }
 
             activationCodeRepository.save(activationCode);
             deactivationCodeRepository.save(deactivationCode);
