@@ -14,6 +14,6 @@ public abstract class Abstract_Service<T> {
      *
      * @return List of all entities
      */
-    public abstract List<Object> findAll();
+    public abstract List<?> findAll();
 
 }
