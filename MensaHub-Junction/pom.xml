@@ -14,7 +14,7 @@
     <groupId>de.olech2412.mensahub.junction</groupId>
     <artifactId>mensaHub-junction</artifactId>
     <name>MensaHub-Junction</name>
-    <version>1.0.1</version>
+    <version>1.0.2</version>
     <packaging>jar</packaging>
 
     <properties>
