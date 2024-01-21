@@ -5,6 +5,8 @@ import de.olech2412.mensahub.models.Leipzig.mensen.Menseria_am_Botanischen_Garte
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class Menseria_am_Botanischen_GartenService extends Mensa_Service {
 
@@ -12,10 +14,10 @@ public class Menseria_am_Botanischen_GartenService extends Mensa_Service {
     Menseria_am_Botanischen_GartenRepository menseria_am_botanischen_gartenRepository;
 
     /**
-     * @return Menseria am Botanischen Garten as Iterable
+     * @return Menseria am Botanischen Garten as List
      */
     @Override
-    public Iterable<Menseria_am_Botanischen_Garten> findAll() {
+    public List<Menseria_am_Botanischen_Garten> findAll() {
         return menseria_am_botanischen_gartenRepository.findAll();
     }
 

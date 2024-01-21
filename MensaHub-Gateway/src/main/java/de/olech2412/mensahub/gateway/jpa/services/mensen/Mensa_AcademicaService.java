@@ -5,6 +5,8 @@ import de.olech2412.mensahub.models.Leipzig.mensen.Mensa_Academica;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class Mensa_AcademicaService extends Mensa_Service {
 
@@ -12,10 +14,10 @@ public class Mensa_AcademicaService extends Mensa_Service {
     Mensa_AcademicaRepository mensa_academicaRepository;
 
     /**
-     * @return Mensa Academica as Iterable
+     * @return Mensa Academica as List
      */
     @Override
-    public Iterable<Mensa_Academica> findAll() {
+    public List<Mensa_Academica> findAll() {
         return mensa_academicaRepository.findAll();
     }
 

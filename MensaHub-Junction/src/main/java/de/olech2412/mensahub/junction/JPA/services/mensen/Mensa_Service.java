@@ -5,6 +5,8 @@ import de.olech2412.mensahub.models.Mensa;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @Log4j2
 public abstract class Mensa_Service extends Abstract_Service<Mensa> {
@@ -15,7 +17,7 @@ public abstract class Mensa_Service extends Abstract_Service<Mensa> {
      * @return Any subclass of Mensa
      */
     @Override
-    public abstract Iterable<? extends Mensa> findAll();
+    public abstract List<? extends Mensa> findAll();
 
     public abstract Mensa getMensa();
 

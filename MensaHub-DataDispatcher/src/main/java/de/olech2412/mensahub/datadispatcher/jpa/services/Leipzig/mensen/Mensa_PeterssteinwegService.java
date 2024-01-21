@@ -15,10 +15,10 @@ public class Mensa_PeterssteinwegService extends Mensa_Service {
     Mensa_PeterssteinwegRepository mensa_peterssteinwegRepository;
 
     /**
-     * @return Mensa Peterssteinweg as Iterable
+     * @return Mensa Peterssteinweg as List
      */
     @Override
-    public Iterable<? extends Mensa> findAll() {
+    public List<? extends Mensa> findAll() {
         return mensa_peterssteinwegRepository.findAll();
     }
 
@@ -27,7 +27,7 @@ public class Mensa_PeterssteinwegService extends Mensa_Service {
      */
     @Override
     public Mensa_Peterssteinweg getMensa() {
-        List<Mensa_Peterssteinweg> mensa_peterssteinwegList = (List<Mensa_Peterssteinweg>) mensa_peterssteinwegRepository.findAll();
+        List<Mensa_Peterssteinweg> mensa_peterssteinwegList = mensa_peterssteinwegRepository.findAll();
         return mensa_peterssteinwegList.get(0);
     }
 }

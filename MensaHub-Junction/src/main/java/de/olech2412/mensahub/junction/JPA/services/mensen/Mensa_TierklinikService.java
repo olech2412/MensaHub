@@ -15,10 +15,10 @@ public class Mensa_TierklinikService extends Mensa_Service {
     Mensa_TierklinikRepository mensa_tierklinikRepository;
 
     /**
-     * @return Mensa Tierklinik as Iterable
+     * @return Mensa Tierklinik as List
      */
     @Override
-    public Iterable<? extends Mensa> findAll() {
+    public List<? extends Mensa> findAll() {
         return mensa_tierklinikRepository.findAll();
     }
 

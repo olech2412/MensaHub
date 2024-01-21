@@ -1,7 +1,7 @@
 package de.olech2412.mensahub.gateway.jpa.repository.meals;
 
 import de.olech2412.mensahub.models.Leipzig.meals.Meals_Schoenauer_Str;
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.repository.ListCrudRepository;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -9,7 +9,7 @@ import java.util.List;
 /**
  * MealRepositorys are used to create a connection to the database
  */
-public interface Meals_Schoenauer_StrRepository extends CrudRepository<Meals_Schoenauer_Str, Long> {
+public interface Meals_Schoenauer_StrRepository extends ListCrudRepository<Meals_Schoenauer_Str, Long> {
 
     List<Meals_Schoenauer_Str> findAllMealsByServingDateGreaterThanEqual(LocalDate servingDate);
 

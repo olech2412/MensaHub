@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @Transactional
 public class MailUserService {
@@ -14,11 +16,11 @@ public class MailUserService {
     MailUserRepository mailUserRepository;
 
     /**
-     * Saves a meal to the database
+     * Saves a meal for the database
      *
      * @return enabled mail users
      */
-    public Iterable<MailUser> findAllUsersThatAreEnabled() {
+    public List<MailUser> findAllUsersThatAreEnabled() {
         return mailUserRepository.findUsersByEnabled(true);
     }
 

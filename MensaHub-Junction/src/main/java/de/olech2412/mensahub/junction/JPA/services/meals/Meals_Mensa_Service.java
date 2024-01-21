@@ -13,7 +13,7 @@ import java.util.List;
 public abstract class Meals_Mensa_Service extends Abstract_Service {
 
     @Override
-    public abstract Iterable<? extends Meal> findAll();
+    public abstract List<? extends Meal> findAll();
 
     public abstract List<? extends Meal> findAllMealsByServingDateGreaterThanEqual(LocalDate servingDate);
 

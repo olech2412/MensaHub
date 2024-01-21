@@ -23,7 +23,7 @@ public class Meals_Mensa_am_ElsterbeckenService extends Meals_Mensa_Service {
      * @return Meals Mensa am Elsterbecken
      */
     @Override
-    public Iterable<Meals_Mensa_am_Elsterbecken> findAll() {
+    public List<Meals_Mensa_am_Elsterbecken> findAll() {
         return meals_mensa_am_elsterbeckenRepository.findAll();
     }
 

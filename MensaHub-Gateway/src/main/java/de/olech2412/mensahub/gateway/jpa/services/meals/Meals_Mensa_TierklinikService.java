@@ -25,7 +25,7 @@ public class Meals_Mensa_TierklinikService extends Meals_Mensa_Service {
      * @return Meals Mensa Tierklinik
      */
     @Override
-    public Iterable<Meals_Mensa_Tierklinik> findAll() {
+    public List<Meals_Mensa_Tierklinik> findAll() {
         return meals_mensa_tierklinikRepository.findAll();
     }
 

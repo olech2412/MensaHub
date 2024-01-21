@@ -45,7 +45,7 @@ public class Mailer {
      *
      * @throws MessagingException
      */
-    public void sendSpeiseplan(MailUser emailTarget, List<? extends Meal> menu, Mensa mensa, Iterable<Allergene> allergenes, boolean update) throws MessagingException, IOException, NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
+    public void sendSpeiseplan(MailUser emailTarget, List<? extends Meal> menu, Mensa mensa, List<Allergene> allergenes, boolean update) throws MessagingException, IOException, NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
         Properties prop = new Properties();
         prop.put("mail.smtp.auth", Boolean.getBoolean(Config.getInstance().getProperty("mensaHub.junction.mail.smtpAuth")));
         prop.put("mail.smtp.host", Config.getInstance().getProperty("mensaHub.junction.mail.smtpHost"));
@@ -80,7 +80,7 @@ public class Mailer {
 
     }
 
-    private String createUpdateEmail(List<? extends Meal> menu, String firstname, String deactivateUrl, Mensa mensa, Iterable<Allergene> allergenes) throws IOException {
+    private String createUpdateEmail(List<? extends Meal> menu, String firstname, String deactivateUrl, Mensa mensa, List<Allergene> allergenes) throws IOException {
         StringBuilder menuText = new StringBuilder();
 
         if (!menu.isEmpty()) {
@@ -186,7 +186,7 @@ public class Mailer {
         return msg;
     }
 
-    private String createEmail(List<? extends Meal> menu, String firstName, String deactivateUrl, Mensa mensa, Iterable<Allergene> allergenes) throws IOException {
+    private String createEmail(List<? extends Meal> menu, String firstName, String deactivateUrl, Mensa mensa, List<Allergene> allergenes) throws IOException {
         StringBuilder menuText = new StringBuilder();
 
         if (!menu.isEmpty()) {

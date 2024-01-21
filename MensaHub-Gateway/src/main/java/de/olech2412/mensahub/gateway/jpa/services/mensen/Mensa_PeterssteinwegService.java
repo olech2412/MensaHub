@@ -5,6 +5,8 @@ import de.olech2412.mensahub.models.Leipzig.mensen.Mensa_Peterssteinweg;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class Mensa_PeterssteinwegService extends Mensa_Service {
 
@@ -12,10 +14,10 @@ public class Mensa_PeterssteinwegService extends Mensa_Service {
     Mensa_PeterssteinwegRepository mensa_peterssteinwegRepository;
 
     /**
-     * @return Mensa Peterssteinweg as Iterable
+     * @return Mensa Peterssteinweg as List
      */
     @Override
-    public Iterable<Mensa_Peterssteinweg> findAll() {
+    public List<Mensa_Peterssteinweg> findAll() {
         return mensa_peterssteinwegRepository.findAll();
     }
 

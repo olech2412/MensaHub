@@ -15,10 +15,10 @@ public class Mensa_am_ElsterbeckenService extends Mensa_Service {
     Mensa_am_ElsterbeckenRepository mensa_am_elsterbeckenRepository;
 
     /**
-     * @return Mensa am Elsterbecken as Iterable
+     * @return Mensa am Elsterbecken as List
      */
     @Override
-    public Iterable<? extends Mensa> findAll() {
+    public List<? extends Mensa> findAll() {
         return mensa_am_elsterbeckenRepository.findAll();
     }
 

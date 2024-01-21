@@ -26,7 +26,7 @@ public class Meals_Mensa_AcademicaService extends Meals_Mensa_Service {
      * @return Meals Mensa Academica
      */
     @Override
-    public Iterable<Meals_Mensa_Academica> findAll() {
+    public List<Meals_Mensa_Academica> findAll() {
         return meals_mensa_academicaRepository.findAll();
     }
 

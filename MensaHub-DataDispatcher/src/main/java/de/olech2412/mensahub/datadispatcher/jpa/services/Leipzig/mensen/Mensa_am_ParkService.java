@@ -15,10 +15,10 @@ public class Mensa_am_ParkService extends Mensa_Service {
     Mensa_am_ParkRepository mensa_am_parkRepository;
 
     /**
-     * @return Mensa am Park as Iterable
+     * @return Mensa am Park as List
      */
     @Override
-    public Iterable<? extends Mensa> findAll() {
+    public List<? extends Mensa> findAll() {
         return mensa_am_parkRepository.findAll();
     }
 
@@ -27,7 +27,7 @@ public class Mensa_am_ParkService extends Mensa_Service {
      */
     @Override
     public Mensa_am_Park getMensa() {
-        List<Mensa_am_Park> mensa_am_parkList = (List<Mensa_am_Park>) mensa_am_parkRepository.findAll();
+        List<Mensa_am_Park> mensa_am_parkList = mensa_am_parkRepository.findAll();
         return mensa_am_parkList.get(0);
     }
 }

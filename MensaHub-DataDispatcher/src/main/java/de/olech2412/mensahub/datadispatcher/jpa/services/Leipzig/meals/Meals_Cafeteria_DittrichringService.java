@@ -26,12 +26,12 @@ public class Meals_Cafeteria_DittrichringService extends Meals_Mensa_Service {
      * @return Meals Cafeteria Dittrichring
      */
     @Override
-    public Iterable<Meals_Cafeteria_Dittrichring> findAll() {
+    public List<Meals_Cafeteria_Dittrichring> findAll() {
         return meals_cafeteria_dittrichringRepository.findAll();
     }
 
     /**
-     * @param servingDate
+     * @param servingDate The serving date
      * @return All meals by serving date greater than or equal to serving date from Cafeteria Dittrichring
      */
     @Override
@@ -40,7 +40,7 @@ public class Meals_Cafeteria_DittrichringService extends Meals_Mensa_Service {
     }
 
     /**
-     * @param servingDate
+     * @param servingDate The serving date
      * @return All meals by serving date from Cafeteria Dittrichring
      */
     @Override
@@ -49,8 +49,8 @@ public class Meals_Cafeteria_DittrichringService extends Meals_Mensa_Service {
     }
 
     /**
-     * @param meal
-     * @param mensa
+     * @param meal The meal
+     * @param mensa The mensa
      */
     @Override
     public void save(Meal meal, Mensa mensa) {
@@ -112,8 +112,8 @@ public class Meals_Cafeteria_DittrichringService extends Meals_Mensa_Service {
     }
 
     /**
-     * @param meal
-     * @param mensa
+     * @param meal The meal
+     * @param mensa The mensa
      */
     @Override
     public void delete(Meal meal, Mensa mensa) {

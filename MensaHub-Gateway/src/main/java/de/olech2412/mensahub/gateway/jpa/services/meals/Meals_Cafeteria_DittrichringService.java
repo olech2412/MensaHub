@@ -26,7 +26,7 @@ public class Meals_Cafeteria_DittrichringService extends Meals_Mensa_Service {
      * @return All meals Cafeteria Dittrichring
      */
     @Override
-    public Iterable<Meals_Cafeteria_Dittrichring> findAll() {
+    public List<Meals_Cafeteria_Dittrichring> findAll() {
         return meals_cafeteria_dittrichringRepository.findAll();
     }
 

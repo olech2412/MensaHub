@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @Transactional
 public class MailUserService {
@@ -18,7 +20,7 @@ public class MailUserService {
      *
      * @return enabled mail users
      */
-    public Iterable<MailUser> findAllUsersThatAreEnabled() {
+    public List<MailUser> findAllUsersThatAreEnabled() {
         return mailUserRepository.findUsersByEnabled(true);
     }
 
@@ -30,7 +32,7 @@ public class MailUserService {
         mailUserRepository.delete(mailUser);
     }
 
-    public Iterable<MailUser> findAll() {
+    public List<MailUser> findAll() {
         return mailUserRepository.findAll();
     }
 }

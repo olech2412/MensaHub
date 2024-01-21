@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.time.LocalDate;
+import java.util.List;
 
 @RestController
 @Log4j2
@@ -59,7 +60,7 @@ public class ControllerCafeteriaDittrichring implements BasicMealController {
      * @return - All meals between the start and end date
      */
     @GetMapping("/getMeals/from/{startDate}/to/{enddate}")
-    public Iterable<? extends Meal> getMealsNextDays(@PathVariable String startDate, @PathVariable String enddate) {
+    public List<? extends Meal> getMealsNextDays(@PathVariable String startDate, @PathVariable String enddate) {
         log.debug("Meals were requested from " + startDate + " until " + enddate);
         return meals_cafeteria_dittrichringService.findAllByServingDateGreaterThanEqualAndServingDateLessThanEqual(LocalDate.parse(startDate), LocalDate.parse(enddate));
     }
@@ -71,7 +72,7 @@ public class ControllerCafeteriaDittrichring implements BasicMealController {
      * @return - All meals with the specific date
      */
     @GetMapping("/servingDate/{servingDate}")
-    public Iterable<? extends Meal> getMealByServingDate(@PathVariable(value = "servingDate") @NotNull String servingDate) {
+    public List<? extends Meal> getMealByServingDate(@PathVariable(value = "servingDate") @NotNull String servingDate) {
         log.debug("Meals were requested with servingDate: " + servingDate);
         return meals_cafeteria_dittrichringService.findAllMealsByServingDate(LocalDate.parse(servingDate));
     }
@@ -83,7 +84,7 @@ public class ControllerCafeteriaDittrichring implements BasicMealController {
      * @return - All meals with the specific category
      */
     @GetMapping("/category/{category}")
-    public Iterable<? extends Meal> getMealByCategory(@PathVariable("category") @NotNull String category) {
+    public List<? extends Meal> getMealByCategory(@PathVariable("category") @NotNull String category) {
         log.debug("Meals were requested with category: " + category);
         return meals_cafeteria_dittrichringService.findAllByCategory(category);
     }
@@ -96,7 +97,7 @@ public class ControllerCafeteriaDittrichring implements BasicMealController {
      * @return - All meals with the specific category and date
      */
     @GetMapping("/category/{category}/servingDate/{servingDate}")
-    public Iterable<? extends Meal> getMealByCategoryAndServingDate(@PathVariable("category") @NotNull String category, @PathVariable("servingDate") @NotNull String servingDate) {
+    public List<? extends Meal> getMealByCategoryAndServingDate(@PathVariable("category") @NotNull String category, @PathVariable("servingDate") @NotNull String servingDate) {
         log.debug("Meals were requested with category: " + category + " on " + servingDate);
         return meals_cafeteria_dittrichringService.findAllByCategoryAndServingDate(category, LocalDate.parse(servingDate));
     }
@@ -108,7 +109,7 @@ public class ControllerCafeteriaDittrichring implements BasicMealController {
      * @return - All meals with a rating lower than the specific value
      */
     @GetMapping("/byRatingLessThen/{rating}")
-    public Iterable<? extends Meal> getMealByRatingLessThan(@PathVariable("rating") @NotNull Double rating) {
+    public List<? extends Meal> getMealByRatingLessThan(@PathVariable("rating") @NotNull Double rating) {
         log.debug("Meals were requested with rating less then: " + rating);
         return meals_cafeteria_dittrichringService.findAllByRatingLessThanEqual(rating);
     }
@@ -120,7 +121,7 @@ public class ControllerCafeteriaDittrichring implements BasicMealController {
      * @return - All meals with a rating higher than the specific value
      */
     @GetMapping("/byRatingHigherThen/{rating}")
-    public Iterable<? extends Meal> getMealByRatingHigherThan(@PathVariable("rating") @NotNull Double rating) {
+    public List<? extends Meal> getMealByRatingHigherThan(@PathVariable("rating") @NotNull Double rating) {
         log.debug("Meals were requested with rating higher then: " + rating);
         return meals_cafeteria_dittrichringService.findAllByRatingGreaterThanEqual(rating);
     }
