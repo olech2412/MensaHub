@@ -32,23 +32,24 @@ import de.olech2412.mensahub.models.authentification.API_User;
 import de.olech2412.mensahub.models.authentification.ActivationCode;
 import de.olech2412.mensahub.models.authentification.DeactivationCode;
 import jakarta.annotation.security.PermitAll;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
+import jakarta.validation.ValidatorFactory;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import javax.mail.MessagingException;
 import java.io.IOException;
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
-import java.time.Duration;
+import java.util.Set;
 
 @Route("registerDev")
 @PageTitle("MensaHub-Dev")
@@ -115,7 +116,23 @@ public class DeveloperRegisterView extends Composite implements BeforeEnterObser
         registerButton.addClickListener(e -> {
             try {
                 if (accept.getValue()) {
-                    registerUser();
+
+                    API_User apiUser = new API_User();
+                    apiUser.setApiUsername(apiUsername.getValue());
+                    apiUser.setPassword(new BCryptPasswordEncoder().encode(passwordField.getValue()));
+                    apiUser.setEmail(emailField.getValue());
+                    apiUser.setDescription(description.getValue());
+                    apiUser.setVerified_email(false);
+                    apiUser.setEnabledByAdmin(false);
+                    apiUser.setRole("ROLE_DEV");
+
+                    if (validate(apiUser)) {
+                        registerUser(apiUser);
+                    } else {
+                        Notification notification = new Notification("Ungültige Eingaben. Bitte korrigiere", 6000);
+                        notification.addThemeVariants(NotificationVariant.LUMO_ERROR);
+                        notification.open();
+                    }
                 } else {
                     Notification notification = new Notification("Bitte Nutzungsbedingungen bestätigen", 6000);
                     notification.addThemeVariants(NotificationVariant.LUMO_ERROR);
@@ -155,53 +172,44 @@ public class DeveloperRegisterView extends Composite implements BeforeEnterObser
         return mainLayout;
     }
 
-    private void registerUser() throws IOException, InterruptedException, MessagingException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
-        HttpClient client = HttpClient.newHttpClient();
-        HttpRequest request = HttpRequest.newBuilder()
-                .timeout(Duration.ofSeconds(20))
-                .uri(URI.create(Config.getInstance().getProperty("mensaHub.junction.gateway.address") + "/mensaHub/auth/register"))
-                .POST(HttpRequest.BodyPublishers.ofString("{\n" +
-                        "      \"apiUsername\": \"" + apiUsername.getValue() + "\",\n" +
-                        "      \"password\": \"" + passwordField.getValue() + "\",\n" +
-                        "      \"description\": \"" + description.getValue() + "\",\n" +
-                        "      \"email\": \"" + emailField.getValue() + "\",\n" +
-                        "      \"enabledByAdmin\":" + "false" + ",\n" +
-                        "      \"verified_email\":" + "false" + "\n" +
-                        "    }"))
-                .header("Content-Type", "application/json")
-                .build();
-        HttpResponse<String> futureResponse = client.send(request, HttpResponse.BodyHandlers.ofString());
-        logger.info(futureResponse.body());
-        logger.info(String.valueOf(futureResponse.statusCode()));
-        if (futureResponse.statusCode() != 200) {
-            if (futureResponse.statusCode() == 400) {
-                Notification notification = new Notification("Ungültige Eingaben. Bitte prüfen!", 6000);
-                notification.addThemeVariants(NotificationVariant.LUMO_ERROR);
-                notification.open();
-                logger.error("Error occurred while register an user for the api: " + request);
-            }
-        } else {
-            sendRegistrationMail(emailField.getValue(), apiUsername.getValue());
+    private void registerUser(API_User apiUser) throws IOException, InterruptedException, MessagingException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
+
+        if (apiUserRepository.findAPI_UserByApiUsername(apiUser.getApiUsername()).isPresent()) {
+            Notification notification = new Notification("API Username bereits vergeben", 6000);
+            notification.addThemeVariants(NotificationVariant.LUMO_ERROR);
+            notification.open();
+            return;
         }
+        sendRegistrationMail(apiUser);
     }
 
-    private void sendRegistrationMail(String email, String username) throws MessagingException, IOException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
+    private void sendRegistrationMail(API_User apiUser) {
         ActivationCode activationCode = new ActivationCode(RandomStringUtils.randomAlphanumeric(32));
         DeactivationCode deactivationCode = new DeactivationCode(RandomStringUtils.randomAlphanumeric(32));
         activationCodeRepository.save(activationCode);
         deactivationCodeRepository.save(deactivationCode);
-        API_User apiUser = apiUserRepository.findAPI_UserByApiUsername(username).get();
+
+        logger.info(String.format("Generated activationcode: %s and deactivationcode: %s", activationCode.getCode(), deactivationCode.getCode()));
+
         apiUser.setActivationCode(activationCode);
         apiUser.setDeactivationCode(deactivationCode);
         apiUserRepository.save(apiUser);
 
-        Mailer mailer = new Mailer();
-        mailer.sendAPIActivationEmail(username, email,
-                activationCode.getCode(), deactivationCode.getCode());
-        logger.info("Mail was sent successfully");
         Notification notification = new Notification("Account gespeichert. Bitte prüfe dein Postfach und bestätige deine E-Mail Adresse", 6000);
         notification.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
         notification.open();
+
+        try {
+            Mailer mailer = new Mailer();
+            mailer.sendAPIActivationEmail(apiUser.getApiUsername(), apiUser.getEmail(),
+                    activationCode.getCode(), deactivationCode.getCode());
+            logger.info("Mail was sent successfully");
+        } catch (Exception exception) {
+            logger.error("Error while sending activation mail to user: " + exception.getMessage());
+            Notification mailErrorNotification = new Notification("E-Mail konnte nicht versendet werden. Wende dich bitte an den Administrator", 6000);
+            mailErrorNotification.addThemeVariants(NotificationVariant.LUMO_WARNING);
+            mailErrorNotification.open();
+        }
     }
 
     private VerticalLayout createInfoText() {
@@ -256,6 +264,25 @@ public class DeveloperRegisterView extends Composite implements BeforeEnterObser
         footer.setJustifyContentMode(FlexComponent.JustifyContentMode.CENTER);
         footer.setSizeFull();
         return footer;
+    }
+
+    private boolean validate(API_User user) {
+        // Erzeuge einen Validator
+        ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+        Validator validator = factory.getValidator();
+
+        // Überprüfe die Validierung für den übergebenen Benutzer
+        Set<ConstraintViolation<API_User>> violations = validator.validate(user);
+
+        // Überprüfe, ob es Verletzungen gibt
+        if (!violations.isEmpty()) {
+            for (ConstraintViolation<API_User> violation : violations) {
+                logger.info("Violation detected: " + violation.getMessage());
+            }
+            return false; // Validierung fehlgeschlagen
+        }
+
+        return true; // Validierung erfolgreich
     }
 
     /**

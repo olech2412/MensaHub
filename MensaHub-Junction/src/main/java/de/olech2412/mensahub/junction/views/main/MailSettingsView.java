@@ -174,16 +174,12 @@ public class MailSettingsView extends Composite implements BeforeEnterObserver {
                 }
                 try {
                     mailer.sendTemporaryDeactivationEmail(mailUser.getFirstname(), mailUser.getEmail(), mailUser.getDeactivationCode().getCode(), mailUser.getDeactviatedUntil());
-                } catch (MessagingException | IOException e) {
-                    logger.error("Error while sending deactivation email");
+                } catch (Exception exception) {
+                    logger.error("Error while sending deactivation email: " + exception.getMessage());
                     Notification notification_error_mail = new Notification("Es ist ein Fehler beim Versenden der Email aufgetreten. Bitte kontaktiere den Administrator", 3000);
                     notification_error_mail.addThemeVariants(NotificationVariant.LUMO_ERROR);
                     notification_error_mail.setPosition(Notification.Position.BOTTOM_START);
                     notification_error_mail.open();
-                    throw new RuntimeException(e);
-                } catch (NoSuchPaddingException | IllegalBlockSizeException | NoSuchAlgorithmException |
-                         BadPaddingException | InvalidKeyException e) {
-                    throw new RuntimeException(e);
                 }
             } else {
                 datePicker.setInvalid(true);
@@ -217,7 +213,11 @@ public class MailSettingsView extends Composite implements BeforeEnterObserver {
 
         logger.info("User deactivated Account successfully: " + activatedUser.getEmail());
         Mailer mailer = new Mailer();
-        mailer.sendDeactivationEmail(activatedUser.getFirstname(), activatedUser.getEmail());
+        try {
+            mailer.sendDeactivationEmail(activatedUser.getFirstname(), activatedUser.getEmail());
+        } catch (Exception exception) {
+            logger.error("Error while sending deactivation email: " + exception.getMessage());
+        }
         logger.info("User deactivated Account successfully");
         Notification notification = new Notification("Du hast deinen Account und alle zugehörigen Daten erfolgreich gelöscht!", 3000);
         notification.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
