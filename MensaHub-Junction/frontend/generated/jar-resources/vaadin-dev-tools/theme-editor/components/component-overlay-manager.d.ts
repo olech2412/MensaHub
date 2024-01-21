@@ -1,5 +1,6 @@
 import {ComponentReference} from '../../component-util';
 import {ComponentMetadata} from '../metadata/model';
+
 export declare class ComponentOverlayManager {
     currentActiveComponent: ComponentReference | null;
     currentActiveComponentMetaData: ComponentMetadata | null;

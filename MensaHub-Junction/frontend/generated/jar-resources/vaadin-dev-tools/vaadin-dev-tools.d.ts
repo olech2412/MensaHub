@@ -6,6 +6,7 @@ import {Product} from './License';
 import {ConnectionStatus} from './connection';
 import './vaadin-dev-tools-log';
 import './vaadin-dev-tools-info';
+
 /**
  * Plugin API for the dev tools window.
  */

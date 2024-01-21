@@ -1,4 +1,5 @@
 import {LitElement} from 'lit';
+
 /**
  * Blocks interaction with all elements on the page. Forwards mouse and key events as custom shim-* events.
  */

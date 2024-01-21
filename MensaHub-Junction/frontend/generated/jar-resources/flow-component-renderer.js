@@ -4,7 +4,7 @@ import {Debouncer} from '@polymer/polymer/lib/utils/debounce.js';
 import {idlePeriod} from '@polymer/polymer/lib/utils/async.js';
 import {PolymerElement} from '@polymer/polymer/polymer-element.js';
 import {flowComponentDirective} from './flow-component-directive.js';
-import {render, html as litHtml} from 'lit';
+import {html as litHtml, render} from 'lit';
 
 /**
  * Returns the requested node in a form suitable for Lit template interpolation.

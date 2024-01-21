@@ -1,4 +1,5 @@
 import {LitElement} from 'lit';
+
 export declare class InfoTab extends LitElement {
     private _devTools;
     private serverInfo;

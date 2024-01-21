@@ -1,6 +1,7 @@
 import {CSSResultGroup, LitElement, PropertyValues, TemplateResult} from 'lit';
 import {ComponentElementMetadata, CssPropertyMetadata} from '../../metadata/model';
 import {ComponentTheme, ThemePropertyValue} from '../../model';
+
 export declare class ThemePropertyValueChangeEvent extends CustomEvent<{
     element: ComponentElementMetadata;
     property: CssPropertyMetadata;

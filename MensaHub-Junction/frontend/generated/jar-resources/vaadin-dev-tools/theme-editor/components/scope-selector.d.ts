@@ -1,6 +1,7 @@
 import {LitElement, PropertyValues} from 'lit';
 import {ComponentMetadata} from '../metadata/model';
 import {ThemeScope} from '../model';
+
 export declare class ScopeChangeEvent extends CustomEvent<{
     value: ThemeScope;
 }> {
