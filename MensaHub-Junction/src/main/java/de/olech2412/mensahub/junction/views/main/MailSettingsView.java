@@ -142,8 +142,8 @@ public class MailSettingsView extends Composite implements BeforeEnterObserver {
         deleteInfo.getElement().getThemeList().add("badge");
 
         DatePicker datePicker = new DatePicker("Wähle den Zeitpunkt der Reaktivierung");
-        if (mailUser.getDeactviatedUntil() != null) {
-            datePicker.setValue(mailUser.getDeactviatedUntil());
+        if (mailUser.getDeactivatedUntil() != null) {
+            datePicker.setValue(mailUser.getDeactivatedUntil());
         }
         datePicker.setPlaceholder("Ich möchte wieder aktiviert werden am...");
         Button threeMonths = new Button("Ich bin in 3 Monaten wieder da...");
@@ -158,7 +158,7 @@ public class MailSettingsView extends Composite implements BeforeEnterObserver {
         save.addClickListener(buttonClickEvent -> {
             if (datePicker.getValue() != null) {
                 mailUser.setEnabled(false);
-                mailUser.setDeactviatedUntil(datePicker.getValue());
+                mailUser.getDeactivatedUntil(datePicker.getValue());
                 mailUserRepository.save(mailUser);
 
                 Notification notification = new Notification("Du wurdest erfolgreich temporär deaktiviert. Alle wichtige Informationen senden wir dir per Mail zu.", 3000);
@@ -173,7 +173,7 @@ public class MailSettingsView extends Composite implements BeforeEnterObserver {
                     throw new RuntimeException(e);
                 }
                 try {
-                    mailer.sendTemporaryDeactivationEmail(mailUser.getFirstname(), mailUser.getEmail(), mailUser.getDeactivationCode().getCode(), mailUser.getDeactviatedUntil());
+                    mailer.sendTemporaryDeactivationEmail(mailUser.getFirstname(), mailUser.getEmail(), mailUser.getDeactivationCode().getCode(), mailUser.getDeactivatedUntil());
                 } catch (Exception exception) {
                     logger.error("Error while sending deactivation email: " + exception.getMessage());
                     Notification notification_error_mail = new Notification("Es ist ein Fehler beim Versenden der Email aufgetreten. Bitte kontaktiere den Administrator", 3000);

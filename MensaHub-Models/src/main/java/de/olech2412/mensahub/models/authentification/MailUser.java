@@ -36,7 +36,7 @@ public class MailUser {
 
     private boolean enabled; // if the user is enabled
 
-    private LocalDate deactviatedUntil; // the date until the user is deactivated
+    private LocalDate deactivatedUntil; // the date until the user is deactivated
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "cafeteria_dittrichring_id")
