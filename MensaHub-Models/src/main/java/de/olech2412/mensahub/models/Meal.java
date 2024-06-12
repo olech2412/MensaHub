@@ -6,14 +6,15 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.util.Objects;
 
 /**
  * This class represents the meal it is the super class for all meals.
  */
 @Getter
 @Setter
-@EqualsAndHashCode
-@MappedSuperclass
+@Entity
+@Table(name = "meals")
 public class Meal {
 
     @Id
@@ -32,11 +33,7 @@ public class Meal {
 
     private LocalDate servingDate; // this is the date the meal is served
 
-    private String additionalInfo; // this is additional information about the meal
-
     private String allergens; // this is the allergens of the meal
-
-    private String additives; // this is the additives of the meal
 
     @EqualsAndHashCode.Exclude
     private Double rating = 0.0; // this is the rating of the meal
@@ -46,6 +43,10 @@ public class Meal {
 
     @EqualsAndHashCode.Exclude
     private Integer starsTotal = 0; // this is the number of stars for the meal
+
+    @ManyToOne
+    @JoinColumn(name = "mensa_id", nullable = false)
+    private Mensa mensa;
 
     /**
      * This is the default constructor.
@@ -74,6 +75,19 @@ public class Meal {
 
     @Override
     public String toString() {
-        return "Meal: " + "name=" + name + ", description=" + description + ", price=" + price + ", category=" + category + ", additionalInfo=" + additionalInfo + ", allergens=" + allergens + ", servingDate=" + servingDate + ", rating=" + rating + ", votes=" + votes + ", starsTotal=" + starsTotal + ", votes=" + votes;
+        return "Meal: " + "name=" + name + ", description=" + description + ", price=" + price + ", category=" + category + ", allergens=" + allergens + ", servingDate=" + servingDate + ", rating=" + rating + ", votes=" + votes + ", starsTotal=" + starsTotal + ", votes=" + votes;
+    }
+
+    @Override
+    public final boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Meal meal = (Meal) o;
+        return getId() != null && Objects.equals(getId(), meal.getId());
+    }
+
+    @Override
+    public final int hashCode() {
+        return getClass().hashCode();
     }
 }
