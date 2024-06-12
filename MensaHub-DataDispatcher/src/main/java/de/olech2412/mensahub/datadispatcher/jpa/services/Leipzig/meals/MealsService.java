@@ -1,6 +1,6 @@
 package de.olech2412.mensahub.datadispatcher.jpa.services.Leipzig.meals;
 
-import de.olech2412.mensahub.datadispatcher.jpa.repository.Leipzig.meals.Meals_Cafeteria_DittrichringRepository;
+import de.olech2412.mensahub.datadispatcher.jpa.repository.Leipzig.meals.MealsRepository;
 import de.olech2412.mensahub.models.Leipzig.meals.Meals_Cafeteria_Dittrichring;
 import de.olech2412.mensahub.models.Leipzig.mensen.Cafeteria_Dittrichring;
 import de.olech2412.mensahub.models.Meal;
@@ -16,10 +16,10 @@ import java.util.List;
 @Service
 @Log4j2
 @Import({Meals_Cafeteria_Dittrichring.class, Meal.class})
-public class Meals_Cafeteria_DittrichringService extends Meals_Mensa_Service {
+public class eals_Cafeteria_DittrichringService extends Meals_Mensa_Service {
 
     @Autowired
-    Meals_Cafeteria_DittrichringRepository meals_cafeteria_dittrichringRepository;
+    MealsRepository meals_Repository;
 
 
     /**
@@ -27,7 +27,7 @@ public class Meals_Cafeteria_DittrichringService extends Meals_Mensa_Service {
      */
     @Override
     public List<Meals_Cafeteria_Dittrichring> findAll() {
-        return meals_cafeteria_dittrichringRepository.findAll();
+        return meals_Repository.findAll();
     }
 
     /**
@@ -36,7 +36,7 @@ public class Meals_Cafeteria_DittrichringService extends Meals_Mensa_Service {
      */
     @Override
     public List<Meals_Cafeteria_Dittrichring> findAllMealsByServingDateGreaterThanEqual(LocalDate servingDate) {
-        return meals_cafeteria_dittrichringRepository.findAllMealsByServingDateGreaterThanEqual(servingDate);
+        return meals_Repository.findAllMealsByServingDateGreaterThanEqual(servingDate);
     }
 
     /**
@@ -45,11 +45,11 @@ public class Meals_Cafeteria_DittrichringService extends Meals_Mensa_Service {
      */
     @Override
     public List<Meals_Cafeteria_Dittrichring> findAllMealsByServingDate(LocalDate servingDate) {
-        return meals_cafeteria_dittrichringRepository.findAllMealsByServingDate(servingDate);
+        return meals_Repository.findAllMealsByServingDate(servingDate);
     }
 
     /**
-     * @param meal The meal
+     * @param meal  The meal
      * @param mensa The mensa
      */
     @Override
@@ -75,7 +75,7 @@ public class Meals_Cafeteria_DittrichringService extends Meals_Mensa_Service {
 
         meals_cafeteria_dittrichring.setCafeteria_dittrichring(cafeteria_dittrichring);
 
-        meals_cafeteria_dittrichringRepository.save(meals_cafeteria_dittrichring);
+        meals_Repository.save(meals_cafeteria_dittrichring);
     }
 
     @Override
@@ -102,17 +102,17 @@ public class Meals_Cafeteria_DittrichringService extends Meals_Mensa_Service {
 
             meals_cafeteria_dittrichring.setCafeteria_dittrichring(cafeteria_dittrichring);
 
-            meals_cafeteria_dittrichringRepository.save(meals_cafeteria_dittrichring);
+            meals_Repository.save(meals_cafeteria_dittrichring);
         }
     }
 
     @Override
     public void deleteAllByServingDate(LocalDate servingDate) {
-        meals_cafeteria_dittrichringRepository.deleteAllByServingDate(servingDate);
+        meals_Repository.deleteAllByServingDate(servingDate);
     }
 
     /**
-     * @param meal The meal
+     * @param meal  The meal
      * @param mensa The mensa
      */
     @Override
@@ -138,13 +138,13 @@ public class Meals_Cafeteria_DittrichringService extends Meals_Mensa_Service {
 
         meals_cafeteria_dittrichring.setCafeteria_dittrichring(cafeteria_dittrichring);
 
-        meals_cafeteria_dittrichringRepository.delete(meals_cafeteria_dittrichring);
+        meals_Repository.delete(meals_cafeteria_dittrichring);
         log.warn("Meal deleted: " + meal.getName() + " from " + mensa.getName());
     }
 
     @Override
     public List<? extends Meal> findMealsFromMensaByNameAndServingDateBeforeOrderByServingDateDesc(String name, LocalDate servingDate) {
-        return meals_cafeteria_dittrichringRepository.findMeals_Cafeteria_DittrichringByNameAndServingDateBeforeOrderByServingDateDesc(name, servingDate);
+        return meals_Repository.findMeals_Cafeteria_DittrichringByNameAndServingDateBeforeOrderByServingDateDesc(name, servingDate);
     }
 
 

@@ -1,7 +1,5 @@
 package de.olech2412.mensahub.models.authentification;
 
-
-import de.olech2412.mensahub.models.Leipzig.mensen.*;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -37,42 +35,6 @@ public class MailUser {
     private boolean enabled; // if the user is enabled
 
     private LocalDate deactviatedUntil; // the date until the user is deactivated
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "cafeteria_dittrichring_id")
-    private Cafeteria_Dittrichring cafeteria_dittrichring; // the cafeteria dittrichring
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "mensa_academica_id")
-    private Mensa_Academica mensa_academica; // the mensa academica
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "mensa_schoenauer_str_id")
-    private Mensa_Schoenauer_Str mensa_schoenauer_str; // the mensa schoenauer str
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "mensa_am_elsterbecken_id")
-    private Mensa_am_Elsterbecken mensa_am_elsterbecken; // the mensa am elsterbecken
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "mensa_am_medizincampus_id")
-    private Mensa_am_Medizincampus mensa_am_medizincampus; // the mensa am medizincampus
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "mensa_am_park_id")
-    private Mensa_am_Park mensa_am_park; // the mensa am park
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "mensa_peterssteinweg_id")
-    private Mensa_Peterssteinweg mensa_peterssteinweg; // the mensa peterssteinweg
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "mensa_tierklinik_id")
-    private Mensa_Tierklinik mensa_tierklinik; // the mensa tierklinik
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "menseria_am_botanischen_garten_id")
-    private Menseria_am_Botanischen_Garten menseria_am_botanischen_garten; // the menseria am botanischen garten
 
     /**
      * Default constructor for the mail-user.

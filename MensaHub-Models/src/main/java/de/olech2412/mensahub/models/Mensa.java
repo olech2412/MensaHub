@@ -1,17 +1,22 @@
 package de.olech2412.mensahub.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
+
+import java.util.Set;
 
 /**
  * This class represents the mensa it is the super class for all mensas.
  */
 @Getter
 @Setter
-@MappedSuperclass
+@Entity
+@Table(name = "mensas")
 public class Mensa {
+
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @EqualsAndHashCode.Exclude
@@ -21,6 +26,11 @@ public class Mensa {
     private String name; // this is the name of the mensa
 
     private String apiUrl; // this is the url to the api of the mensa
+
+    @OneToMany(mappedBy = "mensas_id")
+    @JsonIgnore
+    @Transient
+    private Set<Meal> mealSet;
 
     /**
      * This is the default constructor.
