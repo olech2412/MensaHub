@@ -1,6 +1,9 @@
 # MensaHub 🍝
 
 [![Build-CVE-Pipeline](https://github.com/olech2412/MensaHub/actions/workflows/Build-CVE-Pipeline.yml/badge.svg)](https://github.com/olech2412/MensaHub/actions/workflows/Build-CVE-Pipeline.yml)
+![Docker Image Version (latest semver)](https://img.shields.io/docker/v/olech2412/mensahub-datadispatcher?label=MensaHub-DataDispatcher%20version%3A&link=https%3A%2F%2Fhub.docker.com%2Fr%2Folech2412%2Fmensahub-datadispatcher)
+![Docker Image Version (latest semver)](https://img.shields.io/docker/v/olech2412/mensahub-gateway?label=MensaHub-Gateway%20version%3A&link=https%3A%2F%2Fhub.docker.com%2Fr%2Folech2412%2Fmensahub-gateway)
+![Docker Image Version (latest semver)](https://img.shields.io/docker/v/olech2412/mensahub-junction?label=MensaHub-Junction%20version%3A&link=https%3A%2F%2Fhub.docker.com%2Fr%2Folech2412%2Fmensahub-junction)
 
 ## Technologies
 
