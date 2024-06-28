@@ -83,7 +83,7 @@ public class Meal {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Meal meal = (Meal) o;
-        return getId() != null && Objects.equals(getId(), meal.getId());
+        return getId() != null && Objects.equals(getMensa(), meal.getMensa()) && getName() != null && Objects.equals(getName(), meal.getName()) && getServingDate() != null && Objects.equals(getServingDate(), meal.getServingDate());
     }
 
     @Override
