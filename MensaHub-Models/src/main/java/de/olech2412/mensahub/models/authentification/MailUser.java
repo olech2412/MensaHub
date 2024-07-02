@@ -39,8 +39,13 @@ public class MailUser {
 
     private LocalDate deactviatedUntil; // the date until the user is deactivated
 
-    @ManyToMany(mappedBy = "mail_users")
-    private Set<Mensa> mensas = new HashSet<>();
+    @ManyToMany(cascade = {CascadeType.ALL})
+    @JoinTable(
+            name = "mail_user_mensa_abbo",
+            joinColumns = {@JoinColumn(name = "mail_users_id")},
+            inverseJoinColumns = {@JoinColumn(name = "mensas_id")}
+    )
+    Set<Mensa> mensas = new HashSet<>();
 
     /**
      * Default constructor for the mail-user.
