@@ -1,6 +1,7 @@
 package de.olech2412.mensahub.datadispatcher.jpa.services;
 
 import de.olech2412.mensahub.datadispatcher.jpa.repository.MailUserRepository;
+import de.olech2412.mensahub.models.Mensa;
 import de.olech2412.mensahub.models.authentification.MailUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -34,5 +35,9 @@ public class MailUserService {
 
     public List<MailUser> findAll() {
         return mailUserRepository.findAll();
+    }
+
+    public List<MailUser> findAllByMensasAndEnabled(Mensa mensa, boolean enabled) {
+        return mailUserRepository.findAllByMensasAndEnabled(mensa, enabled);
     }
 }

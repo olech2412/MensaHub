@@ -14,7 +14,6 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
-import javax.mail.MessagingException;
 import java.io.IOException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
@@ -24,13 +23,13 @@ import java.util.Arrays;
 @Log4j2
 @EnableScheduling
 @EnableAsync
-@EntityScan(basePackages = {"de.olech2412.mensahub.models.authentification", "de.olech2412.mensahub.models.Leipzig"})
+@EntityScan(basePackages = {"de.olech2412.mensahub.models.authentification", "de.olech2412.mensahub.models"})
 public class MensaHub_DataDispatcher {
 
     @Autowired
     LeipzigDataDispatcher leipzigDataDispatcher;
 
-    public static void main(String[] args) throws MessagingException, IOException, IllegalBlockSizeException, NoSuchPaddingException, BadPaddingException, NoSuchAlgorithmException, InvalidKeyException {
+    public static void main(String[] args) throws Exception {
         configureEnvironment();
         ConfigurableApplicationContext configurableApplicationContext = SpringApplication.run(MensaHub_DataDispatcher.class, args);
         LeipzigDataDispatcher leipzigDataDispatcher = configurableApplicationContext.getBean(LeipzigDataDispatcher.class);
@@ -41,7 +40,6 @@ public class MensaHub_DataDispatcher {
         }
 
         leipzigDataDispatcher.callData();
-        leipzigDataDispatcher.fetchAllergenes();
     }
 
     private static void configureEnvironment() throws NoSuchPaddingException, IllegalBlockSizeException, IOException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {

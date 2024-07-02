@@ -182,11 +182,6 @@ public class StaticEmailText {
                     "Dir gefällt MensaHub? Das freut mich! Auf freiwilliger Basis kannst du mir hier gerne ein Bier spendieren:" +
                     "</p>" +
                     "<a href=\"https://www.paypal.com/donate/?hosted_button_id=7TSL4ZPA4BYB4\"><img alt=\"Unterstütze MensaHub\" src=\"https://trigger-master.de/wp-content/uploads/2015/04/paypal-logo.png\" width=\"150\" height=\"60\"/></a>" +
-                    "<br>" +
-                    "<p class=\"text-gray-700\" style=\"line-height: 16px; font-size: 12px; color: #4a5568; width: 100%; margin: 0;\" align=\"left\">" +
-                    "%s" +
-                    "</p>" +
-                    "<br>" +
                     "<p class=\"text-gray-700\" style=\"line-height: 16px; font-size: 12px; color: #4a5568; width: 100%; margin: 0;\" align=\"left\">" +
                     "Bitte beachten Sie, dass alle Angaben ohne Gewähr sind. Die Gerichte können täglich variieren, da sich der Speiseplan einer Mensa/Cafeteria ändern kann. Als IT-Dienstleister sind wir bestrebt, Ihnen genaue und aktuelle Informationen bereitzustellen. Bei Fragen oder Unklarheiten zu Allergenen empfehlen wir Ihnen, die jeweilige Website der Mensa/Cafeteria zu besuchen oder das Personal vor Ort zu kontaktieren. Bitte haben Sie Verständnis dafür, dass wir für eventuelle Abweichungen oder Unannehmlichkeiten nicht verantwortlich sind. Vielen Dank für Ihr Verständnis." +
                     "</p>" +

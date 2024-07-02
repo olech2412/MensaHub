@@ -1,7 +1,10 @@
 # MensaHub DataDispatcher
-The **MensaHub DataDispatcher** is a Java-based application that uses the **Spring Boot Framework** to retrieve menu data from Studentenwerk Leipzig and send it to authenticated users from a **MariaDB database**. 
 
-This program is an integral part of the MensaHub family. It is important to note that the MensaHub DataDispatcher works in collaboration with other parts of the MensaHub system. Therefore, it is recommended to operate the entire system.
+The **MensaHub DataDispatcher** is a Java-based application that uses the **Spring Boot Framework** to retrieve menu
+data from Studentenwerk Leipzig and send it to authenticated users from a **MariaDB database**.
+
+This program is an integral part of the MensaHub family. It is important to note that the MensaHub DataDispatcher works
+in collaboration with other parts of the MensaHub system. Therefore, it is recommended to operate the entire system.
 
 ## Technologies
 
@@ -15,8 +18,8 @@ This program is an integral part of the MensaHub family. It is important to note
 - MariaDB
 - Maven
 - Mail Server
-  - For development purposes it is not necessary
-  - For production purposes it is necessary
+    - For development purposes it is not necessary
+    - For production purposes it is necessary
 
 ### Prepare Maven
 

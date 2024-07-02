@@ -1,5 +1,6 @@
 package de.olech2412.mensahub.datadispatcher.jpa.repository;
 
+import de.olech2412.mensahub.models.Mensa;
 import de.olech2412.mensahub.models.authentification.MailUser;
 import org.springframework.data.repository.ListCrudRepository;
 import org.springframework.stereotype.Repository;
@@ -15,6 +16,8 @@ public interface MailUserRepository extends ListCrudRepository<MailUser, Long> {
     MailUser findByActivationCode_Code(String code);
 
     MailUser findByDeactivationCode_Code(String code);
+
+    List<MailUser> findAllByMensasAndEnabled(Mensa mensa, boolean enabled);
 
     /**
      * Finds all enabled users
