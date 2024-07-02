@@ -1,11 +1,13 @@
 package de.olech2412.mensahub.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import de.olech2412.mensahub.models.authentification.MailUser;
 import jakarta.persistence.*;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -31,6 +33,9 @@ public class Mensa {
     @JsonIgnore
     @Transient
     private Set<Meal> mealSet;
+
+    @ManyToMany(mappedBy = "mensas")
+    private Set<MailUser> subscriber = new HashSet<>();
 
     /**
      * This is the default constructor.
