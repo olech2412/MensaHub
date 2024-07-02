@@ -1,30 +1,34 @@
 package de.olech2412.mensahub.datadispatcher.email;
 
 import de.olech2412.mensahub.datadispatcher.config.Config;
-import de.olech2412.mensahub.datadispatcher.data.tools.AllergeneComparator;
-import de.olech2412.mensahub.models.Leipzig.Allergene;
 import de.olech2412.mensahub.models.Meal;
 import de.olech2412.mensahub.models.Mensa;
 import de.olech2412.mensahub.models.authentification.MailUser;
+import jakarta.mail.*;
+import jakarta.mail.internet.InternetAddress;
+import jakarta.mail.internet.MimeBodyPart;
+import jakarta.mail.internet.MimeMessage;
+import jakarta.mail.internet.MimeMultipart;
 import lombok.extern.log4j.Log4j2;
+import net.markenwerk.utils.mail.dkim.DkimMessage;
+import net.markenwerk.utils.mail.dkim.DkimSigner;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
-import javax.mail.*;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeBodyPart;
-import javax.mail.internet.MimeMessage;
-import javax.mail.internet.MimeMultipart;
-import java.io.IOException;
+import java.io.*;
 import java.security.InvalidKeyException;
+import java.security.KeyFactory;
 import java.security.NoSuchAlgorithmException;
+import java.security.PrivateKey;
+import java.security.interfaces.RSAPrivateKey;
+import java.security.spec.PKCS8EncodedKeySpec;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 import java.util.Properties;
-import java.util.stream.Collectors;
 
 @Log4j2
 public class Mailer {
@@ -40,31 +44,66 @@ public class Mailer {
         }
     }
 
+    private static PrivateKey loadPrivateKey(String filename) throws Exception {
+        File file = new File(filename);
+        BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(file)));
+        StringBuilder keyBuilder = new StringBuilder();
+        String line;
+
+        while ((line = reader.readLine()) != null) {
+            if (line.contains("BEGIN") || line.contains("END")) {
+                continue;
+            }
+            keyBuilder.append(line.trim());
+        }
+        reader.close();
+
+        byte[] keyBytes = Base64.getDecoder().decode(keyBuilder.toString());
+        PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(keyBytes);
+        KeyFactory keyFactory = KeyFactory.getInstance("RSA");
+        return keyFactory.generatePrivate(keySpec);
+    }
+
     /**
      * Sends an email to the given email address with the current menu
      *
      * @throws MessagingException
      */
-    public void sendSpeiseplan(MailUser emailTarget, List<? extends Meal> menu, Mensa mensa, List<Allergene> allergenes, boolean update) throws MessagingException, IOException, NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
+    public void sendSpeiseplan(MailUser emailTarget, List<Meal> menu, Mensa mensa, boolean update) throws Exception {
         Properties prop = new Properties();
-        prop.put("mail.smtp.auth", Boolean.getBoolean(Config.getInstance().getProperty("mensaHub.junction.mail.smtpAuth")));
+        prop.put("mail.smtp.auth", Boolean.parseBoolean(Config.getInstance().getProperty("mensaHub.dataDispatcher.mail.smtpAuth")));
         prop.put("mail.smtp.host", Config.getInstance().getProperty("mensaHub.junction.mail.smtpHost"));
         prop.put("mail.smtp.port", Config.getInstance().getProperty("mensaHub.junction.mail.smtpPort"));
+        prop.put("mail.smtp.starttls.enable", "true");
+        prop.put("mail.smtp.ssl.enable", "true");
+
+        String senderMail = Config.getInstance().getProperty("mensaHub.dataDispatcher.mail.sender");
+        String senderPassword = Config.getInstance().getProperty("mensaHub.dataDispatcher.mail.sender.password");
+
+
+        Session mailSession = Session.getDefaultInstance(prop, new Authenticator() {
+
+            @Override
+            protected PasswordAuthentication getPasswordAuthentication() {
+                return new PasswordAuthentication(senderMail, senderPassword);
+            }
+        });
+
 
         String deactivateUrl = Config.getInstance().getProperty("mensaHub.dataDispatcher.junction.address") + "/deactivate?code=" + emailTarget.getDeactivationCode().getCode();
-        Message message = new MimeMessage(Session.getInstance(prop));
-        message.setFrom(new InternetAddress(Config.getInstance().getProperty("mensaHub.dataDispatcher.mail.senderMail")));
+        MimeMessage message = new MimeMessage(mailSession);
+        message.setFrom(new InternetAddress(senderMail));
         message.setRecipients(
                 Message.RecipientType.TO, InternetAddress.parse(emailTarget.getEmail()));
 
         String msg = "";
         if (!update) {
-            msg = createEmail(menu, emailTarget.getFirstname(), deactivateUrl, mensa, allergenes);
+            msg = createEmail(menu, emailTarget.getFirstname(), deactivateUrl, mensa);
             message.setSubject("Speiseplan " +
                     LocalDate.now().format(java.time.format.DateTimeFormatter.ofPattern("dd.MM.yyyy")) + " - " +
                     mensa.getName());
         } else {
-            msg = createUpdateEmail(menu, emailTarget.getFirstname(), deactivateUrl, mensa, allergenes);
+            msg = createUpdateEmail(menu, emailTarget.getFirstname(), deactivateUrl, mensa);
             message.setSubject("Update zu deinem Speiseplan " +
                     LocalDate.now().format(java.time.format.DateTimeFormatter.ofPattern("dd.MM.yyyy")) + " - " +
                     mensa.getName());
@@ -75,12 +114,25 @@ public class Mailer {
         Multipart multipart = new MimeMultipart();
         multipart.addBodyPart(mimeBodyPart);
         message.setContent(multipart);
-        Transport.send(message);
-        log.debug("Email sent to " + emailTarget.getEmail());
+
+        // Lade den privaten Schlüssel
+        PrivateKey privateKey = loadPrivateKey(Config.getInstance().getProperty("mensaHub.dataDispatcher.mail.dkim_priv_path"));
+
+        RSAPrivateKey rsaPrivateKey = (RSAPrivateKey) privateKey;
+
+        // Erstelle den DKIM-Signer
+        DkimSigner signer = new DkimSigner(Config.getInstance().getProperty("mensaHub.dataDispatcher.mail.dkim_signing_domain"),
+                Config.getInstance().getProperty("mensaHub.dataDispatcher.mail.dkim_seperator"), rsaPrivateKey);
+
+        // Signiere die Nachricht mit DKIM
+        DkimMessage dkimMessage = new DkimMessage(message, signer);
+
+        Transport.send(dkimMessage);
+        log.debug("Email sent to {}", emailTarget.getEmail());
 
     }
 
-    private String createUpdateEmail(List<? extends Meal> menu, String firstname, String deactivateUrl, Mensa mensa, List<Allergene> allergenes) throws IOException {
+    private String createUpdateEmail(List<Meal> menu, String firstname, String deactivateUrl, Mensa mensa) throws IOException {
         StringBuilder menuText = new StringBuilder();
 
         if (!menu.isEmpty()) {
@@ -90,9 +142,9 @@ public class Mailer {
                 i = 0;
                 Meal meal = menu.get(i);
                 List<Meal> sublist = new ArrayList<>();
-                for (int x = 0; x < menu.size(); x++) {
-                    if (meal.getCategory().equals(menu.get(x).getCategory())) {
-                        sublist.add(menu.get(x));
+                for (Meal value : menu) {
+                    if (meal.getCategory().equals(value.getCategory())) {
+                        sublist.add(value);
                     }
                 }
                 for (Meal meal2 : sublist) {
@@ -109,15 +161,10 @@ public class Mailer {
                     categoryString = createCategoryString(meals, categoryString);
                     menuString = menuString.replaceFirst("%s", meals.get(0).getName() +
                             " (" + meals.get(0).getDescription() + ")" + " - " + meals.get(0).getPrice());
-                    if (meals.get(0).getAllergens().equals(notAvailableSign) && meals.get(0).getAdditives().equals(notAvailableSign)) {
+                    if (meals.get(0).getAllergens().equals(notAvailableSign)) {
                         menuString = menuString.replaceFirst("%s", "Keine Allergene oder Zusatzstoffe enthalten (kontaktiere bitte die Mensa/Cafeteria, falls du dir unsicher bist)");
                     } else {
-                        if (meals.get(0).getAllergens().equals(notAvailableSign) && !meals.get(0).getAdditives().isEmpty())
-                            menuString = menuString.replaceFirst("%s", "Keine Allergene - Zusatzstoffe: " + meals.get(0).getAdditives());
-                        else if (meals.get(0).getAdditives().equals(notAvailableSign))
-                            menuString = menuString.replaceFirst("%s", "Allergene: " + meals.get(0).getAllergens() + " - Keine Zusatzstoffe");
-                        else
-                            menuString = menuString.replaceFirst("%s", "Allergene: " + meals.get(0).getAllergens() + " - Zusatzstoffe: " + meals.get(0).getAdditives());
+                        menuString = menuString.replaceFirst("%s", meals.get(0).getAllergens());
                     }
 
                 } else {
@@ -126,22 +173,17 @@ public class Mailer {
                     for (Meal meal : meals) {
                         String groupMeal = menuString.replaceFirst("%s", meal.getName() +
                                 " (" + meal.getDescription() + ")" + " - " + meal.getPrice());
-                        if (meals.get(0).getAllergens().equals(notAvailableSign) && meals.get(0).getAdditives().equals(notAvailableSign)) {
+                        if (meals.get(0).getAllergens().equals(notAvailableSign)) {
                             groupMeal = groupMeal.replaceFirst("%s", "Keine Allergene oder Zusatzstoffe enthalten (kontaktiere bitte die Mensa/Cafeteria, falls du dir unsicher bist)");
                         } else {
-                            if (meals.get(0).getAllergens().equals(notAvailableSign) && !meals.get(0).getAdditives().isEmpty())
-                                groupMeal = groupMeal.replaceFirst("%s", "Keine Allergene - Zusatzstoffe: " + meals.get(0).getAdditives());
-                            else if (meals.get(0).getAdditives().equals(notAvailableSign))
-                                groupMeal = groupMeal.replaceFirst("%s", "Allergene: " + meals.get(0).getAllergens() + " - Keine Zusatzstoffe");
-                            else
-                                groupMeal = groupMeal.replaceFirst("%s", "Allergene: " + meals.get(0).getAllergens() + " - Zusatzstoffe: " + meals.get(0).getAdditives());
+                            groupMeal = groupMeal.replaceFirst("%s", meals.get(0).getAllergens());
                         }
-                        mealBuilder.append(groupMeal + "\n");
+                        mealBuilder.append(groupMeal).append("\n");
                     }
                     menuString = mealBuilder.toString();
                 }
 
-                menuText.append(categoryString + menuString);
+                menuText.append(categoryString).append(menuString);
             }
         } else {
             log.warn("No meals found for Mensa: " + mensa.getName() + " --> send empty mail to: " + firstname);
@@ -163,125 +205,6 @@ public class Mailer {
         String footer = StaticEmailText.FOOD_PLAN_FOOTER;
         footer = footer.replaceFirst("%s", getRandomGreetingsText());
         footer = footer.replaceFirst("%s", deactivateUrl);
-
-        StringBuilder allergeneText = new StringBuilder();
-        allergeneText.append("Allergene und Zusatzstoffe: ");
-        List<Allergene> allergene = new ArrayList<>();
-        allergenes.forEach(allergene::add);
-        int count = 0;
-        for (Allergene allergene1 : allergene.stream().sorted(new AllergeneComparator()).collect(Collectors.toList())) {
-            allergeneText.append(allergene1.getToken()).append(": ").append(allergene1.getAllergen());
-            if (count < allergene.size() - 1) {
-                allergeneText.append(", ");
-            }
-            count++;
-        }
-        footer = footer.replaceFirst("%s", allergeneText.toString());
-
-
-        String msg = header +
-                menuText +
-                footer;
-
-        return msg;
-    }
-
-    private String createEmail(List<? extends Meal> menu, String firstName, String deactivateUrl, Mensa mensa, List<Allergene> allergenes) throws IOException {
-        StringBuilder menuText = new StringBuilder();
-
-        if (!menu.isEmpty()) {
-
-            List<List<Meal>> sublists = new ArrayList<>();
-            for (int i = 0; i <= menu.size(); i++) {
-                i = 0;
-                Meal meal = menu.get(i);
-                List<Meal> sublist = new ArrayList<>();
-                for (int x = 0; x < menu.size(); x++) {
-                    if (meal.getCategory().equals(menu.get(x).getCategory())) {
-                        sublist.add(menu.get(x));
-                    }
-                }
-                for (Meal meal2 : sublist) {
-                    menu.remove(meal2);
-                }
-                sublists.add(sublist);
-            }
-
-            for (List<Meal> meals : sublists) {
-
-                String menuString = StaticEmailText.FOOD_TEXT;
-                String categoryString = StaticEmailText.FOOD_CATEGORY;
-                if (meals.size() == 1) {
-                    categoryString = createCategoryString(meals, categoryString);
-                    menuString = menuString.replaceFirst("%s", meals.get(0).getName() +
-                            " (" + meals.get(0).getDescription() + ")" + " - " + meals.get(0).getPrice());
-                    if (meals.get(0).getAllergens().equals(notAvailableSign) && meals.get(0).getAdditives().equals(notAvailableSign)) {
-                        menuString = menuString.replaceFirst("%s", "Keine Allergene oder Zusatzstoffe enthalten (kontaktiere bitte die Mensa/Cafeteria, falls du dir unsicher bist)");
-                    } else {
-                        if (meals.get(0).getAllergens().equals(notAvailableSign) && !meals.get(0).getAdditives().isEmpty())
-                            menuString = menuString.replaceFirst("%s", "Keine Allergene - Zusatzstoffe: " + meals.get(0).getAdditives());
-                        else if (meals.get(0).getAdditives().equals(notAvailableSign))
-                            menuString = menuString.replaceFirst("%s", "Allergene: " + meals.get(0).getAllergens() + " - Keine Zusatzstoffe");
-                        else
-                            menuString = menuString.replaceFirst("%s", "Allergene: " + meals.get(0).getAllergens() + " - Zusatzstoffe: " + meals.get(0).getAdditives());
-                    }
-
-                } else {
-                    categoryString = createCategoryString(meals, categoryString);
-                    StringBuilder mealBuilder = new StringBuilder();
-                    for (Meal meal : meals) {
-                        String groupMeal = menuString.replaceFirst("%s", meal.getName() +
-                                " (" + meal.getDescription() + ")" + " - " + meal.getPrice());
-                        if (meals.get(0).getAllergens().equals(notAvailableSign) && meals.get(0).getAdditives().equals(notAvailableSign)) {
-                            groupMeal = groupMeal.replaceFirst("%s", "Keine Allergene oder Zusatzstoffe enthalten (kontaktiere bitte die Mensa/Cafeteria, falls du dir unsicher bist)");
-                        } else {
-                            if (meals.get(0).getAllergens().equals(notAvailableSign) && !meals.get(0).getAdditives().isEmpty())
-                                groupMeal = groupMeal.replaceFirst("%s", "Keine Allergene - Zusatzstoffe: " + meals.get(0).getAdditives());
-                            else if (meals.get(0).getAdditives().equals(notAvailableSign))
-                                groupMeal = groupMeal.replaceFirst("%s", "Allergene: " + meals.get(0).getAllergens() + " - Keine Zusatzstoffe");
-                            else
-                                groupMeal = groupMeal.replaceFirst("%s", "Allergene: " + meals.get(0).getAllergens() + " - Zusatzstoffe: " + meals.get(0).getAdditives());
-                        }
-                        mealBuilder.append(groupMeal + "\n");
-                    }
-                    menuString = mealBuilder.toString();
-                }
-
-                menuText.append(categoryString + menuString);
-            }
-        } else {
-            log.warn("No meals found for Mensa: " + mensa.getName() + " --> send empty mail to: " + firstName);
-            menuText.append(StaticEmailText.FOOD_TEXT.replaceFirst("%s", "Wir haben für deine Mensa " +
-                    "heute leider keine Gerichte für dich gefunden :("));
-            menuText.append(StaticEmailText.FOOD_TEXT.replaceFirst("%s", " "));
-        }
-
-        String header = StaticEmailText.FOOD_PLAN_TEXT;
-        header = header.replaceFirst("%s", "Speiseplan " +
-                LocalDate.now().format(java.time.format.DateTimeFormatter.ofPattern("dd.MM.yyyy")) + " - " +
-                mensa.getName());
-        header = header.replaceFirst("%s", getRandomFunnyText());
-        header = header.replaceFirst("%s", getRandomFunnyWelcomeText());
-        header = header.replaceFirst("%s", firstName);
-        header = header.replaceFirst("%s", "nachfolgend findest du den Speiseplan für heute.");
-
-        String footer = StaticEmailText.FOOD_PLAN_FOOTER;
-        footer = footer.replaceFirst("%s", getRandomGreetingsText());
-        footer = footer.replaceFirst("%s", deactivateUrl);
-
-        StringBuilder allergeneText = new StringBuilder();
-        allergeneText.append("Allergene und Zusatzstoffe: ");
-        List<Allergene> allergene = new ArrayList<>();
-        allergenes.forEach(allergene::add);
-        int count = 0;
-        for (Allergene allergene1 : allergene.stream().sorted(new AllergeneComparator()).collect(Collectors.toList())) {
-            allergeneText.append(allergene1.getToken()).append(": ").append(allergene1.getAllergen());
-            if (count < allergene.size() - 1) {
-                allergeneText.append(", ");
-            }
-            count++;
-        }
-        footer = footer.replaceFirst("%s", allergeneText.toString());
 
 
         String msg = header +
@@ -463,4 +386,85 @@ public class Mailer {
 
         return funnyTexts.get((int) (Math.random() * funnyTexts.size()));
     }
+
+    private String createEmail(List<? extends Meal> menu, String firstName, String deactivateUrl, Mensa mensa) throws IOException {
+        StringBuilder menuText = new StringBuilder();
+
+        if (!menu.isEmpty()) {
+
+            List<List<Meal>> sublists = new ArrayList<>();
+            for (int i = 0; i <= menu.size(); i++) {
+                i = 0;
+                Meal meal = menu.get(i);
+                List<Meal> sublist = new ArrayList<>();
+                for (int x = 0; x < menu.size(); x++) {
+                    if (meal.getCategory().equals(menu.get(x).getCategory())) {
+                        sublist.add(menu.get(x));
+                    }
+                }
+                for (Meal meal2 : sublist) {
+                    menu.remove(meal2);
+                }
+                sublists.add(sublist);
+            }
+
+            for (List<Meal> meals : sublists) {
+
+                String menuString = StaticEmailText.FOOD_TEXT;
+                String categoryString = StaticEmailText.FOOD_CATEGORY;
+                if (meals.size() == 1) {
+                    categoryString = createCategoryString(meals, categoryString);
+                    menuString = menuString.replaceFirst("%s", meals.get(0).getName() +
+                            " (" + meals.get(0).getDescription() + ")" + " - " + meals.get(0).getPrice());
+                    if (meals.get(0).getAllergens().equals(notAvailableSign)) {
+                        menuString = menuString.replaceFirst("%s", "Keine Allergene oder Zusatzstoffe enthalten (kontaktiere bitte die Mensa/Cafeteria, falls du dir unsicher bist)");
+                    } else {
+                        menuString = menuString.replaceFirst("%s", "Allergene & Zusatzstoffe: " + meals.get(0).getAllergens());
+                    }
+
+                } else {
+                    categoryString = createCategoryString(meals, categoryString);
+                    StringBuilder mealBuilder = new StringBuilder();
+                    for (Meal meal : meals) {
+                        String groupMeal = menuString.replaceFirst("%s", meal.getName() +
+                                " (" + meal.getDescription() + ")" + " - " + meal.getPrice());
+                        if (meals.get(0).getAllergens().equals(notAvailableSign)) {
+                            groupMeal = groupMeal.replaceFirst("%s", "Keine Allergene oder Zusatzstoffe enthalten (kontaktiere bitte die Mensa/Cafeteria, falls du dir unsicher bist)");
+                        } else {
+                            groupMeal = groupMeal.replaceFirst("%s", "Allergene & Zusatzstoffe: " + meals.get(0).getAllergens());
+                        }
+                        mealBuilder.append(groupMeal + "\n");
+                    }
+                    menuString = mealBuilder.toString();
+                }
+
+                menuText.append(categoryString + menuString);
+            }
+        } else {
+            log.warn("No meals found for Mensa: " + mensa.getName() + " --> send empty mail to: " + firstName);
+            menuText.append(StaticEmailText.FOOD_TEXT.replaceFirst("%s", "Wir haben für deine Mensa " +
+                    "heute leider keine Gerichte für dich gefunden :("));
+            menuText.append(StaticEmailText.FOOD_TEXT.replaceFirst("%s", " "));
+        }
+
+        String header = StaticEmailText.FOOD_PLAN_TEXT;
+        header = header.replaceFirst("%s", "Speiseplan " +
+                LocalDate.now().format(java.time.format.DateTimeFormatter.ofPattern("dd.MM.yyyy")) + " - " +
+                mensa.getName());
+        header = header.replaceFirst("%s", getRandomFunnyText());
+        header = header.replaceFirst("%s", getRandomFunnyWelcomeText());
+        header = header.replaceFirst("%s", firstName);
+        header = header.replaceFirst("%s", "nachfolgend findest du den Speiseplan für heute.");
+
+        String footer = StaticEmailText.FOOD_PLAN_FOOTER;
+        footer = footer.replaceFirst("%s", getRandomGreetingsText());
+        footer = footer.replaceFirst("%s", deactivateUrl);
+
+        String msg = header +
+                menuText +
+                footer;
+
+        return msg;
+    }
+
 }

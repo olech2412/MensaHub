@@ -1,22 +1,21 @@
 package de.olech2412.mensahub.datadispatcher.jpa.services.Leipzig.meals;
 
 import de.olech2412.mensahub.datadispatcher.jpa.repository.Leipzig.meals.MealsRepository;
-import de.olech2412.mensahub.models.Leipzig.meals.Meals_Cafeteria_Dittrichring;
-import de.olech2412.mensahub.models.Leipzig.mensen.Cafeteria_Dittrichring;
 import de.olech2412.mensahub.models.Meal;
 import de.olech2412.mensahub.models.Mensa;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Import;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
 
 @Service
 @Log4j2
-@Import({Meals_Cafeteria_Dittrichring.class, Meal.class})
-public class eals_Cafeteria_DittrichringService extends Meals_Mensa_Service {
+@Import({Meal.class})
+public class MealsService {
 
     @Autowired
     MealsRepository meals_Repository;
@@ -25,8 +24,7 @@ public class eals_Cafeteria_DittrichringService extends Meals_Mensa_Service {
     /**
      * @return Meals Cafeteria Dittrichring
      */
-    @Override
-    public List<Meals_Cafeteria_Dittrichring> findAll() {
+    public List<Meal> findAll() {
         return meals_Repository.findAll();
     }
 
@@ -34,119 +32,56 @@ public class eals_Cafeteria_DittrichringService extends Meals_Mensa_Service {
      * @param servingDate The serving date
      * @return All meals by serving date greater than or equal to serving date from Cafeteria Dittrichring
      */
-    @Override
-    public List<Meals_Cafeteria_Dittrichring> findAllMealsByServingDateGreaterThanEqual(LocalDate servingDate) {
-        return meals_Repository.findAllMealsByServingDateGreaterThanEqual(servingDate);
+    public List<Meal> findAllMealsByServingDateGreaterThanEqualAndMensa(LocalDate servingDate, Mensa mensa) {
+        return meals_Repository.findAllMealsByServingDateGreaterThanEqualAndMensa(servingDate, mensa);
     }
 
     /**
      * @param servingDate The serving date
      * @return All meals by serving date from Cafeteria Dittrichring
      */
-    @Override
-    public List<Meals_Cafeteria_Dittrichring> findAllMealsByServingDate(LocalDate servingDate) {
-        return meals_Repository.findAllMealsByServingDate(servingDate);
+    public List<Meal> findAllMealsByServingDateAndMensa(LocalDate servingDate, Mensa mensa) {
+        return meals_Repository.findAllMealsByServingDateAndMensa(servingDate, mensa);
     }
 
     /**
      * @param meal  The meal
      * @param mensa The mensa
      */
-    @Override
     public void save(Meal meal, Mensa mensa) {
-        Meals_Cafeteria_Dittrichring meals_cafeteria_dittrichring = new Meals_Cafeteria_Dittrichring();
-        meals_cafeteria_dittrichring.setId(meal.getId());
-        meals_cafeteria_dittrichring.setName(meal.getName());
-        meals_cafeteria_dittrichring.setCategory(meal.getCategory());
-        meals_cafeteria_dittrichring.setPrice(meal.getPrice());
-        meals_cafeteria_dittrichring.setServingDate(meal.getServingDate());
-        meals_cafeteria_dittrichring.setDescription(meal.getDescription());
-        meals_cafeteria_dittrichring.setAdditionalInfo(meal.getAdditionalInfo());
-        meals_cafeteria_dittrichring.setAllergens(meal.getAllergens());
-        meals_cafeteria_dittrichring.setAdditives(meal.getAdditives());
-        meals_cafeteria_dittrichring.setRating(meal.getRating());
-        meals_cafeteria_dittrichring.setVotes(meal.getVotes());
-        meals_cafeteria_dittrichring.setStarsTotal(meal.getStarsTotal());
 
-        Cafeteria_Dittrichring cafeteria_dittrichring = new Cafeteria_Dittrichring();
-        cafeteria_dittrichring.setId(mensa.getId());
-        cafeteria_dittrichring.setName(mensa.getName());
-        cafeteria_dittrichring.setApiUrl(mensa.getApiUrl());
+        meal.setMensa(mensa);
 
-        meals_cafeteria_dittrichring.setCafeteria_dittrichring(cafeteria_dittrichring);
-
-        meals_Repository.save(meals_cafeteria_dittrichring);
+        meals_Repository.save(meal);
     }
 
-    @Override
-    public void saveAll(List<? extends Meal> meals, Mensa mensa) {
+    @Transactional
+    public void saveAll(List<Meal> meals, Mensa mensa) {
         for (Meal meal : meals) {
-            Meals_Cafeteria_Dittrichring meals_cafeteria_dittrichring = new Meals_Cafeteria_Dittrichring();
-            meals_cafeteria_dittrichring.setId(meal.getId());
-            meals_cafeteria_dittrichring.setName(meal.getName());
-            meals_cafeteria_dittrichring.setCategory(meal.getCategory());
-            meals_cafeteria_dittrichring.setPrice(meal.getPrice());
-            meals_cafeteria_dittrichring.setServingDate(meal.getServingDate());
-            meals_cafeteria_dittrichring.setDescription(meal.getDescription());
-            meals_cafeteria_dittrichring.setAdditionalInfo(meal.getAdditionalInfo());
-            meals_cafeteria_dittrichring.setAllergens(meal.getAllergens());
-            meals_cafeteria_dittrichring.setAdditives(meal.getAdditives());
-            meals_cafeteria_dittrichring.setRating(meal.getRating());
-            meals_cafeteria_dittrichring.setVotes(meal.getVotes());
-            meals_cafeteria_dittrichring.setStarsTotal(meal.getStarsTotal());
-
-            Cafeteria_Dittrichring cafeteria_dittrichring = new Cafeteria_Dittrichring();
-            cafeteria_dittrichring.setId(mensa.getId());
-            cafeteria_dittrichring.setName(mensa.getName());
-            cafeteria_dittrichring.setApiUrl(mensa.getApiUrl());
-
-            meals_cafeteria_dittrichring.setCafeteria_dittrichring(cafeteria_dittrichring);
-
-            meals_Repository.save(meals_cafeteria_dittrichring);
+            meal.setMensa(mensa);
         }
+
+        meals_Repository.saveAll(meals);
     }
 
-    @Override
-    public void deleteAllByServingDate(LocalDate servingDate) {
-        meals_Repository.deleteAllByServingDate(servingDate);
+    @Transactional
+    public void deleteAllByServingDate(LocalDate servingDate, Mensa mensa) {
+        meals_Repository.deleteAllByServingDateAndMensa(servingDate, mensa);
     }
 
     /**
      * @param meal  The meal
      * @param mensa The mensa
      */
-    @Override
     public void delete(Meal meal, Mensa mensa) {
-        Meals_Cafeteria_Dittrichring meals_cafeteria_dittrichring = new Meals_Cafeteria_Dittrichring();
-        meals_cafeteria_dittrichring.setId(meal.getId());
-        meals_cafeteria_dittrichring.setName(meal.getName());
-        meals_cafeteria_dittrichring.setCategory(meal.getCategory());
-        meals_cafeteria_dittrichring.setPrice(meal.getPrice());
-        meals_cafeteria_dittrichring.setServingDate(meal.getServingDate());
-        meals_cafeteria_dittrichring.setDescription(meal.getDescription());
-        meals_cafeteria_dittrichring.setAdditionalInfo(meal.getAdditionalInfo());
-        meals_cafeteria_dittrichring.setAllergens(meal.getAllergens());
-        meals_cafeteria_dittrichring.setAdditives(meal.getAdditives());
-        meals_cafeteria_dittrichring.setRating(meal.getRating());
-        meals_cafeteria_dittrichring.setVotes(meal.getVotes());
-        meals_cafeteria_dittrichring.setStarsTotal(meal.getStarsTotal());
+        meal.setMensa(mensa);
 
-        Cafeteria_Dittrichring cafeteria_dittrichring = new Cafeteria_Dittrichring();
-        cafeteria_dittrichring.setId(mensa.getId());
-        cafeteria_dittrichring.setName(mensa.getName());
-        cafeteria_dittrichring.setApiUrl(mensa.getApiUrl());
-
-        meals_cafeteria_dittrichring.setCafeteria_dittrichring(cafeteria_dittrichring);
-
-        meals_Repository.delete(meals_cafeteria_dittrichring);
+        meals_Repository.delete(meal);
         log.warn("Meal deleted: " + meal.getName() + " from " + mensa.getName());
     }
 
-    @Override
-    public List<? extends Meal> findMealsFromMensaByNameAndServingDateBeforeOrderByServingDateDesc(String name, LocalDate servingDate) {
-        return meals_Repository.findMeals_Cafeteria_DittrichringByNameAndServingDateBeforeOrderByServingDateDesc(name, servingDate);
+    public List<Meal> findAllByNameAndMensaAndServingDateBeforeOrderByServingDateDesc(String name, Mensa mensa, LocalDate servingDate) {
+        return meals_Repository.findAllByNameAndMensaAndServingDateBeforeOrderByServingDateDesc(name, mensa, servingDate);
     }
-
-
 }
 
