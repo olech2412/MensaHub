@@ -1,10 +1,13 @@
 package de.olech2412.mensahub.models.authentification;
 
+import de.olech2412.mensahub.models.Mensa;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * This class represents the mail-user entity in the database.
@@ -35,6 +38,9 @@ public class MailUser {
     private boolean enabled; // if the user is enabled
 
     private LocalDate deactviatedUntil; // the date until the user is deactivated
+
+    @ManyToMany(mappedBy = "mail_users")
+    private Set<Mensa> mensas = new HashSet<>();
 
     /**
      * Default constructor for the mail-user.
