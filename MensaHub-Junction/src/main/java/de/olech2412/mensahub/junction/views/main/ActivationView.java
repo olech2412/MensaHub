@@ -97,7 +97,7 @@ public class ActivationView extends Composite implements BeforeEnterObserver {
                         accept.addThemeVariants(ButtonVariant.LUMO_SUCCESS, ButtonVariant.LUMO_PRIMARY);
                         accept.addClickListener(buttonClickEvent -> {
                             apiUser.setEnabledByAdmin(true);
-                            apiUser.setActivationCode(activationCodeRepository.findByCode("387UxMzB12").get(0));
+                            apiUser.setActivationCode(activationCodeRepository.findByCode("bereits aktiviert").get(0));
                             apiUserRepository.save(apiUser);
                             activationCodeRepository.delete(activationCodeRepository.findByCode(code).get(0));
                             try {
