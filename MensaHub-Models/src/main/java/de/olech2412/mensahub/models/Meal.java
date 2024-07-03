@@ -83,7 +83,7 @@ public class Meal {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Meal meal = (Meal) o;
-        return Objects.equals(getMensa(), meal.getMensa()) && getName() != null && Objects.equals(getName(), meal.getName()) && getServingDate() != null && Objects.equals(getServingDate(), meal.getServingDate());
+        return Objects.equals(getMensa(), meal.getMensa()) && getName() != null && Objects.equals(getName(), meal.getName()) && getServingDate() != null && Objects.equals(getServingDate(), meal.getServingDate()) && meal.getPrice() != null && Objects.equals(getPrice(), meal.getPrice()) && meal.getCategory() != null && Objects.equals(getCategory(), meal.getCategory()) && meal.getDescription() != null && Objects.equals(getDescription(), meal.getDescription()) && meal.getAllergens() != null && Objects.equals(getAllergens(), meal.getAllergens());
     }
 
     @Override
