@@ -38,8 +38,6 @@ public class MensaHub_DataDispatcher {
             log.info("Sending emails manually");
             leipzigDataDispatcher.sendEmails();
         }
-
-        leipzigDataDispatcher.callData();
     }
 
     private static void configureEnvironment() throws NoSuchPaddingException, IllegalBlockSizeException, IOException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {

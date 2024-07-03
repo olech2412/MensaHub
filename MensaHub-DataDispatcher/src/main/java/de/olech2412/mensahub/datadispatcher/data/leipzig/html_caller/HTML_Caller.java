@@ -60,7 +60,7 @@ public class HTML_Caller {
                 }
 
                 // Prices
-                Elements priceElements = meal.select(".meal-prices span.has-tip");
+                Elements priceElements = meal.select(".meal-prices");
                 if (!priceElements.isEmpty()) {
                     List<String> prices = priceElements.eachText();
                     mealObject.setPrice(String.join(" / ", prices).trim());
