@@ -103,14 +103,15 @@ public class Config {
         propertiesToEncrypt.add("mensaHub.database.password");
         propertiesToEncrypt.add("mensaHub.database.name");
         propertiesToEncrypt.add("mensaHub.database.username");
+        propertiesToEncrypt.add("mensaHub.junction.mail.sender.password");
 
         for (String key : propertiesToEncrypt) {
             String property = getPropertyEncrypted(key);
             if (!property.startsWith("{")) {
                 encryptProperty(key, property);
-                log.info("Encrypted property " + key);
+                log.info("Encrypted property {}", key);
             } else {
-                log.info("Property " + key + " already encrypted");
+                log.info("Property {} already encrypted", key);
             }
         }
     }

@@ -1,34 +1,60 @@
 package de.olech2412.mensahub.junction.email;
 
 import de.olech2412.mensahub.junction.config.Config;
+import jakarta.mail.*;
+import jakarta.mail.internet.InternetAddress;
+import jakarta.mail.internet.MimeBodyPart;
+import jakarta.mail.internet.MimeMessage;
+import jakarta.mail.internet.MimeMultipart;
+import net.markenwerk.utils.mail.dkim.DkimMessage;
+import net.markenwerk.utils.mail.dkim.DkimSigner;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
-import javax.mail.*;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeBodyPart;
-import javax.mail.internet.MimeMessage;
-import javax.mail.internet.MimeMultipart;
-import java.io.IOException;
+import java.io.*;
 import java.security.InvalidKeyException;
+import java.security.KeyFactory;
 import java.security.NoSuchAlgorithmException;
+import java.security.PrivateKey;
+import java.security.interfaces.RSAPrivateKey;
+import java.security.spec.PKCS8EncodedKeySpec;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.Base64;
 import java.util.Properties;
 
 @Component
 public class Mailer {
 
-    private final String emailAddress = Config.getInstance().getProperty("mensaHub.junction.mail.senderMail");
     private final String webAddress = Config.getInstance().getProperty("mensaHub.junction.address");
     @Value("${adminMail}")
     private String adminMail;
 
 
     public Mailer() throws IOException, IllegalBlockSizeException, NoSuchPaddingException, BadPaddingException, NoSuchAlgorithmException, InvalidKeyException {
+    }
+
+    private static PrivateKey loadPrivateKey(String filename) throws Exception {
+        File file = new File(filename);
+        BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(file)));
+        StringBuilder keyBuilder = new StringBuilder();
+        String line;
+
+        while ((line = reader.readLine()) != null) {
+            if (line.contains("BEGIN") || line.contains("END")) {
+                continue;
+            }
+            keyBuilder.append(line.trim());
+        }
+        reader.close();
+
+        byte[] keyBytes = Base64.getDecoder().decode(keyBuilder.toString());
+        PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(keyBytes);
+        KeyFactory keyFactory = KeyFactory.getInstance("RSA");
+        return keyFactory.generatePrivate(keySpec);
     }
 
     /**
@@ -41,14 +67,27 @@ public class Mailer {
      * @param deactivationCode
      * @throws MessagingException
      */
-    public void sendActivationEmail(String firstName, String emailTarget, String activationCode, String deactivationCode) throws MessagingException, IOException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
+    public void sendActivationEmail(String firstName, String emailTarget, String activationCode, String deactivationCode) throws Exception {
         Properties prop = new Properties();
-        prop.put("mail.smtp.auth", Boolean.getBoolean(Config.getInstance().getProperty("mensaHub.junction.mail.smtpAuth")));
+        prop.put("mail.smtp.auth", Boolean.parseBoolean(Config.getInstance().getProperty("mensaHub.junction.mail.smtpAuth")));
         prop.put("mail.smtp.host", Config.getInstance().getProperty("mensaHub.junction.mail.smtpHost"));
         prop.put("mail.smtp.port", Config.getInstance().getProperty("mensaHub.junction.mail.smtpPort"));
+        prop.put("mail.smtp.starttls.enable", "true");
+        prop.put("mail.smtp.ssl.enable", "true");
 
-        Message message = new MimeMessage(Session.getInstance(prop));
-        message.setFrom(new InternetAddress(emailAddress));
+        String senderMail = Config.getInstance().getProperty("mensaHub.junction.mail.senderMail");
+        String senderPassword = Config.getInstance().getProperty("mensaHub.junction.mail.sender.password");
+
+        Session mailSession = Session.getDefaultInstance(prop, new Authenticator() {
+
+            @Override
+            protected PasswordAuthentication getPasswordAuthentication() {
+                return new PasswordAuthentication(senderMail, senderPassword);
+            }
+        });
+
+        MimeMessage message = new MimeMessage(mailSession);
+        message.setFrom(new InternetAddress(senderMail));
         message.setRecipients(
                 Message.RecipientType.TO, InternetAddress.parse(emailTarget));
         message.setSubject("Aktivierung deines MensaHub-Newsletter-Accounts");
@@ -63,17 +102,43 @@ public class Mailer {
 
         message.setContent(multipart);
 
-        Transport.send(message);
+        // Lade den privaten Schlüssel
+        PrivateKey privateKey = loadPrivateKey(Config.getInstance().getProperty("mensaHub.dataDispatcher.mail.dkim_priv_path"));
+
+        RSAPrivateKey rsaPrivateKey = (RSAPrivateKey) privateKey;
+
+        // Erstelle den DKIM-Signer
+        DkimSigner signer = new DkimSigner(Config.getInstance().getProperty("mensaHub.dataDispatcher.mail.dkim_signing_domain"),
+                Config.getInstance().getProperty("mensaHub.dataDispatcher.mail.dkim_seperator"), rsaPrivateKey);
+
+        // Signiere die Nachricht mit DKIM
+        DkimMessage dkimMessage = new DkimMessage(message, signer);
+
+        Transport.send(dkimMessage);
     }
 
-    public void sendAPIActivationEmail(String username, String emailTarget, String activationCode, String deactivationCode) throws MessagingException, IOException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
+    public void sendAPIActivationEmail(String username, String emailTarget, String activationCode, String deactivationCode) throws Exception {
         Properties prop = new Properties();
         prop.put("mail.smtp.auth", Boolean.getBoolean(Config.getInstance().getProperty("mensaHub.junction.mail.smtpAuth")));
         prop.put("mail.smtp.host", Config.getInstance().getProperty("mensaHub.junction.mail.smtpHost"));
         prop.put("mail.smtp.port", Config.getInstance().getProperty("mensaHub.junction.mail.smtpPort"));
+        prop.put("mail.smtp.starttls.enable", "true");
+        prop.put("mail.smtp.ssl.enable", "true");
 
-        Message message = new MimeMessage(Session.getInstance(prop));
-        message.setFrom(new InternetAddress(emailAddress));
+        String senderMail = Config.getInstance().getProperty("mensaHub.junction.mail.senderMail");
+        String senderPassword = Config.getInstance().getProperty("mensaHub.junction.mail.sender.password");
+
+
+        Session mailSession = Session.getDefaultInstance(prop, new Authenticator() {
+
+            @Override
+            protected PasswordAuthentication getPasswordAuthentication() {
+                return new PasswordAuthentication(senderMail, senderPassword);
+            }
+        });
+
+        MimeMessage message = new MimeMessage(mailSession);
+        message.setFrom(new InternetAddress(senderMail));
         message.setRecipients(
                 Message.RecipientType.TO, InternetAddress.parse(emailTarget));
         message.setSubject("Aktivierung deines MensaHub-Gateway-Accounts");
@@ -88,17 +153,43 @@ public class Mailer {
 
         message.setContent(multipart);
 
-        Transport.send(message);
+        // Lade den privaten Schlüssel
+        PrivateKey privateKey = loadPrivateKey(Config.getInstance().getProperty("mensaHub.dataDispatcher.mail.dkim_priv_path"));
+
+        RSAPrivateKey rsaPrivateKey = (RSAPrivateKey) privateKey;
+
+        // Erstelle den DKIM-Signer
+        DkimSigner signer = new DkimSigner(Config.getInstance().getProperty("mensaHub.dataDispatcher.mail.dkim_signing_domain"),
+                Config.getInstance().getProperty("mensaHub.dataDispatcher.mail.dkim_seperator"), rsaPrivateKey);
+
+        // Signiere die Nachricht mit DKIM
+        DkimMessage dkimMessage = new DkimMessage(message, signer);
+
+        Transport.send(dkimMessage);
     }
 
-    public void sendAPIAdminRequest(String activationCode) throws MessagingException, IOException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
+    public void sendAPIAdminRequest(String activationCode) throws Exception {
         Properties prop = new Properties();
         prop.put("mail.smtp.auth", Boolean.getBoolean(Config.getInstance().getProperty("mensaHub.junction.mail.smtpAuth")));
         prop.put("mail.smtp.host", Config.getInstance().getProperty("mensaHub.junction.mail.smtpHost"));
         prop.put("mail.smtp.port", Config.getInstance().getProperty("mensaHub.junction.mail.smtpPort"));
+        prop.put("mail.smtp.starttls.enable", "true");
+        prop.put("mail.smtp.ssl.enable", "true");
 
-        Message message = new MimeMessage(Session.getInstance(prop));
-        message.setFrom(new InternetAddress(emailAddress));
+        String senderMail = Config.getInstance().getProperty("mensaHub.junction.mail.senderMail");
+        String senderPassword = Config.getInstance().getProperty("mensaHub.junction.mail.sender.password");
+
+
+        Session mailSession = Session.getDefaultInstance(prop, new Authenticator() {
+
+            @Override
+            protected PasswordAuthentication getPasswordAuthentication() {
+                return new PasswordAuthentication(senderMail, senderPassword);
+            }
+        });
+
+        MimeMessage message = new MimeMessage(mailSession);
+        message.setFrom(new InternetAddress(senderMail));
         message.setRecipients(
                 Message.RecipientType.TO, InternetAddress.parse(adminMail));
         message.setSubject("Admin Request für MensaHub-Gateway");
@@ -113,17 +204,43 @@ public class Mailer {
 
         message.setContent(multipart);
 
-        Transport.send(message);
+        // Lade den privaten Schlüssel
+        PrivateKey privateKey = loadPrivateKey(Config.getInstance().getProperty("mensaHub.dataDispatcher.mail.dkim_priv_path"));
+
+        RSAPrivateKey rsaPrivateKey = (RSAPrivateKey) privateKey;
+
+        // Erstelle den DKIM-Signer
+        DkimSigner signer = new DkimSigner(Config.getInstance().getProperty("mensaHub.dataDispatcher.mail.dkim_signing_domain"),
+                Config.getInstance().getProperty("mensaHub.dataDispatcher.mail.dkim_seperator"), rsaPrivateKey);
+
+        // Signiere die Nachricht mit DKIM
+        DkimMessage dkimMessage = new DkimMessage(message, signer);
+
+        Transport.send(dkimMessage);
     }
 
-    public void sendAPIAdminRequestSuccess(String username, String emailTarget, String deactivationCode) throws MessagingException, IOException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
+    public void sendAPIAdminRequestSuccess(String username, String emailTarget, String deactivationCode) throws Exception {
         Properties prop = new Properties();
         prop.put("mail.smtp.auth", Boolean.getBoolean(Config.getInstance().getProperty("mensaHub.junction.mail.smtpAuth")));
         prop.put("mail.smtp.host", Config.getInstance().getProperty("mensaHub.junction.mail.smtpHost"));
         prop.put("mail.smtp.port", Config.getInstance().getProperty("mensaHub.junction.mail.smtpPort"));
+        prop.put("mail.smtp.starttls.enable", "true");
+        prop.put("mail.smtp.ssl.enable", "true");
 
-        Message message = new MimeMessage(Session.getInstance(prop));
-        message.setFrom(new InternetAddress(emailAddress));
+        String senderMail = Config.getInstance().getProperty("mensaHub.junction.mail.senderMail");
+        String senderPassword = Config.getInstance().getProperty("mensaHub.junction.mail.sender.password");
+
+
+        Session mailSession = Session.getDefaultInstance(prop, new Authenticator() {
+
+            @Override
+            protected PasswordAuthentication getPasswordAuthentication() {
+                return new PasswordAuthentication(senderMail, senderPassword);
+            }
+        });
+
+        MimeMessage message = new MimeMessage(mailSession);
+        message.setFrom(new InternetAddress(senderMail));
         message.setRecipients(
                 Message.RecipientType.TO, InternetAddress.parse(emailTarget));
         message.setSubject("Admin Request für MensaHub-Gateway");
@@ -138,17 +255,43 @@ public class Mailer {
 
         message.setContent(multipart);
 
-        Transport.send(message);
+        // Lade den privaten Schlüssel
+        PrivateKey privateKey = loadPrivateKey(Config.getInstance().getProperty("mensaHub.dataDispatcher.mail.dkim_priv_path"));
+
+        RSAPrivateKey rsaPrivateKey = (RSAPrivateKey) privateKey;
+
+        // Erstelle den DKIM-Signer
+        DkimSigner signer = new DkimSigner(Config.getInstance().getProperty("mensaHub.dataDispatcher.mail.dkim_signing_domain"),
+                Config.getInstance().getProperty("mensaHub.dataDispatcher.mail.dkim_seperator"), rsaPrivateKey);
+
+        // Signiere die Nachricht mit DKIM
+        DkimMessage dkimMessage = new DkimMessage(message, signer);
+
+        Transport.send(dkimMessage);
     }
 
-    public void sendAPIAdminRequestDecline(String username, String emailTarget) throws MessagingException, IOException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
+    public void sendAPIAdminRequestDecline(String username, String emailTarget) throws Exception {
         Properties prop = new Properties();
         prop.put("mail.smtp.auth", Boolean.getBoolean(Config.getInstance().getProperty("mensaHub.junction.mail.smtpAuth")));
         prop.put("mail.smtp.host", Config.getInstance().getProperty("mensaHub.junction.mail.smtpHost"));
         prop.put("mail.smtp.port", Config.getInstance().getProperty("mensaHub.junction.mail.smtpPort"));
+        prop.put("mail.smtp.starttls.enable", "true");
+        prop.put("mail.smtp.ssl.enable", "true");
 
-        Message message = new MimeMessage(Session.getInstance(prop));
-        message.setFrom(new InternetAddress(emailAddress));
+        String senderMail = Config.getInstance().getProperty("mensaHub.junction.mail.senderMail");
+        String senderPassword = Config.getInstance().getProperty("mensaHub.junction.mail.sender.password");
+
+
+        Session mailSession = Session.getDefaultInstance(prop, new Authenticator() {
+
+            @Override
+            protected PasswordAuthentication getPasswordAuthentication() {
+                return new PasswordAuthentication(senderMail, senderPassword);
+            }
+        });
+
+        MimeMessage message = new MimeMessage(mailSession);
+        message.setFrom(new InternetAddress(senderMail));
         message.setRecipients(
                 Message.RecipientType.TO, InternetAddress.parse(emailTarget));
         message.setSubject("Admin Request für MensaHub-Gateway");
@@ -163,7 +306,19 @@ public class Mailer {
 
         message.setContent(multipart);
 
-        Transport.send(message);
+        // Lade den privaten Schlüssel
+        PrivateKey privateKey = loadPrivateKey(Config.getInstance().getProperty("mensaHub.dataDispatcher.mail.dkim_priv_path"));
+
+        RSAPrivateKey rsaPrivateKey = (RSAPrivateKey) privateKey;
+
+        // Erstelle den DKIM-Signer
+        DkimSigner signer = new DkimSigner(Config.getInstance().getProperty("mensaHub.dataDispatcher.mail.dkim_signing_domain"),
+                Config.getInstance().getProperty("mensaHub.dataDispatcher.mail.dkim_seperator"), rsaPrivateKey);
+
+        // Signiere die Nachricht mit DKIM
+        DkimMessage dkimMessage = new DkimMessage(message, signer);
+
+        Transport.send(dkimMessage);
     }
 
     /**
@@ -174,14 +329,28 @@ public class Mailer {
      * @param emailTarget
      * @throws MessagingException
      */
-    public void sendDeactivationEmail(String firstName, String emailTarget) throws MessagingException, IOException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
+    public void sendDeactivationEmail(String firstName, String emailTarget) throws Exception {
         Properties prop = new Properties();
         prop.put("mail.smtp.auth", Boolean.getBoolean(Config.getInstance().getProperty("mensaHub.junction.mail.smtpAuth")));
         prop.put("mail.smtp.host", Config.getInstance().getProperty("mensaHub.junction.mail.smtpHost"));
         prop.put("mail.smtp.port", Config.getInstance().getProperty("mensaHub.junction.mail.smtpPort"));
+        prop.put("mail.smtp.starttls.enable", "true");
+        prop.put("mail.smtp.ssl.enable", "true");
 
-        Message message = new MimeMessage(Session.getInstance(prop));
-        message.setFrom(new InternetAddress(emailAddress));
+        String senderMail = Config.getInstance().getProperty("mensaHub.junction.mail.senderMail");
+        String senderPassword = Config.getInstance().getProperty("mensaHub.junction.mail.sender.password");
+
+
+        Session mailSession = Session.getDefaultInstance(prop, new Authenticator() {
+
+            @Override
+            protected PasswordAuthentication getPasswordAuthentication() {
+                return new PasswordAuthentication(senderMail, senderPassword);
+            }
+        });
+
+        MimeMessage message = new MimeMessage(mailSession);
+        message.setFrom(new InternetAddress(senderMail));
         message.setRecipients(
                 Message.RecipientType.TO, InternetAddress.parse(emailTarget));
         message.setSubject("Deaktivierung deines MensaHub-Newsletter-Accounts");
@@ -196,40 +365,19 @@ public class Mailer {
 
         message.setContent(multipart);
 
-        Transport.send(message);
-    }
+        // Lade den privaten Schlüssel
+        PrivateKey privateKey = loadPrivateKey(Config.getInstance().getProperty("mensaHub.dataDispatcher.mail.dkim_priv_path"));
 
-    /**
-     * Sends an email to the given address with the given subject and content.
-     * For Deactivation
-     *
-     * @param firstName
-     * @param emailTarget
-     * @throws MessagingException
-     */
-    public void sendTemporaryDeactivationEmail(String firstName, String emailTarget, String deactivationCode, LocalDate deactivateUntil) throws MessagingException, IOException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
-        Properties prop = new Properties();
-        prop.put("mail.smtp.auth", Boolean.getBoolean(Config.getInstance().getProperty("mensaHub.junction.mail.smtpAuth")));
-        prop.put("mail.smtp.host", Config.getInstance().getProperty("mensaHub.junction.mail.smtpHost"));
-        prop.put("mail.smtp.port", Config.getInstance().getProperty("mensaHub.junction.mail.smtpPort"));
+        RSAPrivateKey rsaPrivateKey = (RSAPrivateKey) privateKey;
 
-        Message message = new MimeMessage(Session.getInstance(prop));
-        message.setFrom(new InternetAddress(emailAddress));
-        message.setRecipients(
-                Message.RecipientType.TO, InternetAddress.parse(emailTarget));
-        message.setSubject("Temporäre Deaktivierung deines MensaHub-Newsletter-Accounts");
+        // Erstelle den DKIM-Signer
+        DkimSigner signer = new DkimSigner(Config.getInstance().getProperty("mensaHub.dataDispatcher.mail.dkim_signing_domain"),
+                Config.getInstance().getProperty("mensaHub.dataDispatcher.mail.dkim_seperator"), rsaPrivateKey);
 
-        String msg = getTemporaryDeactivationText(firstName, deactivationCode, deactivateUntil);
+        // Signiere die Nachricht mit DKIM
+        DkimMessage dkimMessage = new DkimMessage(message, signer);
 
-        MimeBodyPart mimeBodyPart = new MimeBodyPart();
-        mimeBodyPart.setContent(msg, "text/html; charset=utf-8");
-
-        Multipart multipart = new MimeMultipart();
-        multipart.addBodyPart(mimeBodyPart);
-
-        message.setContent(multipart);
-
-        Transport.send(message);
+        Transport.send(dkimMessage);
     }
 
     private String getAPIAdminRequestSuccessText(String username, String deactivationCode) {
@@ -296,5 +444,64 @@ public class Mailer {
         msg = msg.replaceFirst("%s", deactivateUrl);
 
         return msg;
+    }
+
+    /**
+     * Sends an email to the given address with the given subject and content.
+     * For Deactivation
+     *
+     * @param firstName
+     * @param emailTarget
+     * @throws MessagingException
+     */
+    public void sendTemporaryDeactivationEmail(String firstName, String emailTarget, String deactivationCode, LocalDate deactivateUntil) throws Exception {
+        Properties prop = new Properties();
+        prop.put("mail.smtp.auth", Boolean.getBoolean(Config.getInstance().getProperty("mensaHub.junction.mail.smtpAuth")));
+        prop.put("mail.smtp.host", Config.getInstance().getProperty("mensaHub.junction.mail.smtpHost"));
+        prop.put("mail.smtp.port", Config.getInstance().getProperty("mensaHub.junction.mail.smtpPort"));
+        prop.put("mail.smtp.starttls.enable", "true");
+        prop.put("mail.smtp.ssl.enable", "true");
+
+        String senderMail = Config.getInstance().getProperty("mensaHub.junction.mail.senderMail");
+        String senderPassword = Config.getInstance().getProperty("mensaHub.junction.mail.sender.password");
+
+
+        Session mailSession = Session.getDefaultInstance(prop, new Authenticator() {
+
+            @Override
+            protected PasswordAuthentication getPasswordAuthentication() {
+                return new PasswordAuthentication(senderMail, senderPassword);
+            }
+        });
+
+        MimeMessage message = new MimeMessage(mailSession);
+        message.setFrom(new InternetAddress(senderMail));
+        message.setRecipients(
+                Message.RecipientType.TO, InternetAddress.parse(emailTarget));
+        message.setSubject("Temporäre Deaktivierung deines MensaHub-Newsletter-Accounts");
+
+        String msg = getTemporaryDeactivationText(firstName, deactivationCode, deactivateUntil);
+
+        MimeBodyPart mimeBodyPart = new MimeBodyPart();
+        mimeBodyPart.setContent(msg, "text/html; charset=utf-8");
+
+        Multipart multipart = new MimeMultipart();
+        multipart.addBodyPart(mimeBodyPart);
+
+        message.setContent(multipart);
+
+        // Lade den privaten Schlüssel
+        PrivateKey privateKey = loadPrivateKey(Config.getInstance().getProperty("mensaHub.dataDispatcher.mail.dkim_priv_path"));
+
+        RSAPrivateKey rsaPrivateKey = (RSAPrivateKey) privateKey;
+
+        // Erstelle den DKIM-Signer
+        DkimSigner signer = new DkimSigner(Config.getInstance().getProperty("mensaHub.dataDispatcher.mail.dkim_signing_domain"),
+                Config.getInstance().getProperty("mensaHub.dataDispatcher.mail.dkim_seperator"), rsaPrivateKey);
+
+        // Signiere die Nachricht mit DKIM
+        DkimMessage dkimMessage = new DkimMessage(message, signer);
+
+        Transport.send(dkimMessage);
     }
 }

@@ -27,7 +27,7 @@ import java.security.NoSuchAlgorithmException;
 @Theme("mensaHub-theme")
 @NpmPackage(value = "line-awesome", version = "1.3.0")
 @PWA(name = "MensaHub-Junction", shortName = "MensaHub")
-@EntityScan(basePackages = {"de.olech2412.mensahub.models.authentification", "de.olech2412.mensahub.models.Leipzig"})
+@EntityScan(basePackages = {"de.olech2412.mensahub.models"})
 @Slf4j
 public class MensaHub_Junction implements AppShellConfigurator {
 
