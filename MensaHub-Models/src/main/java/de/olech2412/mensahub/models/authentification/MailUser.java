@@ -39,7 +39,7 @@ public class MailUser {
 
     private LocalDate deactviatedUntil; // the date until the user is deactivated
 
-    @ManyToMany(cascade = {CascadeType.ALL})
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(
             name = "mail_user_mensa_abbo",
             joinColumns = {@JoinColumn(name = "mail_users_id")},
