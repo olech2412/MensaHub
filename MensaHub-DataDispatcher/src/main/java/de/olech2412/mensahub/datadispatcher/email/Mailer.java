@@ -72,8 +72,8 @@ public class Mailer {
     public void sendSpeiseplan(MailUser emailTarget, List<Meal> menu, Mensa mensa, boolean update) throws Exception {
         Properties prop = new Properties();
         prop.put("mail.smtp.auth", Boolean.parseBoolean(Config.getInstance().getProperty("mensaHub.dataDispatcher.mail.smtpAuth")));
-        prop.put("mail.smtp.host", Config.getInstance().getProperty("mensaHub.junction.mail.smtpHost"));
-        prop.put("mail.smtp.port", Config.getInstance().getProperty("mensaHub.junction.mail.smtpPort"));
+        prop.put("mail.smtp.host", Config.getInstance().getProperty("mensaHub.dataDispatcher.mail.smtpHost"));
+        prop.put("mail.smtp.port", Config.getInstance().getProperty("mensaHub.dataDispatcher.mail.smtpPort"));
         prop.put("mail.smtp.starttls.enable", "true");
         prop.put("mail.smtp.ssl.enable", "true");
 
@@ -132,7 +132,7 @@ public class Mailer {
 
     }
 
-    private String createUpdateEmail(List<Meal> menu, String firstname, String deactivateUrl, Mensa mensa) throws IOException {
+    private String createUpdateEmail(List<Meal> menu, String firstname, String deactivateUrl, Mensa mensa) {
         StringBuilder menuText = new StringBuilder();
 
         if (!menu.isEmpty()) {
