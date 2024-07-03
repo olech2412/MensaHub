@@ -35,6 +35,8 @@ public class Mensa {
     private Set<Meal> mealSet;
 
     @ManyToMany(mappedBy = "mensas")
+    @JsonIgnore
+    @Transient
     private Set<MailUser> subscriber = new HashSet<>();
 
     /**
