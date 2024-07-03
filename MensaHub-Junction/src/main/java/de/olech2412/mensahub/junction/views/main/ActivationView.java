@@ -153,7 +153,7 @@ public class ActivationView extends Composite implements BeforeEnterObserver {
                 } else {
                     layout.add(new Text("Freischaltung erfolgreich :). Du bist nun im Email-Verteiler."));
                     MailUser activatedUser = mailUserRepository.findByActivationCode_Code(code);
-                    activatedUser.setActivationCode(activationCodeRepository.findByCode("387UxMzB12").get(0));
+                    activatedUser.setActivationCode(activationCodeRepository.findByCode("bereits aktiviert").get(0));
                     activatedUser.setEnabled(true);
                     mailUserRepository.save(activatedUser);
                     activationCodeRepository.delete(activationCodeRepository.findByCode(code).get(0));
