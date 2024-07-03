@@ -41,6 +41,7 @@ public class MealController {
      *
      * @param startDate - The start date as a string (yyyy-MM-dd)
      * @param enddate   - The end date as a string (yyyy-MM-dd)
+     * @param mensaId   - The ID of the mensa
      * @return - All meals between the start and end date
      */
     @GetMapping("/getMeals/from/{startDate}/to/{enddate}/fromMensa/{mensaId}")
