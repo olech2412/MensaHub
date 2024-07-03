@@ -25,16 +25,16 @@ import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.*;
 import de.olech2412.mensahub.junction.JPA.repository.ActivationCodeRepository;
 import de.olech2412.mensahub.junction.JPA.repository.DeactivationCodeRepository;
-import de.olech2412.mensahub.junction.JPA.repository.MailUserRepository;
-import de.olech2412.mensahub.junction.JPA.services.mensen.*;
+import de.olech2412.mensahub.junction.JPA.services.MailUserService;
+import de.olech2412.mensahub.junction.JPA.services.mensen.MensaService;
 import de.olech2412.mensahub.junction.config.Config;
 import de.olech2412.mensahub.junction.email.Mailer;
-import de.olech2412.mensahub.models.Leipzig.mensen.*;
 import de.olech2412.mensahub.models.Mensa;
 import de.olech2412.mensahub.models.authentification.ActivationCode;
 import de.olech2412.mensahub.models.authentification.DeactivationCode;
 import de.olech2412.mensahub.models.authentification.MailUser;
 import jakarta.annotation.security.RolesAllowed;
+import jakarta.mail.MessagingException;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,11 +43,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
-import javax.mail.MessagingException;
 import java.io.IOException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -65,42 +63,21 @@ public class UserView extends HorizontalLayout implements BeforeEnterObserver {
     private TextField lastName;
     private Button registerButton;
     private Checkbox accept;
-    @Autowired
-    private MailUserRepository mailUserRepository;
+
     @Autowired
     private ActivationCodeRepository activationCodeRepository;
+
     @Autowired
     private DeactivationCodeRepository deactivationCodeRepository;
+
+    private final MensaService mensaService;
+
     @Autowired
-    private Mensa_AcademicaService mensa_academicaService;
-    @Autowired
-    private Cafeteria_DittrichringService cafeteria_dittrichringService;
-    @Autowired
-    private Mensa_am_ElsterbeckenService mensa_am_elsterbeckenService;
-    @Autowired
-    private Mensa_am_MedizincampusService mensa_am_medizincampusService;
-    @Autowired
-    private Mensa_am_ParkService mensa_am_parkService;
-    @Autowired
-    private Mensa_PeterssteinwegService mensa_peterssteinwegService;
-    @Autowired
-    private Mensa_Schoenauer_StrService mensa_schoenauer_strService;
-    @Autowired
-    private Mensa_TierklinikService mensa_tierklinikService;
-    @Autowired
-    private Menseria_am_Botanischen_GartenService menseria_am_botanischen_gartenService;
+    private MailUserService mailUserService;
 
 
-    public UserView(Mensa_AcademicaService mensa_academicaService, Cafeteria_DittrichringService cafeteria_dittrichringService, Mensa_am_ElsterbeckenService mensa_am_elsterbeckenService, Mensa_am_MedizincampusService mensa_am_medizincampusService, Mensa_am_ParkService mensa_am_parkService, Mensa_PeterssteinwegService mensa_peterssteinwegService, Mensa_Schoenauer_StrService mensa_schoenauer_strService, Mensa_TierklinikService mensa_tierklinikService, Menseria_am_Botanischen_GartenService menseria_am_botanischen_gartenService) throws IOException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
-        this.mensa_academicaService = mensa_academicaService;
-        this.cafeteria_dittrichringService = cafeteria_dittrichringService;
-        this.mensa_am_elsterbeckenService = mensa_am_elsterbeckenService;
-        this.mensa_am_medizincampusService = mensa_am_medizincampusService;
-        this.mensa_am_parkService = mensa_am_parkService;
-        this.mensa_peterssteinwegService = mensa_peterssteinwegService;
-        this.mensa_schoenauer_strService = mensa_schoenauer_strService;
-        this.mensa_tierklinikService = mensa_tierklinikService;
-        this.menseria_am_botanischen_gartenService = menseria_am_botanischen_gartenService;
+    public UserView(MensaService mensaService) throws IOException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
+        this.mensaService = mensaService;
 
         VerticalLayout mainLayout = init();
 
@@ -129,16 +106,7 @@ public class UserView extends HorizontalLayout implements BeforeEnterObserver {
     }
 
     private VerticalLayout init() throws IOException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
-        List<Mensa> mensas = new ArrayList<>();
-        mensas.add(mensa_academicaService.getMensa());
-        mensas.add(cafeteria_dittrichringService.getMensa());
-        mensas.add(mensa_am_elsterbeckenService.getMensa());
-        mensas.add(mensa_am_medizincampusService.getMensa());
-        mensas.add(mensa_am_parkService.getMensa());
-        mensas.add(mensa_peterssteinwegService.getMensa());
-        mensas.add(mensa_schoenauer_strService.getMensa());
-        mensas.add(mensa_tierklinikService.getMensa());
-        mensas.add(menseria_am_botanischen_gartenService.getMensa());
+        List<Mensa> mensas = mensaService.getAllMensas();
 
         MultiSelectComboBox<Mensa> multiSelectComboBox = new MultiSelectComboBox<>();
         multiSelectComboBox.setLabel("Wähle deine Mensen aus");
@@ -279,7 +247,7 @@ public class UserView extends HorizontalLayout implements BeforeEnterObserver {
                 if (firstName.getValue().length() <= 255 && lastName.getValue().length() <= 255
                         && !special.matcher(firstname).find() && !special.matcher(lastname).find()
                         && !firstName.isEmpty() && !lastName.isEmpty()) { // same step for lastname and firstname
-                    if (mailUserRepository.findByEmail(email).isEmpty()) {
+                    if (mailUserService.findMailUserByEmail(email).isEmpty()) {
                         if (accept.getValue()) {
                             try {
                                 createRegistratedUser(email, firstname, lastname, mensa);
@@ -328,11 +296,11 @@ public class UserView extends HorizontalLayout implements BeforeEnterObserver {
 
     /**
      * Save User in Database
-     * User is not enabled because he didnt verified the email
+     * User is not enabled because he didn't verified the email
      *
      * @param email
      */
-    private void createRegistratedUser(String email, String firstname, String lastname, Set<Mensa> mensa) throws MessagingException, IOException {
+    private void createRegistratedUser(String email, String firstname, String lastname, Set<Mensa> mensa) {
 
         try {
             ActivationCode activationCode = new ActivationCode(RandomStringUtils.randomAlphanumeric(32));
@@ -362,36 +330,16 @@ public class UserView extends HorizontalLayout implements BeforeEnterObserver {
             mailUser.setActivationCode(activationCode);
             mailUser.setDeactivationCode(deactivationCode);
 
-            for (Mensa mensa1 : mensa) {
-                if (mensa1 instanceof Cafeteria_Dittrichring) {
-                    mailUser.setCafeteria_dittrichring((Cafeteria_Dittrichring) mensa1);
-                } else if (mensa1 instanceof Mensa_Academica) {
-                    mailUser.setMensa_academica((Mensa_Academica) mensa1);
-                } else if (mensa1 instanceof Mensa_Schoenauer_Str) {
-                    mailUser.setMensa_schoenauer_str((Mensa_Schoenauer_Str) mensa1);
-                } else if (mensa1 instanceof Mensa_am_Elsterbecken) {
-                    mailUser.setMensa_am_elsterbecken((Mensa_am_Elsterbecken) mensa1);
-                } else if (mensa1 instanceof Mensa_am_Medizincampus) {
-                    mailUser.setMensa_am_medizincampus((Mensa_am_Medizincampus) mensa1);
-                } else if (mensa1 instanceof Mensa_am_Park) {
-                    mailUser.setMensa_am_park((Mensa_am_Park) mensa1);
-                } else if (mensa1 instanceof Mensa_Peterssteinweg) {
-                    mailUser.setMensa_peterssteinweg((Mensa_Peterssteinweg) mensa1);
-                } else if (mensa1 instanceof Mensa_Tierklinik) {
-                    mailUser.setMensa_tierklinik((Mensa_Tierklinik) mensa1);
-                } else if (mensa1 instanceof Menseria_am_Botanischen_Garten) {
-                    mailUser.setMenseria_am_botanischen_garten((Menseria_am_Botanischen_Garten) mensa1);
-                }
-            }
+            mailUser.setMensas(mensa);
 
-            mailUserRepository.save(mailUser); // save the user in the database, not enabled because he didnt verified the email
+            mailUserService.saveMailUser(mailUser); // save the user in the database, not enabled because he didnt verified the email
         } catch (Exception e) {
-            logger.trace("Error while sending mail: ", e);
-            logger.trace("User input: " + email + " " + firstname + " " + lastname);
+            logger.trace("Error while saving user: ", e);
+            logger.trace("User input: {} {} {}", email, firstname, lastname);
             Notification notification = new Notification("Es ist ein Fehler aufgetreten. Bitte versuche es später erneut", 3000);
             notification.addThemeVariants(NotificationVariant.LUMO_ERROR);
             notification.open();
-            throw new RuntimeException(e);
+            return;
         }
 
         Notification notification = new Notification("Alles erledigt :). Du kannst die Seite nun verlassen", 6000);

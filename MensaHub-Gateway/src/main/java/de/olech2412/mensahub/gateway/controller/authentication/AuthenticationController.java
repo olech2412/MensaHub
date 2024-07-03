@@ -47,6 +47,10 @@ public class AuthenticationController {
             apiUserRepository.save(apiUser);
         }
 
+        if (apiUser == null) {
+            return ResponseEntity.badRequest().build();
+        }
+
         // Check if user is enabled by admin and verified email
         if (!apiUser.getEnabledByAdmin() || !apiUser.getVerified_email()) {
             return ResponseEntity.badRequest().build(); // if not, return bad request

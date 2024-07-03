@@ -32,20 +32,19 @@ import de.olech2412.mensahub.models.authentification.API_User;
 import de.olech2412.mensahub.models.authentification.ActivationCode;
 import de.olech2412.mensahub.models.authentification.DeactivationCode;
 import jakarta.annotation.security.PermitAll;
+import jakarta.mail.MessagingException;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 import jakarta.validation.ValidatorFactory;
+import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.RandomStringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
-import javax.mail.MessagingException;
 import java.io.IOException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
@@ -54,8 +53,8 @@ import java.util.Set;
 @Route("registerDev")
 @PageTitle("MensaHub-Dev")
 @PermitAll
+@Log4j2
 public class DeveloperRegisterView extends Composite implements BeforeEnterObserver {
-    Logger logger = LoggerFactory.getLogger(MailSettingsView.class);
     @Autowired
     ActivationCodeRepository activationCodeRepository;
     @Autowired
@@ -189,7 +188,7 @@ public class DeveloperRegisterView extends Composite implements BeforeEnterObser
         activationCodeRepository.save(activationCode);
         deactivationCodeRepository.save(deactivationCode);
 
-        logger.info(String.format("Generated activationcode: %s and deactivationcode: %s", activationCode.getCode(), deactivationCode.getCode()));
+        log.info(String.format("Generated activationcode: %s and deactivationcode: %s", activationCode.getCode(), deactivationCode.getCode()));
 
         apiUser.setActivationCode(activationCode);
         apiUser.setDeactivationCode(deactivationCode);
@@ -203,9 +202,9 @@ public class DeveloperRegisterView extends Composite implements BeforeEnterObser
             Mailer mailer = new Mailer();
             mailer.sendAPIActivationEmail(apiUser.getApiUsername(), apiUser.getEmail(),
                     activationCode.getCode(), deactivationCode.getCode());
-            logger.info("Mail was sent successfully");
+            log.info("Mail was sent successfully");
         } catch (Exception exception) {
-            logger.error("Error while sending activation mail to user: " + exception.getMessage());
+            log.error("Error while sending activation mail to user: {}", exception.getMessage());
             Notification mailErrorNotification = new Notification("E-Mail konnte nicht versendet werden. Wende dich bitte an den Administrator", 6000);
             mailErrorNotification.addThemeVariants(NotificationVariant.LUMO_WARNING);
             mailErrorNotification.open();
@@ -250,12 +249,11 @@ public class DeveloperRegisterView extends Composite implements BeforeEnterObser
     private Component createFooter() throws IOException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
         Button privacy = new Button("Datenschutzerklärung");
         privacy.addClickListener(e -> {
-            logger.info("Privacy button clicked");
+            log.info("Privacy button clicked");
             UI.getCurrent().navigate("datenschutzerklärung");
         });
         privacy.addThemeVariants(ButtonVariant.LUMO_SMALL, ButtonVariant.LUMO_TERTIARY);
         privacy.setIcon(new Icon("vaadin", "bookmark-o"));
-
 
         VerticalLayout footer = new VerticalLayout(new HorizontalLayout(privacy), new H6("Made with ❤️ " +
                 "by  christopho"), new Span(Config.getInstance().getProperty("mensaHub.junction.footer.cp")));
@@ -277,7 +275,7 @@ public class DeveloperRegisterView extends Composite implements BeforeEnterObser
         // Überprüfe, ob es Verletzungen gibt
         if (!violations.isEmpty()) {
             for (ConstraintViolation<API_User> violation : violations) {
-                logger.info("Violation detected: " + violation.getMessage());
+                log.info("Violation detected: " + violation.getMessage());
             }
             return false; // Validierung fehlgeschlagen
         }

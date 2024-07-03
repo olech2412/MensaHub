@@ -66,7 +66,7 @@ public class ActivationView extends Composite implements BeforeEnterObserver {
 
             String code = params.get("code").get(0);
 
-            if (activationCodeRepository.findByCode(code).isEmpty() || code.equals("387UxMzB12")) {
+            if (activationCodeRepository.findByCode(code).isEmpty() || code.equals("bereits aktiviert")) {
                 layout.add(new Text("Dein Code ist ungültig :("));
                 layout.add(new Text("Wahrscheinlich hast du den Code bereits verwendet :D"));
             } else {

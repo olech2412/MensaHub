@@ -11,7 +11,6 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 @Configuration
 @EnableWebSecurity
@@ -36,8 +35,8 @@ public class SecurityConfig {
                 .cors(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(
                         auth -> {
-                            auth.requestMatchers(AntPathRequestMatcher.antMatcher(HttpMethod.POST, "/auth/**")).permitAll(); // allow all POST requests to /auth/**
-                            auth.requestMatchers(AntPathRequestMatcher.antMatcher(HttpMethod.GET, "/**")).permitAll(); // allow all GET requests to /**
+                            auth.requestMatchers(HttpMethod.POST, "auth/**").permitAll(); // allow all POST requests to /auth/**
+                            auth.requestMatchers(HttpMethod.GET, "/**").permitAll(); // allow all GET requests to /**
                             auth.anyRequest().authenticated(); // deny all other requests (send meals to api)
                         }
                 )

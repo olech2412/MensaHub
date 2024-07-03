@@ -1,0 +1,4 @@
+FROM arm64v8/openjdk:17
+LABEL authors="olech2412"
+ADD MensaHub-Gateway/target/mensahub-gateway-2.0.0.jar mensaHub-gateway.jar
+ENTRYPOINT ["java", "-jar", "/mensaHub-gateway.jar"]

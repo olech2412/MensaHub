@@ -105,6 +105,8 @@ public class Config {
         propertiesToEncrypt.add("mensaHub.database.username");
         propertiesToEncrypt.add("mensaHub.dataDispatcher.mail.dkim_priv_path");
         propertiesToEncrypt.add("mensaHub.dataDispatcher.mail.sender.password");
+        propertiesToEncrypt.add("mensaHub.dataDispatcher.mail.sender.password");
+        propertiesToEncrypt.add("mensaHub.junction.mail.sender.password");
 
         for (String key : propertiesToEncrypt) {
             String property = getPropertyEncrypted(key);

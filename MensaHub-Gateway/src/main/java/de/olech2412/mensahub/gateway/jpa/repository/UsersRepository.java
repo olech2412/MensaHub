@@ -7,9 +7,6 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-/**
- * UsersRepository are used to create a connection to the database via Spring Data
- */
 public interface UsersRepository extends ListCrudRepository<Users, Long> {
 
     /**
