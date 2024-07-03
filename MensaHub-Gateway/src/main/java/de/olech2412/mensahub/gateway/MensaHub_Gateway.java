@@ -14,7 +14,7 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 
 @SpringBootApplication
-@EntityScan(basePackages = {"de.olech2412.mensahub.models.authentification", "de.olech2412.mensahub.models.Leipzig"})
+@EntityScan(basePackages = {"de.olech2412.mensahub.models"})
 @Slf4j
 public class MensaHub_Gateway {
 
