@@ -3,9 +3,6 @@ name: Build-Pipeline-And-Deploy
 on:
   workflow_dispatch:
     inputs:
-      version-mensahub-models:
-        description: 'Version of models package to deploy'
-        required: true
       version-mensahub-data-dispatcher-version:
         description: 'Version of data-dispatcher package to deploy'
         required: true
