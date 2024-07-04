@@ -66,7 +66,7 @@ public class ActivationView extends Composite implements BeforeEnterObserver {
 
             String code = params.get("code").get(0);
 
-            if (activationCodeRepository.findByCode(code).isEmpty() || code.equals("bereits aktiviert")) {
+            if (activationCodeRepository.findByCode(code).isEmpty()) {
                 layout.add(new Text("Dein Code ist ungültig :("));
                 layout.add(new Text("Wahrscheinlich hast du den Code bereits verwendet :D"));
             } else {
@@ -97,7 +97,7 @@ public class ActivationView extends Composite implements BeforeEnterObserver {
                         accept.addThemeVariants(ButtonVariant.LUMO_SUCCESS, ButtonVariant.LUMO_PRIMARY);
                         accept.addClickListener(buttonClickEvent -> {
                             apiUser.setEnabledByAdmin(true);
-                            apiUser.setActivationCode(activationCodeRepository.findByCode("bereits aktiviert").get(0));
+                            apiUser.setActivationCode(null);
                             apiUserRepository.save(apiUser);
                             activationCodeRepository.delete(activationCodeRepository.findByCode(code).get(0));
                             try {
@@ -153,7 +153,7 @@ public class ActivationView extends Composite implements BeforeEnterObserver {
                 } else {
                     layout.add(new Text("Freischaltung erfolgreich :). Du bist nun im Email-Verteiler."));
                     MailUser activatedUser = mailUserRepository.findByActivationCode_Code(code);
-                    activatedUser.setActivationCode(activationCodeRepository.findByCode("bereits aktiviert").get(0));
+                    activatedUser.setActivationCode(null);
                     activatedUser.setEnabled(true);
                     mailUserRepository.save(activatedUser);
                     activationCodeRepository.delete(activationCodeRepository.findByCode(code).get(0));

@@ -25,6 +25,7 @@ import de.olech2412.mensahub.junction.JPA.repository.ActivationCodeRepository;
 import de.olech2412.mensahub.junction.JPA.repository.DeactivationCodeRepository;
 import de.olech2412.mensahub.junction.JPA.repository.MailUserRepository;
 import de.olech2412.mensahub.junction.email.Mailer;
+import de.olech2412.mensahub.models.authentification.API_User;
 import de.olech2412.mensahub.models.authentification.MailUser;
 import jakarta.mail.MessagingException;
 import org.slf4j.Logger;
@@ -40,6 +41,7 @@ import java.security.NoSuchAlgorithmException;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Route("deactivate")
 @PageTitle("Verwaltung deiner E-Mail-Einstellungen")
@@ -118,6 +120,28 @@ public class MailSettingsView extends Composite implements BeforeEnterObserver {
         layout.add(content);
 
         MailUser mailUser = mailUserRepository.findByDeactivationCode_Code(code);
+
+        if (mailUser == null) {
+            logger.info("User tried to deactivate account but there is no user with the code: {}", code);
+            // check if it's an api user
+            Optional<API_User> apiUser = apiUserRepository.findAPI_UserByDeactivationCodeCode(code);
+            if (apiUser.isPresent()) {
+                logger.info("User is an API User");
+                apiUserRepository.delete(apiUser.get());
+                deactivationCodeRepository.delete(apiUser.get().getDeactivationCode());
+                logger.info("Deleted apiUser {}", apiUser.get().getApiUsername());
+                // were done print message and exit
+                Notification notification = new Notification("Du hast deinen Account und alle zugehörigen Daten erfolgreich gelöscht!", 3000);
+                notification.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
+                notification.setPosition(Notification.Position.BOTTOM_START);
+                notification.open();
+
+                // remove all elements from UI
+                content.removeAll();
+
+                return;
+            }
+        }
 
         deactivateForTime.addClickListener(buttonClickEvent -> {
             addTimeChoosePanel(mailUser);
@@ -207,11 +231,11 @@ public class MailSettingsView extends Composite implements BeforeEnterObserver {
         mailUserRepository.delete(activatedUser);
         deactivationCodeRepository.delete(activatedUser.getDeactivationCode());
 
-        if (!activatedUser.getActivationCode().getCode().equals("bereits aktiviert")) { // if user is not activated
+        if (activatedUser.getActivationCode() != null) { // if user is not activated
             activationCodeRepository.delete(activatedUser.getActivationCode());
         }
 
-        logger.info("User deactivated Account successfully: " + activatedUser.getEmail());
+        logger.info("User deactivated Account successfully: {}", activatedUser.getEmail());
         Mailer mailer = new Mailer();
         try {
             mailer.sendDeactivationEmail(activatedUser.getFirstname(), activatedUser.getEmail());
