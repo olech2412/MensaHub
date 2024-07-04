@@ -67,7 +67,7 @@ jobs:
         env:
           PACKAGE_READ: ${{ secrets.PACKAGE_READ }}
 
-  build-mensahub:
+  build-mensahub-models:
     runs-on: ubuntu-latest
     needs: build-mensahub-data-dispatcher
 
@@ -82,14 +82,16 @@ jobs:
           distribution: 'temurin'
           cache: maven
 
-      - name: Build MensaHub-DataDispatcher
-        run: 'mvn -s $GITHUB_WORKSPACE/.github/config/maven-settings.xml -Dpackage.publicKey=$PACKAGE_READ clean install'
+      - name: Build MensaHub-Models
+        run: |
+          cd MensaHub-Models
+          'mvn -s $GITHUB_WORKSPACE/.github/config/maven-settings.xml -Dpackage.publicKey=$PACKAGE_READ clean install'
         env:
           PACKAGE_READ: ${{ secrets.PACKAGE_READ }}
 
   publish-mensahub-models:
     runs-on: ubuntu-latest
-    needs: build-mensahub
+    needs: [build-mensahub-models]
     permissions:
       contents: read
       packages: write
