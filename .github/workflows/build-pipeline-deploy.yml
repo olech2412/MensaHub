@@ -88,12 +88,20 @@ jobs:
         env:
           PACKAGE_READ: ${{ secrets.PACKAGE_READ }}
 
-      - name: Build Docker image
+      - name: Build Docker image for amd64
         run: |
           cd MensaHub-DataDispatcher
           docker build -t ${{ secrets.DOCKER_HUB_USERNAME }}/mensahub-datadispatcher:${{ github.event.inputs.version-mensahub-data-dispatcher-version }} .
           docker login -u ${{ secrets.DOCKER_HUB_USERNAME }} -p ${{ secrets.DOCKER_HUB_TOKEN }}
           docker push ${{ secrets.DOCKER_HUB_USERNAME }}/mensahub-datadispatcher:${{ github.event.inputs.version-mensahub-data-dispatcher-version }}
+        env:
+          DOCKER_HUB_TOKEN: ${{ secrets.DOCKER_HUB_TOKEN }}
 
+      - name: Build Docker image for arm64
+        run: |
+          cd MensaHub-DataDispatcher
+          docker buildx build --platform linux/arm64 -t ${{ secrets.DOCKER_HUB_USERNAME }}/mensahub-datadispatcher:arm_${{ github.event.inputs.version-mensahub-data-dispatcher-version }} . -f Dockerfile_arm --load .
+          docker login -u ${{ secrets.DOCKER_HUB_USERNAME }} -p ${{ secrets.DOCKER_HUB_TOKEN }}
+          docker push ${{ secrets.DOCKER_HUB_USERNAME }}/mensahub-datadispatcher:arm_${{ github.event.inputs.version-mensahub-data-dispatcher-version }}
         env:
           DOCKER_HUB_TOKEN: ${{ secrets.DOCKER_HUB_TOKEN }}
