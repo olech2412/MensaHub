@@ -110,14 +110,14 @@ jobs:
           mvn versions:commit
 
       - name: Commit and Push Changes
+        env:
+          GITHUB_TOKEN: ${{ secrets.DEPLOYMENT }}
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
           git add pom.xml
           git commit -m "Update version automated from GitHub action to ${{ github.event.inputs.version-mensahub-models }}"
-          git push origin HEAD:refs/heads/master
-        env:
-          GITHUB_TOKEN: ${{ secrets.DEPLOYMENT }}
+          git push https://x-access-token:${{ secrets.DEPLOYMENT }}@github.com/${{ github.repository }} HEAD:refs/heads/master
 
       - name: Build and Publish MensaHub-Models
         run: |
