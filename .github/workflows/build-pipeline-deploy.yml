@@ -107,6 +107,6 @@ jobs:
       - name: Build and Publish MensaHub-Models
         run: |
           cd MensaHub-Models
-          mvn --batch-mode deploy -Dmaven.version=${{ version-mensahub-models }}
+          mvn --batch-mode deploy -Dmaven.version=${{ github.event.inputs.version-mensahub-models }}
         env:
           GITHUB_TOKEN: ${{ secrets.DEPLOY_PACKAGE }}
