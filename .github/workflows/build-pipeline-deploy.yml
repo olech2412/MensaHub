@@ -104,6 +104,19 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
+      - name: Update Version in pom.xml
+        run: |
+          mvn versions:set -DnewVersion=${{ github.event.inputs.version-mensahub-models }}
+          mvn versions:commit
+
+      - name: Commit and Push Changes
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add pom.xml
+          git commit -m "Update version automated from GitHub action to ${{ github.event.inputs.version-mensahub-models }}"
+          git push origin HEAD:refs/heads/master
+
       - name: Build and Publish MensaHub-Models
         run: |
           cd MensaHub-Models
