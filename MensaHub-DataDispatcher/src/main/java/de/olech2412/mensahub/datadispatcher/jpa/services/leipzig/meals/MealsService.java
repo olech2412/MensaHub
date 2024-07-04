@@ -1,4 +1,4 @@
-package de.olech2412.mensahub.datadispatcher.jpa.services.Leipzig.meals;
+package de.olech2412.mensahub.datadispatcher.jpa.services.leipzig.meals;
 
 import de.olech2412.mensahub.datadispatcher.jpa.repository.Leipzig.meals.MealsRepository;
 import de.olech2412.mensahub.models.Meal;
