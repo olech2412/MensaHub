@@ -1,4 +1,4 @@
 FROM arm64v8/openjdk:17
 LABEL authors="olech2412"
-ADD MensaHub-DataDispatcher/target/mensaHub-dataDispatcher*.jar mensaHub-dataDispatcher.jar
+ADD target/mensaHub-dataDispatcher*.jar mensaHub-dataDispatcher.jar
 ENTRYPOINT ["java", "-jar", "/mensaHub-dataDispatcher.jar"]
