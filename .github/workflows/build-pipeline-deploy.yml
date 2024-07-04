@@ -116,6 +116,8 @@ jobs:
           git add pom.xml
           git commit -m "Update version automated from GitHub action to ${{ github.event.inputs.version-mensahub-models }}"
           git push origin HEAD:refs/heads/master
+        env:
+          GITHUB_TOKEN: ${{ secrets.DEPLOYMENT }}
 
       - name: Build and Publish MensaHub-Models
         run: |
