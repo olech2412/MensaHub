@@ -90,6 +90,7 @@ jobs:
 
       - name: Build Docker image
         run: |
+          cd MensaHub-DataDispatcher
           docker build -t ${{ secrets.DOCKER_HUB_USERNAME }}/mensahub-datadispatcher:${{ github.event.inputs.version-mensahub-data-dispatcher-version }} .
           docker login -u ${{ secrets.DOCKER_HUB_USERNAME }} -p ${{ secrets.DOCKER_HUB_TOKEN }}
           docker push ${{ secrets.DOCKER_HUB_USERNAME }}/mensahub-datadispatcher:${{ github.event.inputs.version-mensahub-data-dispatcher-version }}
