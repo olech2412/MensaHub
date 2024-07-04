@@ -100,7 +100,7 @@ jobs:
       - name: Build Docker image for arm64
         run: |
           cd MensaHub-DataDispatcher
-          docker buildx build --platform linux/arm64 -t ${{ secrets.DOCKER_HUB_USERNAME }}/mensahub-datadispatcher:arm_${{ github.event.inputs.version-mensahub-data-dispatcher-version }} . -f Dockerfile_arm --load .
+          docker buildx build --platform linux/arm64 -t ${{ secrets.DOCKER_HUB_USERNAME }}/mensahub-datadispatcher:arm_${{ github.event.inputs.version-mensahub-data-dispatcher-version }} -f Dockerfile_arm .
           docker login -u ${{ secrets.DOCKER_HUB_USERNAME }} -p ${{ secrets.DOCKER_HUB_TOKEN }}
           docker push ${{ secrets.DOCKER_HUB_USERNAME }}/mensahub-datadispatcher:arm_${{ github.event.inputs.version-mensahub-data-dispatcher-version }}
         env:
