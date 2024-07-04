@@ -108,17 +108,14 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Update Version in pom.xml
-        run: |
-          mvn versions:set -DnewVersion=${{ github.event.inputs.version-mensahub-models }}
-          mvn versions:commit
-
       - name: Commit and Push Changes
         env:
           GITHUB_TOKEN: ${{ secrets.DEPLOYMENT }}
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
+          mvn versions:set -DnewVersion=${{ github.event.inputs.version-mensahub-models }}
+          mvn versions:commit
           git add pom.xml
           git commit -m "Update version automated from GitHub action to ${{ github.event.inputs.version-mensahub-models }}"
           git push https://x-access-token:${{ secrets.DEPLOYMENT }}@github.com/${{ github.repository }} HEAD:refs/heads/master
