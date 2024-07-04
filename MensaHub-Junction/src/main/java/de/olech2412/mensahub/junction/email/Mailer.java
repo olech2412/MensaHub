@@ -119,7 +119,7 @@ public class Mailer {
 
     public void sendAPIActivationEmail(String username, String emailTarget, String activationCode, String deactivationCode) throws Exception {
         Properties prop = new Properties();
-        prop.put("mail.smtp.auth", Boolean.getBoolean(Config.getInstance().getProperty("mensaHub.junction.mail.smtpAuth")));
+        prop.put("mail.smtp.auth", Boolean.parseBoolean(Config.getInstance().getProperty("mensaHub.junction.mail.smtpAuth")));
         prop.put("mail.smtp.host", Config.getInstance().getProperty("mensaHub.junction.mail.smtpHost"));
         prop.put("mail.smtp.port", Config.getInstance().getProperty("mensaHub.junction.mail.smtpPort"));
         prop.put("mail.smtp.starttls.enable", "true");
@@ -170,7 +170,7 @@ public class Mailer {
 
     public void sendAPIAdminRequest(String activationCode) throws Exception {
         Properties prop = new Properties();
-        prop.put("mail.smtp.auth", Boolean.getBoolean(Config.getInstance().getProperty("mensaHub.junction.mail.smtpAuth")));
+        prop.put("mail.smtp.auth", Boolean.parseBoolean(Config.getInstance().getProperty("mensaHub.junction.mail.smtpAuth")));
         prop.put("mail.smtp.host", Config.getInstance().getProperty("mensaHub.junction.mail.smtpHost"));
         prop.put("mail.smtp.port", Config.getInstance().getProperty("mensaHub.junction.mail.smtpPort"));
         prop.put("mail.smtp.starttls.enable", "true");
@@ -221,7 +221,7 @@ public class Mailer {
 
     public void sendAPIAdminRequestSuccess(String username, String emailTarget, String deactivationCode) throws Exception {
         Properties prop = new Properties();
-        prop.put("mail.smtp.auth", Boolean.getBoolean(Config.getInstance().getProperty("mensaHub.junction.mail.smtpAuth")));
+        prop.put("mail.smtp.auth", Boolean.parseBoolean(Config.getInstance().getProperty("mensaHub.junction.mail.smtpAuth")));
         prop.put("mail.smtp.host", Config.getInstance().getProperty("mensaHub.junction.mail.smtpHost"));
         prop.put("mail.smtp.port", Config.getInstance().getProperty("mensaHub.junction.mail.smtpPort"));
         prop.put("mail.smtp.starttls.enable", "true");
@@ -272,7 +272,7 @@ public class Mailer {
 
     public void sendAPIAdminRequestDecline(String username, String emailTarget) throws Exception {
         Properties prop = new Properties();
-        prop.put("mail.smtp.auth", Boolean.getBoolean(Config.getInstance().getProperty("mensaHub.junction.mail.smtpAuth")));
+        prop.put("mail.smtp.auth", Boolean.parseBoolean(Config.getInstance().getProperty("mensaHub.junction.mail.smtpAuth")));
         prop.put("mail.smtp.host", Config.getInstance().getProperty("mensaHub.junction.mail.smtpHost"));
         prop.put("mail.smtp.port", Config.getInstance().getProperty("mensaHub.junction.mail.smtpPort"));
         prop.put("mail.smtp.starttls.enable", "true");
@@ -331,7 +331,7 @@ public class Mailer {
      */
     public void sendDeactivationEmail(String firstName, String emailTarget) throws Exception {
         Properties prop = new Properties();
-        prop.put("mail.smtp.auth", Boolean.getBoolean(Config.getInstance().getProperty("mensaHub.junction.mail.smtpAuth")));
+        prop.put("mail.smtp.auth", Boolean.parseBoolean(Config.getInstance().getProperty("mensaHub.junction.mail.smtpAuth")));
         prop.put("mail.smtp.host", Config.getInstance().getProperty("mensaHub.junction.mail.smtpHost"));
         prop.put("mail.smtp.port", Config.getInstance().getProperty("mensaHub.junction.mail.smtpPort"));
         prop.put("mail.smtp.starttls.enable", "true");
