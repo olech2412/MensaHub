@@ -1,4 +1,4 @@
-FROM openjdk:17
+FROM openjdk:24
 LABEL authors="olech2412"
 ADD target/mensahub-gateway*.jar mensaHub-gateway.jar
 ENTRYPOINT ["java", "-jar", "/mensaHub-gateway.jar"]
