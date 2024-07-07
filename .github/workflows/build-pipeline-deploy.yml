@@ -1,11 +1,9 @@
 name: Build-Pipeline-And-Deploy
 
 on:
-  workflow_dispatch:
-    inputs:
-      version-mensahub-data-dispatcher-version:
-        description: 'Version of data-dispatcher package to deploy'
-        required: true
+  push:
+    branches:
+      - master
 
 jobs:
 
@@ -28,7 +26,7 @@ jobs:
           cd MensaHub-Models
           mvn clean install
 
-  build-mensahub-gateway:
+  build-and-publish-mensahub-gateway:
     runs-on: ubuntu-latest
     needs: build-mensahub-models
     
@@ -48,7 +46,25 @@ jobs:
         env:
           PACKAGE_READ: ${{ secrets.PACKAGE_READ }}
 
-  build-mensahub-junction:
+      - name: Build Docker image for amd64
+        run: |
+          cd MensaHub-Gateway
+          docker build -t ${{ secrets.DOCKER_HUB_USERNAME }}/mensahub-gateway:amd64 .
+          docker login -u ${{ secrets.DOCKER_HUB_USERNAME }} -p ${{ secrets.DOCKER_HUB_TOKEN }}
+          docker push ${{ secrets.DOCKER_HUB_USERNAME }}/mensahub-gateway:amd64
+        env:
+          DOCKER_HUB_TOKEN: ${{ secrets.DOCKER_HUB_TOKEN }}
+
+      - name: Build Docker image for arm64
+        run: |
+          cd MensaHub-Gateway
+          docker buildx build --platform linux/arm64 -t ${{ secrets.DOCKER_HUB_USERNAME }}/mensahub-gateway:arm64 -f Dockerfile_arm .
+          docker login -u ${{ secrets.DOCKER_HUB_USERNAME }} -p ${{ secrets.DOCKER_HUB_TOKEN }}
+          docker push ${{ secrets.DOCKER_HUB_USERNAME }}/mensahub-gateway:arm64
+        env:
+          DOCKER_HUB_TOKEN: ${{ secrets.DOCKER_HUB_TOKEN }}
+
+  build-and-publish-mensahub-junction:
     runs-on: ubuntu-latest
     needs: build-mensahub-models
 
@@ -64,9 +80,27 @@ jobs:
           cache: maven
 
       - name: Build MensaHub-Junction
-        run: 'mvn -s $GITHUB_WORKSPACE/.github/config/maven-settings.xml -Dpackage.publicKey=$PACKAGE_READ clean install -pl MensaHub-Junction'
+        run: 'mvn -s $GITHUB_WORKSPACE/.github/config/maven-settings.xml -Dpackage.publicKey=$PACKAGE_READ clean install -P production -pl MensaHub-Junction'
         env:
           PACKAGE_READ: ${{ secrets.PACKAGE_READ }}
+
+      - name: Build Docker image for amd64
+        run: |
+          cd MensaHub-Junction
+          docker build -t ${{ secrets.DOCKER_HUB_USERNAME }}/mensahub-junction:amd64 .
+          docker login -u ${{ secrets.DOCKER_HUB_USERNAME }} -p ${{ secrets.DOCKER_HUB_TOKEN }}
+          docker push ${{ secrets.DOCKER_HUB_USERNAME }}/mensahub-junction:amd64
+        env:
+          DOCKER_HUB_TOKEN: ${{ secrets.DOCKER_HUB_TOKEN }}
+
+      - name: Build Docker image for arm64
+        run: |
+          cd MensaHub-Junction
+          docker buildx build --platform linux/arm64 -t ${{ secrets.DOCKER_HUB_USERNAME }}/mensahub-junction:arm64 -f Dockerfile_arm .
+          docker login -u ${{ secrets.DOCKER_HUB_USERNAME }} -p ${{ secrets.DOCKER_HUB_TOKEN }}
+          docker push ${{ secrets.DOCKER_HUB_USERNAME }}/mensahub-junction:arm64
+        env:
+          DOCKER_HUB_TOKEN: ${{ secrets.DOCKER_HUB_TOKEN }}
 
   build-and-publish-mensahub-data-dispatcher:
     runs-on: ubuntu-latest
@@ -91,17 +125,17 @@ jobs:
       - name: Build Docker image for amd64
         run: |
           cd MensaHub-DataDispatcher
-          docker build -t ${{ secrets.DOCKER_HUB_USERNAME }}/mensahub-datadispatcher:${{ github.event.inputs.version-mensahub-data-dispatcher-version }} .
+          docker build -t ${{ secrets.DOCKER_HUB_USERNAME }}/mensahub-datadispatcher:amd64 .
           docker login -u ${{ secrets.DOCKER_HUB_USERNAME }} -p ${{ secrets.DOCKER_HUB_TOKEN }}
-          docker push ${{ secrets.DOCKER_HUB_USERNAME }}/mensahub-datadispatcher:${{ github.event.inputs.version-mensahub-data-dispatcher-version }}
+          docker push ${{ secrets.DOCKER_HUB_USERNAME }}/mensahub-datadispatcher:amd64
         env:
           DOCKER_HUB_TOKEN: ${{ secrets.DOCKER_HUB_TOKEN }}
 
       - name: Build Docker image for arm64
         run: |
           cd MensaHub-DataDispatcher
-          docker buildx build --platform linux/arm64 -t ${{ secrets.DOCKER_HUB_USERNAME }}/mensahub-datadispatcher:arm_${{ github.event.inputs.version-mensahub-data-dispatcher-version }} -f Dockerfile_arm .
+          docker buildx build --platform linux/arm64 -t ${{ secrets.DOCKER_HUB_USERNAME }}/mensahub-datadispatcher:arm64 -f Dockerfile_arm .
           docker login -u ${{ secrets.DOCKER_HUB_USERNAME }} -p ${{ secrets.DOCKER_HUB_TOKEN }}
-          docker push ${{ secrets.DOCKER_HUB_USERNAME }}/mensahub-datadispatcher:arm_${{ github.event.inputs.version-mensahub-data-dispatcher-version }}
+          docker push ${{ secrets.DOCKER_HUB_USERNAME }}/mensahub-datadispatcher:arm64
         env:
           DOCKER_HUB_TOKEN: ${{ secrets.DOCKER_HUB_TOKEN }}
