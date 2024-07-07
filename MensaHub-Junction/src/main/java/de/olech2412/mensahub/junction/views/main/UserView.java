@@ -296,7 +296,7 @@ public class UserView extends HorizontalLayout implements BeforeEnterObserver {
 
     /**
      * Save User in Database
-     * User is not enabled because he didn't verified the email
+     * User is not enabled because he didn't verify the email
      *
      * @param email
      */
