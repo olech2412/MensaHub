@@ -147,7 +147,7 @@ public class ActivationView extends Composite implements BeforeEnterObserver {
                         } catch (Exception exception) {
                             logger.error("Admin request could not send due to: {}", exception);
                         }
-                        logger.info("API adminrequest sent for user: {}", activatedUser.getEmail());
+                        logger.info("API admin-request sent for user: {}", activatedUser.getEmail());
                     }
                 } else {
                     layout.add(new Text("Freischaltung erfolgreich :). Du bist nun im Email-Verteiler."));
