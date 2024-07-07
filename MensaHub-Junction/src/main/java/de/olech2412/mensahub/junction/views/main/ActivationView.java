@@ -141,13 +141,13 @@ public class ActivationView extends Composite implements BeforeEnterObserver {
                         activatedUser.setVerified_email(true);
                         apiUserRepository.save(activatedUser);
                         activationCodeRepository.delete(activationCodeRepository.findByCode(code).get(0));
-                        logger.info("User activated API-Account successfully: " + activatedUser.getEmail() + " admin review required");
+                        logger.info("User activated API-Account successfully: {} admin review required", activatedUser.getEmail());
                         try {
                             mailer.sendAPIAdminRequest(activationCode.getCode());
                         } catch (Exception exception) {
-                            logger.error("Admin request could not send due to: " + exception);
+                            logger.error("Admin request could not send due to: {}", exception);
                         }
-                        logger.info("API adminrequest sent for user: " + activatedUser.getEmail());
+                        logger.info("API adminrequest sent for user: {}", activatedUser.getEmail());
                     }
                 } else {
                     layout.add(new Text("Freischaltung erfolgreich :). Du bist nun im Email-Verteiler."));
@@ -156,7 +156,7 @@ public class ActivationView extends Composite implements BeforeEnterObserver {
                     activatedUser.setEnabled(true);
                     mailUserRepository.save(activatedUser);
                     activationCodeRepository.delete(activationCodeRepository.findByCode(code).get(0));
-                    logger.info("User activated Account successfully: " + activatedUser.getEmail());
+                    logger.info("User activated Account successfully: {}", activatedUser.getEmail());
                 }
             }
         } catch (NullPointerException nullPointerException) {
