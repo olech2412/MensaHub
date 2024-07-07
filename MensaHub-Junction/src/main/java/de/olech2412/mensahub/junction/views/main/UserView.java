@@ -332,7 +332,7 @@ public class UserView extends HorizontalLayout implements BeforeEnterObserver {
 
             mailUser.setMensas(mensa);
 
-            mailUserService.saveMailUser(mailUser); // save the user in the database, not enabled because he didnt verified the email
+            mailUserService.saveMailUser(mailUser); // save the user in the database, not enabled because he didn't verify the email
         } catch (Exception e) {
             logger.trace("Error while saving user: ", e);
             logger.trace("User input: {} {} {}", email, firstname, lastname);
