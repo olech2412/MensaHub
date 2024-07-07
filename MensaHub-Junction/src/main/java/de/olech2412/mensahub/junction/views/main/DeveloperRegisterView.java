@@ -73,6 +73,17 @@ public class DeveloperRegisterView extends Composite implements BeforeEnterObser
 
     }
 
+    /**
+     * Initialize the view
+     *
+     * @return VerticalLayout with all components
+     * @throws IOException               if the mail could not be sent
+     * @throws NoSuchPaddingException    if the padding is not available
+     * @throws IllegalBlockSizeException if the block size is invalid
+     * @throws NoSuchAlgorithmException  if the algorithm is not available
+     * @throws BadPaddingException       if the padding is invalid
+     * @throws InvalidKeyException       if the key is invalid
+     */
     private VerticalLayout init() throws IOException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
         apiUsername = new TextField("Dein API Username");
         apiUsername.setMaxLength(100);
