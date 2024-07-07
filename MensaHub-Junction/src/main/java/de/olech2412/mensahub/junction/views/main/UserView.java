@@ -348,14 +348,14 @@ public class UserView extends HorizontalLayout implements BeforeEnterObserver {
     }
 
     /**
-     * log an access on the website
+     * log access on the website
      * IP and information about the webbrowser is logged
      *
      * @param beforeEnterEvent
      */
     @Override
     public void beforeEnter(BeforeEnterEvent beforeEnterEvent) {
-        logger.info("User accessed the main page: " + UI.getCurrent().getSession().getBrowser().getBrowserApplication() + " IP: " + UI.getCurrent().getSession().getBrowser().getAddress());
+        logger.info("User accessed the main page: {} IP: {}", UI.getCurrent().getSession().getBrowser().getBrowserApplication(), UI.getCurrent().getSession().getBrowser().getAddress());
     }
 
     /**
