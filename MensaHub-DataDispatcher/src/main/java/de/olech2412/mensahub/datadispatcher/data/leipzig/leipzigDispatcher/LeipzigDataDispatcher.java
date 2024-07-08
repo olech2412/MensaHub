@@ -78,8 +78,10 @@ public class LeipzigDataDispatcher {
         for (MailUser mailUser : mailUserService.findAll()) {
             try {
                 if (mailUser.isEnabled()) {
-                    mailer.sendSpeiseplan(mailUser, mealsService.findAllMealsByServingDateAndMensa(today, mensasService.getMensaByName("Mensa am Park")), mensasService.getMensaByName("Mensa am Park"), false);
-                    log.info("Email sent to {} for cafeteria_dittrichring", mailUser.getEmail());
+                    for (Mensa mensa : mailUser.getMensas()) {
+                        mailer.sendSpeiseplan(mailUser, mealsService.findAllMealsByServingDateAndMensa(today, mensa), mensa, false);
+                        log.info("Sent speiseplan for user: {} for mensa: {}");
+                    }
                 }
             } catch (Exception exception) {
                 log.error("Error while sending email to {}: {}", mailUser.getEmail(), exception.getMessage());
