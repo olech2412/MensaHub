@@ -122,7 +122,7 @@ public class ActivationView extends Composite implements BeforeEnterObserver {
                             } catch (Exception exception) {
                                 logger.error("User tried to activate API-Account but: " + exception.getMessage());
                             }
-                            logger.info("API adminrequest declined for user: " + apiUser.getEmail());
+                            logger.info("API adminrequest declined for user: {}", apiUser.getEmail());
                             Notification notification = new Notification("Ablehnung wurde gespeichert und der User informiert! Alle Daten des Nutzers werden gelöscht", 6000);
                             notification.addThemeVariants(NotificationVariant.LUMO_ERROR);
                             notification.open();
