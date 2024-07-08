@@ -49,7 +49,7 @@ public class MensaHub_DataDispatcher {
             System.exit(1);
         }
 
-        // configure settings for the database
+        // configure settings for the database read from the config file
         System.setProperty("spring.datasource.url", "jdbc:mariadb://" + Config.getInstance().getProperty("mensaHub.database.location") + "/" + Config.getInstance().getProperty("mensaHub.database.name"));
         System.setProperty("spring.datasource.username", Config.getInstance().getProperty("mensaHub.database.username"));
         System.setProperty("spring.datasource.password", Config.getInstance().getProperty("mensaHub.database.password"));
