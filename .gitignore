@@ -23,3 +23,15 @@ target/
 *.properties
 *.gz
 *.iml
+
+### Custom ###
+package-lock.json
+**/frontend/generated/
+**/node_modules/
+**/src/main/bundles/
+**/tsconfig.json
+**/types.d.ts
+**/vite.config.ts
+**/vite.generated.ts
+node_modules/
+package.json
