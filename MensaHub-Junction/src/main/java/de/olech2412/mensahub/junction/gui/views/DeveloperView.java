@@ -1,4 +1,4 @@
-package de.olech2412.mensahub.junction.views.main;
+package de.olech2412.mensahub.junction.gui.views;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Composite;
