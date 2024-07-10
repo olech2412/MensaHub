@@ -57,21 +57,17 @@ import java.util.regex.Pattern;
 public class UserView extends HorizontalLayout implements BeforeEnterObserver {
 
     private final String welcomeText = "Willkommen bei MensaHub";
+    private final MensaService mensaService;
     Logger logger = LoggerFactory.getLogger(UserView.class);
     private EmailField emailField;
     private TextField firstName;
     private TextField lastName;
     private Button registerButton;
     private Checkbox accept;
-
     @Autowired
     private ActivationCodeRepository activationCodeRepository;
-
     @Autowired
     private DeactivationCodeRepository deactivationCodeRepository;
-
-    private final MensaService mensaService;
-
     @Autowired
     private MailUserService mailUserService;
 

@@ -1,3 +1,6 @@
+@import "mealbox.css";
+@import "infobox.css";
+
 html {
     --lumo-font-family: Consolas, "Andale Mono WT", "Andale Mono", "Lucida Console", "Lucida Sans Typewriter", "DejaVu Sans Mono", "Bitstream Vera Sans Mono", "Liberation Mono", "Nimbus Mono L", Monaco, "Courier New", Courier, monospace;
     --lumo-space-xl: 1.875rem;
