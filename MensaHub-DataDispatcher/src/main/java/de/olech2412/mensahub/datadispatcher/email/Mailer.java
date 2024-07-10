@@ -419,7 +419,7 @@ public class Mailer {
                     if (meals.get(0).getAllergens().equals(notAvailableSign)) {
                         menuString = menuString.replaceFirst("%s", "Keine Allergene oder Zusatzstoffe enthalten (kontaktiere bitte die Mensa/Cafeteria, falls du dir unsicher bist)");
                     } else {
-                        menuString = menuString.replaceFirst("%s", "Allergene & Zusatzstoffe: " + meals.get(0).getAllergens());
+                        menuString = menuString.replaceFirst("%s", meals.get(0).getAllergens());
                     }
 
                 } else {
@@ -431,7 +431,7 @@ public class Mailer {
                         if (meals.get(0).getAllergens().equals(notAvailableSign)) {
                             groupMeal = groupMeal.replaceFirst("%s", "Keine Allergene oder Zusatzstoffe enthalten (kontaktiere bitte die Mensa/Cafeteria, falls du dir unsicher bist)");
                         } else {
-                            groupMeal = groupMeal.replaceFirst("%s", "Allergene & Zusatzstoffe: " + meals.get(0).getAllergens());
+                            groupMeal = groupMeal.replaceFirst("%s", meals.get(0).getAllergens());
                         }
                         mealBuilder.append(groupMeal + "\n");
                     }
