@@ -1,7 +1,7 @@
 package de.olech2412.mensahub.junction.security;
 
 import com.vaadin.flow.spring.security.VaadinWebSecurity;
-import de.olech2412.mensahub.junction.views.main.LoginView;
+import de.olech2412.mensahub.junction.gui.views.LoginView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;

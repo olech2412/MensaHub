@@ -1,4 +1,4 @@
-package de.olech2412.mensahub.junction.views.main;
+package de.olech2412.mensahub.junction.gui.views;
 
 import com.vaadin.flow.component.html.*;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
