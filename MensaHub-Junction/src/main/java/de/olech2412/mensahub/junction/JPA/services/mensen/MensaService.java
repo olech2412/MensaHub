@@ -20,6 +20,10 @@ public class MensaService {
         return mensaRepository.findAll();
     }
 
+    public Mensa mensaById(Long id) {
+        return  mensaRepository.findMensaById(id);
+    }
+
     /**
      * @return mensa
      */
