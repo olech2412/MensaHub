@@ -7,12 +7,15 @@ import de.olech2412.mensahub.models.Mensa;
 import io.micrometer.core.annotation.Timed;
 import jakarta.validation.constraints.NotNull;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.http.CacheControl;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 @RestController
 @Log4j2
@@ -45,9 +48,11 @@ public class MealController {
      * @return - All meals between the start and end date
      */
     @GetMapping("/getMeals/from/{startDate}/to/{enddate}/fromMensa/{mensaId}")
-    public List<? extends Meal> getMealsNextDays(@PathVariable String startDate, @PathVariable String enddate, @PathVariable long mensaId) {
-        log.info("Meals were requested from {} until {}", startDate, enddate);
-        return mealsService.findAllByServingDateGreaterThanEqualAndServingDateLessThanEqualAndMensaOrderByServingDate(LocalDate.parse(startDate), LocalDate.parse(enddate), mensaService.getMensa(mensaId));
+    public ResponseEntity<List<? extends Meal>> getMealsNextDays(@PathVariable String startDate, @PathVariable String enddate, @PathVariable long mensaId) {
+        List<? extends Meal> meals = mealsService.findAllByServingDateGreaterThanEqualAndServingDateLessThanEqualAndMensaOrderByServingDate(LocalDate.parse(startDate), LocalDate.parse(enddate), mensaService.getMensa(mensaId));
+        return ResponseEntity.ok()
+                .cacheControl(CacheControl.maxAge(20, TimeUnit.MINUTES))
+                .body(meals);
     }
 
     /**
@@ -57,9 +62,11 @@ public class MealController {
      * @return - All meals with the specific date
      */
     @GetMapping("/servingDate/{servingDate}/fromMensa/{mensaId}")
-    public List<? extends Meal> getMealByServingDate(@PathVariable(value = "servingDate") @NotNull String servingDate, @PathVariable long mensaId) {
-        log.info("Meals were requested with servingDate: {}", servingDate);
-        return mealsService.findAllMealsByServingDateAndMensa(LocalDate.parse(servingDate), mensaService.getMensa(mensaId));
+    public ResponseEntity<List<? extends Meal>> getMealByServingDate(@PathVariable(value = "servingDate") @NotNull String servingDate, @PathVariable long mensaId) {
+        List<? extends Meal> meals = mealsService.findAllMealsByServingDateAndMensa(LocalDate.parse(servingDate), mensaService.getMensa(mensaId));
+        return ResponseEntity.ok()
+                .cacheControl(CacheControl.maxAge(20, TimeUnit.MINUTES))
+                .body(meals);
     }
 
     /**
@@ -69,9 +76,11 @@ public class MealController {
      * @return - All meals with the specific category
      */
     @GetMapping("/category/{category}/fromMensa/{mensaId}")
-    public List<? extends Meal> getMealByCategory(@PathVariable("category") @NotNull String category, @PathVariable long mensaId) {
-        log.info("Meals were requested with category: {}", category);
-        return mealsService.findAllByCategoryAndMensa(category, mensaService.getMensa(mensaId));
+    public ResponseEntity<List<? extends Meal>> getMealByCategory(@PathVariable("category") @NotNull String category, @PathVariable long mensaId) {
+        List<? extends Meal> meals = mealsService.findAllByCategoryAndMensa(category, mensaService.getMensa(mensaId));
+        return ResponseEntity.ok()
+                .cacheControl(CacheControl.maxAge(20, TimeUnit.MINUTES))
+                .body(meals);
     }
 
     /**
@@ -82,9 +91,11 @@ public class MealController {
      * @return - All meals with the specific category and date
      */
     @GetMapping("/category/{category}/servingDate/{servingDate}/fromMensa/{mensaId}")
-    public List<? extends Meal> getMealByCategoryAndServingDate(@PathVariable("category") @NotNull String category, @PathVariable("servingDate") @NotNull String servingDate, @PathVariable long mensaId) {
-        log.info("Meals were requested with category: " + category + " on " + servingDate);
-        return mealsService.findAllByCategoryAndServingDateAndMensa(category, LocalDate.parse(servingDate), mensaService.getMensa(mensaId));
+    public ResponseEntity<List<? extends Meal>> getMealByCategoryAndServingDate(@PathVariable("category") @NotNull String category, @PathVariable("servingDate") @NotNull String servingDate, @PathVariable long mensaId) {
+        List<? extends Meal> meals = mealsService.findAllByCategoryAndServingDateAndMensa(category, LocalDate.parse(servingDate), mensaService.getMensa(mensaId));
+        return ResponseEntity.ok()
+                .cacheControl(CacheControl.maxAge(20, TimeUnit.MINUTES))
+                .body(meals);
     }
 
     /**
@@ -94,9 +105,11 @@ public class MealController {
      * @return - All meals with a rating lower than the specific value
      */
     @GetMapping("/byRatingLessThen/{rating}/fromMensa/{mensaId}")
-    public List<? extends Meal> getMealByRatingLessThan(@PathVariable("rating") @NotNull Double rating, @PathVariable long mensaId) {
-        log.info("Meals were requested with rating less then: {}", rating);
-        return mealsService.findAllByRatingLessThanEqualAndMensa(rating, mensaService.getMensa(mensaId));
+    public ResponseEntity<List<? extends Meal>> getMealByRatingLessThan(@PathVariable("rating") @NotNull Double rating, @PathVariable long mensaId) {
+        List<? extends Meal> meals = mealsService.findAllByRatingLessThanEqualAndMensa(rating, mensaService.getMensa(mensaId));
+        return ResponseEntity.ok()
+                .cacheControl(CacheControl.maxAge(20, TimeUnit.MINUTES))
+                .body(meals);
     }
 
     /**
@@ -106,9 +119,11 @@ public class MealController {
      * @return - All meals with a rating higher than the specific value
      */
     @GetMapping("/byRatingHigherThen/{rating}/fromMensa/{mensaId}")
-    public List<? extends Meal> getMealByRatingHigherThan(@PathVariable("rating") @NotNull Double rating, @PathVariable long mensaId) {
-        log.info("Meals were requested with rating higher then: {}", rating);
-        return mealsService.findAllByRatingGreaterThanEqualAndMensa(rating, mensaService.getMensa(mensaId));
+    public ResponseEntity<List<? extends Meal>> getMealByRatingHigherThan(@PathVariable("rating") @NotNull Double rating, @PathVariable long mensaId) {
+        List<? extends Meal> meals = mealsService.findAllByRatingGreaterThanEqualAndMensa(rating, mensaService.getMensa(mensaId));
+        return ResponseEntity.ok()
+                .cacheControl(CacheControl.maxAge(20, TimeUnit.MINUTES))
+                .body(meals);
     }
 
     /**

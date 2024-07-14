@@ -4,12 +4,15 @@ import de.olech2412.mensahub.gateway.jpa.services.mensen.MensaService;
 import de.olech2412.mensahub.models.Mensa;
 import io.micrometer.core.annotation.Timed;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.http.CacheControl;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 @RestController
 @Log4j2
@@ -30,21 +33,27 @@ public class MensaController {
     }
 
     @GetMapping("/getMensas")
-    public List<Mensa> getMensa() {
-        log.info("Mensa info requested");
-        return mensaService.findAll();
+    public ResponseEntity<List<Mensa>> getMensa() {
+        List<Mensa> mensas = mensaService.findAll();
+        return ResponseEntity.ok()
+                .cacheControl(CacheControl.maxAge(1, TimeUnit.DAYS))
+                .body(mensas);
     }
 
     @GetMapping("/getMensaByName")
-    public Mensa getMensaByName(String name) {
-        log.info("Mensa info requested for {}", name);
-        return mensaService.getMensaByName(name);
+    public ResponseEntity<Mensa> getMensaByName(String name) {
+        Mensa mensa = mensaService.getMensaByName(name);
+        return ResponseEntity.ok()
+                .cacheControl(CacheControl.maxAge(1, TimeUnit.DAYS))
+                .body(mensa);
     }
 
     @GetMapping("/getMensaById")
-    public Mensa getMensaById(long id) {
-        log.info("Mensa info requested for {}", id);
-        return mensaService.getMensa(id);
+    public ResponseEntity<Mensa> getMensaById(long id) {
+        Mensa mensa = mensaService.getMensa(id);
+        return ResponseEntity.ok()
+                .cacheControl(CacheControl.maxAge(1, TimeUnit.DAYS))
+                .body(mensa);
     }
 
 }
