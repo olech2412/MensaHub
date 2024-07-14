@@ -166,7 +166,11 @@ public class MealPlan extends VerticalLayout implements BeforeEnterObserver {
         mensa.ifPresent(value -> mensaComboBox.setValue(finalMensa.get()));
 
         if (!date.isEmpty()) {
-            datePicker.setValue(LocalDate.parse(date));
+            if(date.equals("today")){
+                datePicker.setValue(LocalDate.now());
+            } else {
+                datePicker.setValue(LocalDate.parse(date));
+            }
         }
 
     }

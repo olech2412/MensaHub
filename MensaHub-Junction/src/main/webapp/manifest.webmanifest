@@ -1,0 +1,66 @@
+{
+  "name": "MensaHub",
+  "short_name": "MensaHub",
+  "display": "standalone",
+  "background_color": "#f2f2f2",
+  "theme_color": "#ffffff",
+  "start_url": ".",
+  "icons": [
+    {
+      "src": "icons/icon-144x144.png",
+      "sizes": "144x144",
+      "type": "image/png"
+    },
+    {
+      "src": "icons/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icons/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Mensa Schönauer Straße",
+      "short_name": "Mensa Schönauer Straße",
+      "description": "Anzeigen des Speiseplans der Mensa in der Schönauer Straße",
+      "url": "https://mensahub.olech2412.de/mensaHub/mealPlan?date=today&mensa=Mensa Schönauer Straße",
+      "icons": [
+        {
+          "src": "icons/menu-icon-192x192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Contact Mensa",
+      "short_name": "Contact",
+      "description": "Contact the Mensa",
+      "url": "/contact",
+      "icons": [
+        {
+          "src": "icons/contact-icon-192x192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Mensa Locations",
+      "short_name": "Locations",
+      "description": "Find Mensa locations",
+      "url": "/locations",
+      "icons": [
+        {
+          "src": "icons/locations-icon-192x192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    }
+  ]
+}
