@@ -132,7 +132,7 @@ public class Mailer {
 
     }
 
-    private String createUpdateEmail(List<Meal> menu, String firstname, String deactivateUrl, Mensa mensa) {
+    private String createUpdateEmail(List<Meal> menu, String firstname, String deactivateUrl, Mensa mensa) throws NoSuchPaddingException, IllegalBlockSizeException, IOException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
         StringBuilder menuText = new StringBuilder();
 
         if (!menu.isEmpty()) {
@@ -205,6 +205,7 @@ public class Mailer {
         String footer = StaticEmailText.FOOD_PLAN_FOOTER;
         footer = footer.replaceFirst("%s", getRandomGreetingsText());
         footer = footer.replaceFirst("%s", deactivateUrl);
+        footer = footer.replaceFirst("%s", Config.getInstance().getProperty("mensaHub.dataDispatcher.junction.address") + "/mensaHub/mealPlan?date=today&mensa=" + mensa.getId());
 
 
         String msg = header +
