@@ -132,7 +132,7 @@ public class Mailer {
 
     }
 
-    private String createUpdateEmail(List<Meal> menu, String firstname, String deactivateUrl, Mensa mensa) {
+    private String createUpdateEmail(List<Meal> menu, String firstname, String deactivateUrl, Mensa mensa) throws NoSuchPaddingException, IllegalBlockSizeException, IOException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
         StringBuilder menuText = new StringBuilder();
 
         if (!menu.isEmpty()) {
@@ -205,6 +205,7 @@ public class Mailer {
         String footer = StaticEmailText.FOOD_PLAN_FOOTER;
         footer = footer.replaceFirst("%s", getRandomGreetingsText());
         footer = footer.replaceFirst("%s", deactivateUrl);
+        footer = footer.replaceFirst("%s", Config.getInstance().getProperty("mensaHub.dataDispatcher.junction.address") + "/mensaHub/mealPlan?date=today&mensa=" + mensa.getId());
 
 
         String msg = header +
@@ -319,6 +320,21 @@ public class Mailer {
         welcome.add("Whazuuuuuuuup");
         welcome.add("Yo Moinsen");
         welcome.add("Yo");
+        welcome.add("Na was geht");
+        welcome.add("Grüß Gottle");
+        welcome.add("Meddl");
+        welcome.add("Sei gegrüßt");
+        welcome.add("Wie gehts");
+        welcome.add("Was geht ab");
+        welcome.add("Schön dich wiederzusehen");
+        welcome.add("Ich glaube mein Schwein pfeift");
+        welcome.add("Wow siehst du heute gut aus");
+        welcome.add("Das gibts ja nicht, der einzig wahre");
+        welcome.add("Das gibts ja nicht, der aller echte Hase");
+        welcome.add("\uD83C\uDFB6 So wie Photoshop, so wie, so wie...\uD83C\uDFB6 oh ... sry");
+        welcome.add("\uD83C\uDFB6 Vöööllig losgelöst von der EEERDE...\uD83C\uDFB6 oh ... sry");
+        welcome.add("\uD83C\uDFB6 Mit 66 Jahren da fängt das Leben an...\uD83C\uDFB6 oh ... sry");
+        welcome.add("\uD83C\uDFB6 Ein Rudi Völler, es gibt nur ein... \uD83C\uDFB6 ups ... sry");
         welcome.add("Mohoin");
 
         return welcome.get((int) (Math.random() * welcome.size()));
@@ -359,6 +375,59 @@ public class Mailer {
         greetings.add("再见, ");
         greetings.add("Ciao, ");
         greetings.add("Ciao Kakao, ");
+        greetings.add("Servus, ");
+        greetings.add("Adios, ");
+        greetings.add("Hasta luego, ");
+        greetings.add("Hasta la vista, ");
+        greetings.add("Leb wohl, ");
+        greetings.add("Take care, ");
+        greetings.add("Farewell, ");
+        greetings.add("Mach’s gut, ");
+        greetings.add("Hau rein, ");
+        greetings.add("Bis die Tage, ");
+        greetings.add("Cheerio, ");
+        greetings.add("Peace out, ");
+        greetings.add("Alles Gute, ");
+        greetings.add("Bleib gesund, ");
+        greetings.add("Schönen Tag noch, ");
+        greetings.add("Bis danni, ");
+        greetings.add("Machs jut, ");
+        greetings.add("Pfiat di, ");
+        greetings.add("Schönen Feierabend, ");
+        greetings.add("Guten Rutsch, ");
+        greetings.add("Bis morgen, ");
+        greetings.add("Bis nächste Woche, ");
+        greetings.add("Man sieht sich, ");
+        greetings.add("Bis demnächst, ");
+        greetings.add("Adieu, ");
+        greetings.add("Bye bye, ");
+        greetings.add("Bis gleich, ");
+        greetings.add("Viel Erfolg, ");
+        greetings.add("Gute Reise, ");
+        greetings.add("Haut rein, ");
+        greetings.add("Bis zur nächsten Runde, ");
+        greetings.add("Bis später, ");
+        greetings.add("Bis in Kürze, ");
+        greetings.add("Bis nachher, ");
+        greetings.add("Gute Nacht, ");
+        greetings.add("Schlaf gut, ");
+        greetings.add("Schönes Wochenende, ");
+        greetings.add("Bis Montag, ");
+        greetings.add("Bis Freitag, ");
+        greetings.add("Bis Dienstag, ");
+        greetings.add("Gute Fahrt, ");
+        greetings.add("Schöne Ferien, ");
+        greetings.add("Schöne Feiertage, ");
+        greetings.add("Bis bald im Wald, ");
+        greetings.add("Bis die Tage, ");
+        greetings.add("Tschüssikowski, ");
+        greetings.add("Mach’s gut, bis bald, ");
+        greetings.add("Auf Wiederhören, ");
+        greetings.add("Bis nächstes Mal, ");
+        greetings.add("Take it easy, ");
+        greetings.add("Bis denne Antenne, ");
+        greetings.add("See ya, ");
+        greetings.add("Bis die Tage, ");
 
         return greetings.get((int) (Math.random() * greetings.size()));
     }
@@ -376,18 +445,64 @@ public class Mailer {
         funnyTexts.add("Ich denke, ich werde meine Mittagspause heute für ein köstliches Mittagessen opfern.");
         funnyTexts.add("Ein gutes Mittagessen ist das Geheimnis, um den Uni-Tag durchzustehen.");
         funnyTexts.add("Ohne Mittagessen wäre der Uni-Tag nur halb so erträglich.");
-        funnyTexts.add("Ohne Mittagessen wäre der Uni-Tag nur halb so erträglich.");
         funnyTexts.add("Ich denke nur an mein Mittagessen, wenn ich in der Vorlesung sitze.");
         funnyTexts.add("Ich würde für ein gutes Mittagessen jede Vorlesung besuchen.");
         funnyTexts.add("Ich denke nur ans Mittagessen, wenn ich in einer langweiligen Vorlesung sitze.");
         funnyTexts.add("Ohne Mittagessen wäre die Uni nur ein Ort voller Trägheit und Müdigkeit.");
         funnyTexts.add("Nimm lieber Salz und Pfeffer mit.");
         funnyTexts.add("Mittagessen ist wie ein Mini-Urlaub von der Uni.");
+        funnyTexts.add("Das beste am Studium ist die Mittagspause.");
+        funnyTexts.add("Ohne Essen keine Leistung.");
+        funnyTexts.add("Ich studiere, damit ich mir mein Mittagessen leisten kann.");
+        funnyTexts.add("Essen ist wichtiger als jede Vorlesung.");
+        funnyTexts.add("Das Essen ist der heimliche Star der Uni.");
+        funnyTexts.add("Wenn der Magen knurrt, hilft nur ein Mittagessen.");
+        funnyTexts.add("Essen hält Leib und Seele zusammen.");
+        funnyTexts.add("Mittagspause: Das Highlight des Tages.");
+        funnyTexts.add("Ohne gutes Essen keine guten Noten.");
+        funnyTexts.add("Essen ist das beste Mittel gegen Langeweile in der Uni.");
+        funnyTexts.add("Wer gut isst, studiert besser.");
+        funnyTexts.add("Essen macht glücklich.");
+        funnyTexts.add("Essen ist die beste Belohnung für einen langen Uni-Tag.");
+        funnyTexts.add("Das Geheimnis eines erfolgreichen Studiums: gute Mahlzeiten.");
+        funnyTexts.add("Ein leerer Magen studiert nicht gern.");
+        funnyTexts.add("Ein gutes Mittagessen kann Wunder wirken.");
+        funnyTexts.add("Essen ist die beste Motivation.");
+        funnyTexts.add("Ein hungriger Student ist ein unproduktiver Student.");
+        funnyTexts.add("Essen ist der Treibstoff für den Uni-Alltag.");
+        funnyTexts.add("Ohne Essen keine Konzentration.");
+        funnyTexts.add("Essen ist das beste Anti-Stress-Mittel.");
+        funnyTexts.add("Das beste Rezept gegen Langeweile: ein leckeres Mittagessen.");
+        funnyTexts.add("Essen ist die schönste Nebensache der Welt.");
+        funnyTexts.add("Wer gut isst, hat gut lachen.");
+        funnyTexts.add("Ohne Essen keine Energie.");
+        funnyTexts.add("Ein gutes Mittagessen macht den Tag perfekt.");
+        funnyTexts.add("Essen ist das Highlight des Tages.");
+        funnyTexts.add("Ein gutes Essen ist die beste Medizin.");
+        funnyTexts.add("Essen verbindet.");
+        funnyTexts.add("Essen ist Liebe.");
+        funnyTexts.add("Essen ist Genuss.");
+        funnyTexts.add("Essen ist Leben.");
+        funnyTexts.add("Ein gutes Essen kann Wunder wirken.");
+        funnyTexts.add("Essen ist das beste Mittel gegen schlechte Laune.");
+        funnyTexts.add("Wer gut isst, lebt besser.");
+        funnyTexts.add("Essen ist das beste Mittel gegen Langeweile.");
+        funnyTexts.add("Essen ist das Beste, was man in der Mittagspause machen kann.");
+        funnyTexts.add("Essen ist das Beste, was man in der Uni machen kann.");
+        funnyTexts.add("Essen ist die beste Belohnung für einen langen Uni-Tag.");
+        funnyTexts.add("Essen ist das Highlight des Uni-Tages.");
+        funnyTexts.add("Essen ist das Beste am Studium.");
+        funnyTexts.add("Essen ist das Wichtigste im Leben eines Studenten.");
+        funnyTexts.add("Essen ist das Einzige, was im Uni-Alltag wirklich zählt.");
+        funnyTexts.add("Essen ist das Einzige, was mich bei Laune hält.");
+        funnyTexts.add("Essen ist das Einzige, was mich durch den Uni-Tag bringt.");
+        funnyTexts.add("Essen ist das Einzige, was mich motiviert.");
+        funnyTexts.add("Essen ist das Einzige, was mich glücklich macht.");
 
         return funnyTexts.get((int) (Math.random() * funnyTexts.size()));
     }
 
-    private String createEmail(List<? extends Meal> menu, String firstName, String deactivateUrl, Mensa mensa) throws IOException {
+    private String createEmail(List<? extends Meal> menu, String firstName, String deactivateUrl, Mensa mensa) throws IOException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
         StringBuilder menuText = new StringBuilder();
 
         if (!menu.isEmpty()) {
@@ -459,12 +574,11 @@ public class Mailer {
         String footer = StaticEmailText.FOOD_PLAN_FOOTER;
         footer = footer.replaceFirst("%s", getRandomGreetingsText());
         footer = footer.replaceFirst("%s", deactivateUrl);
+        footer = footer.replaceFirst("%s", Config.getInstance().getProperty("mensaHub.dataDispatcher.junction.address") + "/mensaHub/mealPlan?date=today&mensa=" + mensa.getId());
 
-        String msg = header +
+        return header +
                 menuText +
                 footer;
-
-        return msg;
     }
 
 }
