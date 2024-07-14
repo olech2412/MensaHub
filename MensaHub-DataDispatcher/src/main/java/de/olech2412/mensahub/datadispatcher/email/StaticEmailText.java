@@ -172,11 +172,17 @@ public class StaticEmailText {
                     "</table>" +
                     "</div>" +
                     "<br>" +
-                    "<br>" +
-                    "<p class=\"text-gray-700\" style=\"line-height: 16px; font-size: 12px; color: #4a5568; width: 100%; margin: 0;\" align=\"left\">" +
-                    "Essen ist lecker, Essen verbindet.... also hole dir MensiMates! Eine App, entwickelt von Fritz Schubert, die Gerichte der Mensen in Leipzig und eine Bewertungsfunktion bereitstellt." +
-                    "</p>" +
-                    "<a href=\"https://play.google.com/store/apps/details?id=com.whosfritz.MensiMates&pcampaignid=pcampaignidMKT-Other-global-all-co-prtnr-py-PartBadge-Mar2515-1\"><img alt=\"Jetzt bei Google Play\" src=\"https://play.google.com/intl/en_us/badges/static/images/badges/de_badge_web_generic.png\" width=\"150\" height=\"58\"/></a>" +
+                    "<div class=\"child\" style=\"float: center;\">" +
+                    "<table class=\"btn btn-info\" role=\"presentation\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" style=\"border-radius: 6px; border-collapse: separate !important;\">" +
+                    "<tbody>" +
+                    "<tr>" +
+                    "<td style=\"line-height: 24px; font-size: 16px; border-radius: 6px; margin: 0;\" align=\"center\" bgcolor=\"#0d6efd\">" +
+                    "<a href=\"%s\" target=\"_blank\" style=\"color: #ffffff; font-size: 16px; font-family: Helvetica, Arial, sans-serif; text-decoration: none; border-radius: 6px; line-height: 20px; display: block; font-weight: normal; white-space: nowrap; background-color: #0d6efd; padding: 8px 12px; border: 1px solid #0d6efd;\">Zum Speiseplan \uD83C\uDF7D\uFE0F</a>" +
+                    "</td>" +
+                    "</tr>" +
+                    "</tbody>" +
+                    "</table>" +
+                    "</div>" +
                     "<br>" +
                     "<p class=\"text-gray-700\" style=\"line-height: 16px; font-size: 12px; color: #4a5568; width: 100%; margin: 0;\" align=\"left\">" +
                     "Dir gefällt MensaHub? Das freut mich! Auf freiwilliger Basis kannst du mir hier gerne ein Bier spendieren:" +
