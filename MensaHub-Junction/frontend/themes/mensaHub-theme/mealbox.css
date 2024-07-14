@@ -7,7 +7,7 @@
     transition: box-shadow 0.3s ease-in-out;
     margin: 10px;
     flex: 1 1 10%; /* Flexbox properties for responsive layout */
-    min-height: 10%;
+    min-height: 20%;
     max-height: 20%;
     min-width: 30%;
     max-width: 30%; /* Ensure the boxes don't get too wide */
