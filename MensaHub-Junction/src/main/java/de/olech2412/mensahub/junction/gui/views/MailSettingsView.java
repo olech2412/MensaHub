@@ -187,6 +187,7 @@ public class MailSettingsView extends Composite implements BeforeEnterObserver {
                 notification.addThemeVariants(NotificationVariant.LUMO_ERROR);
                 notification.setPosition(Notification.Position.BOTTOM_START);
                 notification.open();
+                return;
             }
 
             if (datePicker.getValue() != null) {
