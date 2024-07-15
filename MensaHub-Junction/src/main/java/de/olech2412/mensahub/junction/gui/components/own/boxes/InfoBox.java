@@ -1,16 +1,12 @@
-package de.olech2412.mensahub.junction.gui.components.own;
+package de.olech2412.mensahub.junction.gui.components.own.boxes;
 
 import com.vaadin.flow.component.UI;
-import com.vaadin.flow.component.accordion.AccordionPanel;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
-import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.H4;
 import com.vaadin.flow.component.html.Paragraph;
-import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-import com.vaadin.flow.component.accordion.Accordion;
 
 public class InfoBox extends VerticalLayout {
 
