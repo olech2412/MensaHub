@@ -12,10 +12,10 @@ public class GermanDatePicker extends DatePicker {
         germanI18n.setMonthNames(List.of("Januar", "Februar", "März", "April",
                 "Mai", "Juni", "Juli", "August", "September", "Oktober",
                 "November", "Dezember"));
-        germanI18n.setWeekdays(List.of("Sonntag", "Montag", "Dienstag",
-                "Mittwoch", "Donnerstag", "Freitag", "Samstag"));
+        germanI18n.setWeekdays(List.of("Montag", "Dienstag",
+                "Mittwoch", "Donnerstag", "Freitag", "Samstag", "Sonntag"));
         germanI18n.setWeekdaysShort(
-                List.of("So", "Mo", "Di", "Mi", "Do", "Fr", "Sa"));
+                List.of("Mo", "Di", "Mi", "Do", "Fr", "Sa", "So"));
         germanI18n.setToday("Heute");
         germanI18n.setCancel("Abbrechen");
 

@@ -1,5 +1,6 @@
 @import "mealbox.css";
 @import "infobox.css";
+@import "custom-404.css";
 
 html {
     --lumo-font-family: Consolas, "Andale Mono WT", "Andale Mono", "Lucida Console", "Lucida Sans Typewriter", "DejaVu Sans Mono", "Bitstream Vera Sans Mono", "Liberation Mono", "Nimbus Mono L", Monaco, "Courier New", Courier, monospace;
@@ -9,4 +10,28 @@ html {
     --lumo-space-s: 0.3125rem;
     --lumo-space-xs: 0.1875rem;
     --lumo-border-radius: calc(var(--lumo-size-m) / 2);
+}
+
+.button-link{
+    background-color: #166bbd;
+    color: #ffffff;
+    border: none;
+    border-radius: 10px;
+    padding: 10px 20px;
+    font-size: 1em;
+    font-weight: bold;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    background: linear-gradient(90deg, #166bbd, #1a80f8);
+    background-size: 200% 200%;
+}
+
+.button-link:hover {
+    background-position: right center;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    transform: scale(1.05);
 }

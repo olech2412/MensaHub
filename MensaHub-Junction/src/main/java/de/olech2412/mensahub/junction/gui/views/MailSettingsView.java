@@ -6,6 +6,7 @@ import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.html.H3;
 import com.vaadin.flow.component.html.Image;
+import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.notification.Notification;
@@ -103,6 +104,14 @@ public class MailSettingsView extends Composite implements BeforeEnterObserver {
     }
 
     private void initDeactivationView(String code) throws MessagingException {
+        MailUser mailUser = mailUserRepository.findByDeactivationCode_Code(code);
+
+        if(mailUser == null){
+            layout.add(new Paragraph("Der Nutzer konnte nicht identifiziert werden. Wenn du der Meinung bist, es " +
+                    "handelt sich um einen Fehler, kontaktiere bitte den Administrator."));
+            return;
+        }
+
         H3 headlineDelete = new H3("Du möchtest keine weiteren Emails von uns oder deine Einstellungen bearbeiten? Hier sind deine Optionen...");
         Text explanationDelete = new Text("Der klick auf \"Vollständig Deaktivieren\" hat eine sofortige Löschung deiner Daten zur Folge." +
                 " Durch klick auf \"Zeitweise Deaktivieren\" kannst du deinen Account für gewisse Zeit deaktivieren und anschließend weiter nutzen");
@@ -118,8 +127,6 @@ public class MailSettingsView extends Composite implements BeforeEnterObserver {
 
         content.add(formLayout);
         layout.add(content);
-
-        MailUser mailUser = mailUserRepository.findByDeactivationCode_Code(code);
 
         if (!mailUser.isEnabled() && mailUser.getDeactviatedUntil() != null) {
             formLayout.remove(deactivateForTime);
@@ -138,28 +145,6 @@ public class MailSettingsView extends Composite implements BeforeEnterObserver {
                 notification.setPosition(Notification.Position.BOTTOM_START);
                 notification.open();
             });
-        }
-
-        if (mailUser == null) {
-            logger.info("User tried to deactivate account but there is no user with the code: {}", code);
-            // check if it's an api user
-            Optional<API_User> apiUser = apiUserRepository.findAPI_UserByDeactivationCodeCode(code);
-            if (apiUser.isPresent()) {
-                logger.info("User is an API User");
-                apiUserRepository.delete(apiUser.get());
-                deactivationCodeRepository.delete(apiUser.get().getDeactivationCode());
-                logger.info("Deleted apiUser {}", apiUser.get().getApiUsername());
-                // were done print message and exit
-                Notification notification = new Notification("Du hast deinen Account und alle zugehörigen Daten erfolgreich gelöscht!", 3000);
-                notification.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
-                notification.setPosition(Notification.Position.BOTTOM_START);
-                notification.open();
-
-                // remove all elements from UI
-                content.removeAll();
-
-                return;
-            }
         }
 
         deactivateForTime.addClickListener(buttonClickEvent -> {
