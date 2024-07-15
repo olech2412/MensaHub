@@ -182,6 +182,13 @@ public class MailSettingsView extends Composite implements BeforeEnterObserver {
         save.addThemeVariants(ButtonVariant.LUMO_PRIMARY, ButtonVariant.LUMO_SUCCESS);
 
         save.addClickListener(buttonClickEvent -> {
+            if (datePicker.isInvalid()) {
+                Notification notification = new Notification("Bitte gib ein gültiges Datum ein", 3000);
+                notification.addThemeVariants(NotificationVariant.LUMO_ERROR);
+                notification.setPosition(Notification.Position.BOTTOM_START);
+                notification.open();
+            }
+
             if (datePicker.getValue() != null) {
                 mailUser.setEnabled(false);
                 mailUser.setDeactviatedUntil(datePicker.getValue());
