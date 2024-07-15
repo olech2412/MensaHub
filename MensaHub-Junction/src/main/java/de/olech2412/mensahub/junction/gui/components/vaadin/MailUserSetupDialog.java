@@ -36,11 +36,7 @@ public class MailUserSetupDialog extends Dialog {
         mensaComboBox.setItems(mensen);
         mensaComboBox.setItemLabelGenerator(Mensa::getName);
         mensaComboBox.select(mailUser.getMensas());
-        if (isMobileDevice()) {
-            mensaComboBox.setWidth(50f, Unit.PERCENTAGE);
-        } else {
-            mensaComboBox.setWidth(100f, Unit.PERCENTAGE);
-        }
+        mensaComboBox.setWidth(100, Unit.PERCENTAGE);
 
 
         wantsUpdateCheckbox = new Checkbox("Möchtest du benachrichtigt werden, wenn Änderungen am Speiseplan festgestellt werden?");
