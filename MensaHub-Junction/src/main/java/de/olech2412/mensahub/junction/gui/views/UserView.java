@@ -70,6 +70,7 @@ public class UserView extends HorizontalLayout implements BeforeEnterObserver {
     private DeactivationCodeRepository deactivationCodeRepository;
     @Autowired
     private MailUserService mailUserService;
+    private Checkbox wantUpdates;
 
 
     public UserView(MensaService mensaService) throws IOException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
@@ -129,8 +130,8 @@ public class UserView extends HorizontalLayout implements BeforeEnterObserver {
         emailField.setMaxLength(255);
         emailField.setPlaceholder("email@example.de");
         emailField.setWidth(100f, Unit.PERCENTAGE);
-        registerButton = new Button("Registriere dich");
 
+        registerButton = new Button("Registriere dich");
         registerButton.addThemeVariants(ButtonVariant.LUMO_SUCCESS, ButtonVariant.LUMO_PRIMARY);
         registerButton.setIcon(new Icon("vaadin", "envelope-open-o"));
 
@@ -168,7 +169,6 @@ public class UserView extends HorizontalLayout implements BeforeEnterObserver {
             inputLayout.setWidth(50f, Unit.PERCENTAGE);
         }
 
-
         mainLayout.add(inputLayout, createFooter());
         return mainLayout;
     }
@@ -204,7 +204,13 @@ public class UserView extends HorizontalLayout implements BeforeEnterObserver {
         accept.setRequiredIndicatorVisible(true);
         accept.getStyle().set("text-align", "center");
 
-        VerticalLayout infoLayout = new VerticalLayout(new H3("Informationen zu deiner Registrierung: "), infoText, accept);
+        wantUpdates = new Checkbox("Möchtest du benachrichtigt werden, wenn Änderungen am Speiseplan festgestellt werden?");
+        wantUpdates.setTooltipText("Bei jeder Änderung senden wird dir eine E-Mail zu. Wenn du diese Updates nicht " +
+                "empfangen möchtest, kannst du diese Einstellung jederzeit in den Newsletter-Einstellungen widerrufen.");
+        wantUpdates.setRequiredIndicatorVisible(true);
+        wantUpdates.setValue(true);
+
+        VerticalLayout infoLayout = new VerticalLayout(new H3("Informationen zu deiner Registrierung: "), infoText, wantUpdates, accept);
         infoLayout.setAlignItems(Alignment.CENTER);
 
         return infoLayout;
@@ -246,13 +252,13 @@ public class UserView extends HorizontalLayout implements BeforeEnterObserver {
                     if (mailUserService.findMailUserByEmail(email).isEmpty()) {
                         if (accept.getValue()) {
                             try {
-                                createRegistratedUser(email, firstname, lastname, mensa);
+                                createRegistratedUser(email, firstname, lastname, mensa, wantUpdates.getValue());
                                 Notification notification = new Notification("Deine E-Mail-Adresse wurde erfolgreich registriert!. Klicke auf den Link in deiner Bestätigungsmail", 6000);
                                 notification.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
                                 notification.open();
                             } catch (Exception e) {
                                 logger.error("Error while creating Account: ", e);
-                                logger.error("User input: " + email + " " + firstname + " " + lastname);
+                                logger.error("User input: {} {} {}", email, firstname, lastname);
                                 throw new RuntimeException(e);
                             }
                         } else {
@@ -296,7 +302,7 @@ public class UserView extends HorizontalLayout implements BeforeEnterObserver {
      *
      * @param email
      */
-    private void createRegistratedUser(String email, String firstname, String lastname, Set<Mensa> mensa) {
+    private void createRegistratedUser(String email, String firstname, String lastname, Set<Mensa> mensa, boolean wantUpdates) {
 
         try {
             ActivationCode activationCode = new ActivationCode(RandomStringUtils.randomAlphanumeric(32));
@@ -325,6 +331,7 @@ public class UserView extends HorizontalLayout implements BeforeEnterObserver {
             mailUser.setEnabled(false);
             mailUser.setActivationCode(activationCode);
             mailUser.setDeactivationCode(deactivationCode);
+            mailUser.setWantsUpdate(wantUpdates);
 
             mailUser.setMensas(mensa);
 

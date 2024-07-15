@@ -23,15 +23,18 @@ import com.vaadin.flow.server.auth.AnonymousAllowed;
 import de.olech2412.mensahub.junction.JPA.repository.API_UserRepository;
 import de.olech2412.mensahub.junction.JPA.repository.ActivationCodeRepository;
 import de.olech2412.mensahub.junction.JPA.repository.DeactivationCodeRepository;
-import de.olech2412.mensahub.junction.JPA.repository.MailUserRepository;
+import de.olech2412.mensahub.junction.JPA.repository.mensen.MensaRepository;
+import de.olech2412.mensahub.junction.JPA.services.MailUserService;
 import de.olech2412.mensahub.junction.email.Mailer;
 import de.olech2412.mensahub.junction.gui.components.vaadin.GermanDatePicker;
-import de.olech2412.mensahub.models.authentification.API_User;
+import de.olech2412.mensahub.junction.gui.components.vaadin.MailUserSetupDialog;
+import de.olech2412.mensahub.models.Mensa;
 import de.olech2412.mensahub.models.authentification.MailUser;
 import jakarta.mail.MessagingException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
@@ -42,14 +45,13 @@ import java.security.NoSuchAlgorithmException;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 @Route("deactivate")
 @PageTitle("Verwaltung deiner E-Mail-Einstellungen")
 @AnonymousAllowed
 public class MailSettingsView extends Composite implements BeforeEnterObserver {
     private final DeactivationCodeRepository deactivationCodeRepository;
-    private final MailUserRepository mailUserRepository;
+    private final MailUserService mailUserService;
     private final ActivationCodeRepository activationCodeRepository;
     private final VerticalLayout content = new VerticalLayout();
     @Autowired
@@ -57,10 +59,13 @@ public class MailSettingsView extends Composite implements BeforeEnterObserver {
     Logger logger = LoggerFactory.getLogger(MailSettingsView.class);
     private VerticalLayout layout;
 
-    public MailSettingsView(DeactivationCodeRepository deactivationCodeRepository, MailUserRepository mailUserRepository, ActivationCodeRepository activationCodeRepository) {
+    private final MensaRepository mensaRepository;
+
+    public MailSettingsView(DeactivationCodeRepository deactivationCodeRepository, MailUserService mailUserService, ActivationCodeRepository activationCodeRepository, MensaRepository mensaRepository) {
         this.deactivationCodeRepository = deactivationCodeRepository;
-        this.mailUserRepository = mailUserRepository;
+        this.mailUserService = mailUserService;
         this.activationCodeRepository = activationCodeRepository;
+        this.mensaRepository = mensaRepository;
     }
 
     @Override
@@ -103,8 +108,9 @@ public class MailSettingsView extends Composite implements BeforeEnterObserver {
         }
     }
 
-    private void initDeactivationView(String code) throws MessagingException {
-        MailUser mailUser = mailUserRepository.findByDeactivationCode_Code(code);
+    @Transactional
+    protected void initDeactivationView(String code) throws MessagingException {
+        MailUser mailUser = mailUserService.findMailUserByDeactivationCode(code);
 
         if(mailUser == null){
             layout.add(new Paragraph("Der Nutzer konnte nicht identifiziert werden. Wenn du der Meinung bist, es " +
@@ -115,15 +121,45 @@ public class MailSettingsView extends Composite implements BeforeEnterObserver {
         H3 headlineDelete = new H3("Du möchtest keine weiteren Emails von uns oder deine Einstellungen bearbeiten? Hier sind deine Optionen...");
         Text explanationDelete = new Text("Der klick auf \"Vollständig Deaktivieren\" hat eine sofortige Löschung deiner Daten zur Folge." +
                 " Durch klick auf \"Zeitweise Deaktivieren\" kannst du deinen Account für gewisse Zeit deaktivieren und anschließend weiter nutzen");
+
         Button deactivate = new Button("Vollständig Deaktivieren");
         deactivate.setIcon(VaadinIcon.TRASH.create());
         deactivate.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
         deactivate.addThemeVariants(ButtonVariant.LUMO_ERROR);
+
         Button deactivateForTime = new Button("Zeitweise Deaktivieren");
         deactivateForTime.setIcon(VaadinIcon.CLOCK.create());
         deactivateForTime.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 
-        FormLayout formLayout = new FormLayout(headlineDelete, explanationDelete, deactivate, deactivateForTime);
+        Button mailUserSettings = new Button("Einstellungen");
+        mailUserSettings.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+        mailUserSettings.setIcon(VaadinIcon.COG.create());
+
+        List<Mensa> mensen = mensaRepository.findAll();
+
+        mailUserSettings.addClickListener(buttonClickEvent -> {
+            MailUserSetupDialog mailUserSetupDialog = new MailUserSetupDialog(mailUser, mensen);
+            mailUserSetupDialog.getSaveButton().addClickListener(saveEvent -> {
+                if (mailUserSetupDialog.getMensaComboBox().isEmpty() || mailUserSetupDialog.getMensaComboBox().isInvalid()) {
+                    Notification errorNotification = new Notification("Bitte wähle gültige Daten aus", 3000);
+                    errorNotification.addThemeVariants(NotificationVariant.LUMO_ERROR);
+                    errorNotification.setPosition(Notification.Position.BOTTOM_START);
+                    errorNotification.open();
+                    return;
+                }
+                mailUser.setWantsUpdate(mailUserSetupDialog.getWantsUpdateCheckbox().getValue());
+                mailUser.setMensas(mailUserSetupDialog.getMensaComboBox().getValue());
+
+                mailUserService.saveMailUser(mailUser);
+                Notification successNotification = new Notification("Änderungen wurden erfolgreich gespeichert", 3000);
+                successNotification.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
+                successNotification.setPosition(Notification.Position.BOTTOM_START);
+                successNotification.open();
+            });
+            mailUserSetupDialog.open();
+        });
+
+        FormLayout formLayout = new FormLayout(headlineDelete, explanationDelete, deactivate, deactivateForTime, mailUserSettings);
 
         content.add(formLayout);
         layout.add(content);
@@ -139,7 +175,7 @@ public class MailSettingsView extends Composite implements BeforeEnterObserver {
             reactivate.addClickListener(buttonClickEvent -> {
                 mailUser.setEnabled(true);
                 mailUser.setDeactviatedUntil(null);
-                mailUserRepository.save(mailUser);
+                mailUserService.saveMailUser(mailUser);
                 Notification notification = new Notification("Du hast deinen Account erfolgreich wieder freigeschaltet.", 3000);
                 notification.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
                 notification.setPosition(Notification.Position.BOTTOM_START);
@@ -170,6 +206,7 @@ public class MailSettingsView extends Composite implements BeforeEnterObserver {
         deleteInfo.getElement().getThemeList().add("badge");
 
         GermanDatePicker datePicker = new GermanDatePicker();
+        datePicker.setWidth(30f, Unit.PERCENTAGE);
         datePicker.setLabel("Wähle den Zeitpunkt der Reaktivierung");
         if (mailUser.getDeactviatedUntil() != null) {
             datePicker.setValue(mailUser.getDeactviatedUntil());
@@ -197,7 +234,7 @@ public class MailSettingsView extends Composite implements BeforeEnterObserver {
             if (datePicker.getValue() != null) {
                 mailUser.setEnabled(false);
                 mailUser.setDeactviatedUntil(datePicker.getValue());
-                mailUserRepository.save(mailUser);
+                mailUserService.saveMailUser(mailUser);
 
                 Notification notification = new Notification("Du wurdest erfolgreich temporär deaktiviert. Alle wichtige Informationen senden wir dir per Mail zu.", 3000);
                 notification.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
@@ -242,7 +279,7 @@ public class MailSettingsView extends Composite implements BeforeEnterObserver {
     }
 
     private void deleteAccount(MailUser activatedUser) throws MessagingException, IOException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
-        mailUserRepository.delete(activatedUser);
+        mailUserService.deleteMailUser(activatedUser);
         deactivationCodeRepository.delete(activatedUser.getDeactivationCode());
 
         if (activatedUser.getActivationCode() != null) { // if user is not activated

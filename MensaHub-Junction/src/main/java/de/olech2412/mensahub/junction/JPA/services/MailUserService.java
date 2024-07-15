@@ -4,6 +4,7 @@ import de.olech2412.mensahub.junction.JPA.repository.MailUserRepository;
 import de.olech2412.mensahub.junction.JPA.repository.mensen.MensaRepository;
 import de.olech2412.mensahub.models.Mensa;
 import de.olech2412.mensahub.models.authentification.MailUser;
+import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,6 +35,14 @@ public class MailUserService {
 
     public List<MailUser> findMailUserByEmail(String email) {
         return mailUserRepository.findByEmail(email);
+    }
+
+    @Transactional
+    public MailUser findMailUserByDeactivationCode(String deactivationCode) {
+        MailUser mailUser = mailUserRepository.findByDeactivationCode_Code(deactivationCode);
+        // trigger load lazy loading obj
+        Hibernate.initialize(mailUser.getMensas());
+        return mailUser;
     }
 
     @Transactional

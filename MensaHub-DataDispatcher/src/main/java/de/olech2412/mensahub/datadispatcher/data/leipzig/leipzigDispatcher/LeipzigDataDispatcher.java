@@ -46,7 +46,7 @@ public class LeipzigDataDispatcher {
         this.mailUserService = mailUserService;
     }
 
-    @Scheduled(cron = "0 */5 * * * *")
+    @Scheduled(cron = "0 */10 * * * *")
     @Transactional
     public void callData() throws Exception {
         HTML_Caller dataCaller = new HTML_Caller();
@@ -132,8 +132,10 @@ public class LeipzigDataDispatcher {
                 List<Meal> meals = mealsService.findAllMealsByServingDateAndMensa(today, mensa);
                 List<MailUser> mailUsers = mailUserService.findAllByMensasAndEnabled(mensa, true);
                 for (MailUser mailUser : mailUsers) {
-                    mailer.sendSpeiseplan(mailUser, meals, mensa, true);
-                    log.info("Update sent to {} for mensa {}", mailUser.getEmail(), mensa.getName());
+                    if (mailUser.isWantsUpdate()) {
+                        mailer.sendSpeiseplan(mailUser, meals, mensa, true);
+                        log.info("Update sent to {} for mensa {}", mailUser.getEmail(), mensa.getName());
+                    }
                 }
             }
         }
