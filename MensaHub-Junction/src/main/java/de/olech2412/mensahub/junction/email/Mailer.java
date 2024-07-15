@@ -456,7 +456,7 @@ public class Mailer {
      */
     public void sendTemporaryDeactivationEmail(String firstName, String emailTarget, String deactivationCode, LocalDate deactivateUntil) throws Exception {
         Properties prop = new Properties();
-        prop.put("mail.smtp.auth", Boolean.getBoolean(Config.getInstance().getProperty("mensaHub.junction.mail.smtpAuth")));
+        prop.put("mail.smtp.auth", Boolean.parseBoolean(Config.getInstance().getProperty("mensaHub.junction.mail.smtpAuth")));
         prop.put("mail.smtp.host", Config.getInstance().getProperty("mensaHub.junction.mail.smtpHost"));
         prop.put("mail.smtp.port", Config.getInstance().getProperty("mensaHub.junction.mail.smtpPort"));
         prop.put("mail.smtp.starttls.enable", "true");
