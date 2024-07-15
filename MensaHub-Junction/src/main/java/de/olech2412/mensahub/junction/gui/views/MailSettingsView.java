@@ -3,7 +3,6 @@ package de.olech2412.mensahub.junction.gui.views;
 import com.vaadin.flow.component.*;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
-import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.html.H3;
 import com.vaadin.flow.component.html.Image;
@@ -25,6 +24,7 @@ import de.olech2412.mensahub.junction.JPA.repository.ActivationCodeRepository;
 import de.olech2412.mensahub.junction.JPA.repository.DeactivationCodeRepository;
 import de.olech2412.mensahub.junction.JPA.repository.MailUserRepository;
 import de.olech2412.mensahub.junction.email.Mailer;
+import de.olech2412.mensahub.junction.gui.components.vaadin.GermanDatePicker;
 import de.olech2412.mensahub.models.authentification.API_User;
 import de.olech2412.mensahub.models.authentification.MailUser;
 import jakarta.mail.MessagingException;
@@ -161,14 +161,16 @@ public class MailSettingsView extends Composite implements BeforeEnterObserver {
     private void addTimeChoosePanel(MailUser mailUser) {
         content.removeAll();
         Text explanation = new Text("Alles klar. Du kannst entweder deinen Account automatisch in 3 Monaten wieder aktivieren" +
-                " oder du wählst selber den Zeitpunkt. Die Entscheidung kann nicht rückgängig gemacht werden");
+                " oder du wählst selber den Zeitpunkt. Die Entscheidung kann jederzeit rückgängig gemacht werden.");
         Span deleteInfo = new Span("Eine Löschung ist trotzdem jederzeit möglich!");
         deleteInfo.getElement().getThemeList().add("badge");
 
-        DatePicker datePicker = new DatePicker("Wähle den Zeitpunkt der Reaktivierung");
+        GermanDatePicker datePicker = new GermanDatePicker();
+        datePicker.setLabel("Wähle den Zeitpunkt der Reaktivierung");
         if (mailUser.getDeactviatedUntil() != null) {
             datePicker.setValue(mailUser.getDeactviatedUntil());
         }
+        datePicker.setMin(LocalDate.now().plusDays(1));
         datePicker.setPlaceholder("Ich möchte wieder aktiviert werden am...");
         Button threeMonths = new Button("Ich bin in 3 Monaten wieder da...");
         threeMonths.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
