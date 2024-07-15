@@ -121,6 +121,25 @@ public class MailSettingsView extends Composite implements BeforeEnterObserver {
 
         MailUser mailUser = mailUserRepository.findByDeactivationCode_Code(code);
 
+        if (!mailUser.isEnabled() && mailUser.getDeactviatedUntil() != null) {
+            formLayout.remove(deactivateForTime);
+            Button reactivate = new Button("Account reaktivieren");
+            reactivate.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+            reactivate.addThemeVariants(ButtonVariant.LUMO_SUCCESS);
+            reactivate.setIcon(VaadinIcon.REFRESH.create());
+            formLayout.add(reactivate);
+
+            reactivate.addClickListener(buttonClickEvent -> {
+                mailUser.setEnabled(true);
+                mailUser.setDeactviatedUntil(null);
+                mailUserRepository.save(mailUser);
+                Notification notification = new Notification("Du hast deinen Account erfolgreich wieder freigeschaltet.", 3000);
+                notification.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
+                notification.setPosition(Notification.Position.BOTTOM_START);
+                notification.open();
+            });
+        }
+
         if (mailUser == null) {
             logger.info("User tried to deactivate account but there is no user with the code: {}", code);
             // check if it's an api user
