@@ -10,6 +10,8 @@ import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.server.VaadinSession;
+import com.vaadin.flow.server.WebBrowser;
 import de.olech2412.mensahub.models.Mensa;
 import de.olech2412.mensahub.models.authentification.MailUser;
 import lombok.Getter;
@@ -34,7 +36,12 @@ public class MailUserSetupDialog extends Dialog {
         mensaComboBox.setItems(mensen);
         mensaComboBox.setItemLabelGenerator(Mensa::getName);
         mensaComboBox.select(mailUser.getMensas());
-        mensaComboBox.setWidth(50f, Unit.PERCENTAGE);
+        if (isMobileDevice()) {
+            mensaComboBox.setWidth(50f, Unit.PERCENTAGE);
+        } else {
+            mensaComboBox.setWidth(100f, Unit.PERCENTAGE);
+        }
+
 
         wantsUpdateCheckbox = new Checkbox("Möchtest du benachrichtigt werden, wenn Änderungen am Speiseplan festgestellt werden?");
         wantsUpdateCheckbox.setValue(mailUser.isWantsUpdate());
@@ -55,5 +62,10 @@ public class MailUserSetupDialog extends Dialog {
 
         add(new VerticalLayout(mensaComboBox, wantsUpdateCheckbox));
         add(chooserLayout);
+    }
+
+    public boolean isMobileDevice() {
+        WebBrowser webBrowser = VaadinSession.getCurrent().getBrowser();
+        return webBrowser.isAndroid() || webBrowser.isIPhone() || webBrowser.isWindowsPhone();
     }
 }
