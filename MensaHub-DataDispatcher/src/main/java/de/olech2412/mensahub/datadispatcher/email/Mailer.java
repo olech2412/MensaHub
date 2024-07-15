@@ -205,7 +205,7 @@ public class Mailer {
         String footer = StaticEmailText.FOOD_PLAN_FOOTER;
         footer = footer.replaceFirst("%s", getRandomGreetingsText());
         footer = footer.replaceFirst("%s", deactivateUrl);
-        footer = footer.replaceFirst("%s", Config.getInstance().getProperty("mensaHub.dataDispatcher.junction.address") + "/mensaHub/mealPlan?date=today&mensa=" + mensa.getId());
+        footer = footer.replaceFirst("%s", Config.getInstance().getProperty("mensaHub.dataDispatcher.junction.address") + "/mealPlan?date=today&mensa=" + mensa.getId());
 
 
         String msg = header +
@@ -574,7 +574,7 @@ public class Mailer {
         String footer = StaticEmailText.FOOD_PLAN_FOOTER;
         footer = footer.replaceFirst("%s", getRandomGreetingsText());
         footer = footer.replaceFirst("%s", deactivateUrl);
-        footer = footer.replaceFirst("%s", Config.getInstance().getProperty("mensaHub.dataDispatcher.junction.address") + "/mensaHub/mealPlan?date=today&mensa=" + mensa.getId());
+        footer = footer.replaceFirst("%s", Config.getInstance().getProperty("mensaHub.dataDispatcher.junction.address") + "/mealPlan?date=today&mensa=" + mensa.getId());
 
         return header +
                 menuText +
