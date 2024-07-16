@@ -36,7 +36,7 @@ public class Users {
      * @param role the role
      * @param enabled if the user is enabled
      */
-    public Users(String username, String password, String role, Boolean enabled) {
+    public Users(String username, String password, Roles role, Boolean enabled) {
         this.username = username;
         this.password = password;
         this.role = role;
