@@ -24,7 +24,7 @@ public class Users {
     private String password; // the password will be used for the login
 
     @Column(name = "role", nullable = false)
-    private String role; // the role of the user
+    private Roles role; // the role of the user
 
     @Column(name = "enabled", nullable = false)
     private Boolean enabled; // if the user is enabled
