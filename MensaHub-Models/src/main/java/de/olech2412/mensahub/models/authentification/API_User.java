@@ -63,8 +63,9 @@ public class API_User {
 
     @Column(name = "role", nullable = false)
     @NotEmpty
+    @Enumerated(EnumType.STRING)
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    private String role = "ROLE_DEV"; // default value
+    private Roles role; // default value
 
     @Column(name = "creationDate", nullable = false)
     private LocalDate creationDate = LocalDate.now(); // default value
