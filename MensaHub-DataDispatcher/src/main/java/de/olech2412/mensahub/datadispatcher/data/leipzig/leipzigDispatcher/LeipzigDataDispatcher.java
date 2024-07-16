@@ -80,7 +80,7 @@ public class LeipzigDataDispatcher {
                 if (mailUser.isEnabled()) {
                     for (Mensa mensa : mailUser.getMensas()) {
                         mailer.sendSpeiseplan(mailUser, mealsService.findAllMealsByServingDateAndMensa(today, mensa), mensa, false);
-                        log.info("Sent speiseplan for user: {} for mensa: {}");
+                        log.info("Sent speiseplan for user: {} for mensa: {}", mailUser.getEmail(), mensa.getName());
                     }
                 }
             } catch (Exception exception) {
