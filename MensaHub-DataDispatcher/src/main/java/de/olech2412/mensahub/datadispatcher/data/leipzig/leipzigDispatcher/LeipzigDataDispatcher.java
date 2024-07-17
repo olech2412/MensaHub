@@ -6,9 +6,14 @@ import de.olech2412.mensahub.datadispatcher.email.Mailer;
 import de.olech2412.mensahub.datadispatcher.jpa.services.MailUserService;
 import de.olech2412.mensahub.datadispatcher.jpa.services.leipzig.meals.MealsService;
 import de.olech2412.mensahub.datadispatcher.jpa.services.leipzig.mensen.MensasService;
+import de.olech2412.mensahub.datadispatcher.monitoring.MonitoringConfig;
+import de.olech2412.mensahub.datadispatcher.monitoring.MonitoringTags;
 import de.olech2412.mensahub.models.Meal;
 import de.olech2412.mensahub.models.Mensa;
 import de.olech2412.mensahub.models.authentification.MailUser;
+import io.micrometer.core.annotation.Counted;
+import io.micrometer.core.annotation.Timed;
+import io.micrometer.core.instrument.Counter;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -35,21 +40,32 @@ public class LeipzigDataDispatcher {
     @Autowired
     private MealsService mealsService;
 
+    @Autowired
+    private MonitoringConfig monitoringConfig;
+
 
     public LeipzigDataDispatcher(
             MensasService mensasService,
             MealsService mealsService,
-            MailUserService mailUserService) {
+            MailUserService mailUserService,
+            MonitoringConfig monitoringConfig) {
 
         this.mensasService = mensasService;
         this.mealsService = mealsService;
         this.mailUserService = mailUserService;
+        this.monitoringConfig = monitoringConfig;
     }
 
     @Scheduled(cron = "0 */10 * * * *")
     @Transactional
     public void callData() throws Exception {
-        HTML_Caller dataCaller = new HTML_Caller();
+        HTML_Caller dataCaller = new HTML_Caller(
+                monitoringConfig.customCounter("stuwe_call_counter_success",
+                MonitoringTags.MENSAHUB_DATA_DISPATCHER_APPLICATION_TAG.getValue(), "How many calls were sent and parsed successfully"),
+                monitoringConfig.customCounter("stuwe_call_counter_failure",
+                        MonitoringTags.MENSAHUB_DATA_DISPATCHER_APPLICATION_TAG.getValue(), "How many call or parsing failure happened")
+        );
+
         log.info("------------------ Data call for Leipzig ------------------");
         LocalDate currentDate = LocalDate.now();
         for (Mensa mensa : mensasService.findAll()) {
@@ -73,6 +89,10 @@ public class LeipzigDataDispatcher {
 
     @Scheduled(cron = "0 00 08 ? * MON-FRI")
     public void sendEmails() {
+        Counter mailCounterSuccess = monitoringConfig.customCounter("mails_success", MonitoringTags.MENSAHUB_DATA_DISPATCHER_APPLICATION_TAG.getValue(),
+                "How many mails were sent successfully");
+        Counter mailCounterFailure = monitoringConfig.customCounter("mails_failure", MonitoringTags.MENSAHUB_DATA_DISPATCHER_APPLICATION_TAG.getValue(),
+                "How many mails were sent failure");
         Mailer mailer = new Mailer();
         LocalDate today = LocalDate.now();
         for (MailUser mailUser : mailUserService.findAll()) {
@@ -81,10 +101,12 @@ public class LeipzigDataDispatcher {
                     for (Mensa mensa : mailUser.getMensas()) {
                         mailer.sendSpeiseplan(mailUser, mealsService.findAllMealsByServingDateAndMensa(today, mensa), mensa, false);
                         log.info("Sent speiseplan for user: {} for mensa: {}", mailUser.getEmail(), mensa.getName());
+                        mailCounterSuccess.increment();
                     }
                 }
             } catch (Exception exception) {
                 log.error("Error while sending email to {}: {}", mailUser.getEmail(), exception.getMessage());
+                mailCounterFailure.increment();
             }
         }
     }
@@ -123,10 +145,12 @@ public class LeipzigDataDispatcher {
         }
     }
 
+    @Counted(value = "detected_updates", description = "How many updates were detected")
     protected void sendUpdate(Mensa wantedMensa) throws Exception {
         Mailer mailer = new Mailer();
         LocalDate today = LocalDate.now();
-
+        Counter updateSentCounter = monitoringConfig.customCounter("updates_sent", MonitoringTags.MENSAHUB_DATA_DISPATCHER_APPLICATION_TAG.getValue(),
+                "How many updates were sent successfully");
         for (Mensa mensa : mensasService.findAll()) {
             if (mensa.equals(wantedMensa)) {
                 List<Meal> meals = mealsService.findAllMealsByServingDateAndMensa(today, mensa);
@@ -135,6 +159,7 @@ public class LeipzigDataDispatcher {
                     if (mailUser.isWantsUpdate()) {
                         mailer.sendSpeiseplan(mailUser, meals, mensa, true);
                         log.info("Update sent to {} for mensa {}", mailUser.getEmail(), mensa.getName());
+                        updateSentCounter.increment();
                     }
                 }
             }

@@ -3,6 +3,7 @@ package de.olech2412.mensahub.datadispatcher.data.leipzig.html_caller;
 import de.olech2412.mensahub.datadispatcher.config.Config;
 import de.olech2412.mensahub.models.Meal;
 import de.olech2412.mensahub.models.Mensa;
+import io.micrometer.core.instrument.Counter;
 import lombok.extern.log4j.Log4j2;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -22,9 +23,15 @@ import java.util.List;
 @Log4j2
 public class HTML_Caller {
 
+    private Counter callCounterSuccess;
+
+    private Counter callCounterFailure;
+
     private final String notAvailableSign = Config.getInstance().getProperty("mensaHub.dataDispatcher.notAvailable.sign");
 
-    public HTML_Caller() throws IOException, IllegalBlockSizeException, NoSuchPaddingException, BadPaddingException, NoSuchAlgorithmException, InvalidKeyException {
+    public HTML_Caller(Counter callCounterSuccess, Counter callCounterFails) throws IOException, IllegalBlockSizeException, NoSuchPaddingException, BadPaddingException, NoSuchAlgorithmException, InvalidKeyException {
+        this.callCounterSuccess = callCounterSuccess;
+        this.callCounterFailure = callCounterFails;
     }
 
     public List<Meal> callDataFromStudentenwerk(String url, Mensa mensa) {
@@ -92,10 +99,11 @@ public class HTML_Caller {
                 mealsList.add(mealObject);
             }
 
-            log.info("Parser found: " + mealsList.size() + " individual meals");
-
+            log.info("Parser found: {} individual meals", mealsList.size());
+            callCounterSuccess.increment();
             return mealsList;
         } catch (IOException e) {
+            callCounterFailure.increment();
             log.fatal("Error while parsing the HTML document: {}", e.getMessage());
             return null;
         }
