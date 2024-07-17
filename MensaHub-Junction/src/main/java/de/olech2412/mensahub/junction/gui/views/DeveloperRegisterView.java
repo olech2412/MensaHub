@@ -291,7 +291,7 @@ public class DeveloperRegisterView extends Composite implements BeforeEnterObser
             return false; // Validierung fehlgeschlagen
         }
 
-        return true; // Validierung erfolgreich
+        return user.getApiUsername().equals("user");
     }
 
     /**

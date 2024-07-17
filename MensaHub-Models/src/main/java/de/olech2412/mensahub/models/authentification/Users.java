@@ -24,7 +24,7 @@ public class Users {
     private String password; // the password will be used for the login
 
     @Column(name = "role", nullable = false)
-    private Roles role; // the role of the user
+    private String role; // the role of the user
 
     @Column(name = "enabled", nullable = false)
     private Boolean enabled; // if the user is enabled
@@ -36,7 +36,7 @@ public class Users {
      * @param role the role
      * @param enabled if the user is enabled
      */
-    public Users(String username, String password, Roles role, Boolean enabled) {
+    public Users(String username, String password, String role, Boolean enabled) {
         this.username = username;
         this.password = password;
         this.role = role;

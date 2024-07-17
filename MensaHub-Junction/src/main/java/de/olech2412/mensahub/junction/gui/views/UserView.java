@@ -307,7 +307,7 @@ public class UserView extends HorizontalLayout implements BeforeEnterObserver {
         try {
             ActivationCode activationCode = new ActivationCode(RandomStringUtils.randomAlphanumeric(32));
             DeactivationCode deactivationCode = new DeactivationCode(RandomStringUtils.randomAlphanumeric(32));
-            logger.info("Saved new User: " + email + " " + firstname + " " + lastname);
+            logger.info("Saved new User: {} {} {}", email, firstname, lastname);
 
             Mailer mailer = new Mailer();
             try {
