@@ -31,7 +31,7 @@ public class UserDataDispatcher {
         for (MailUser deactivatedMailUser : deactivatedMailUsers) {
             if (deactivatedMailUser.getDeactviatedUntil() != null) {
                 if (deactivatedMailUser.getDeactviatedUntil().isEqual(LocalDate.now())) {
-                    log.info("Activating user: " + deactivatedMailUser.getEmail());
+                    log.info("Activating user: {}", deactivatedMailUser.getEmail());
                     deactivatedMailUser.setEnabled(true);
                     deactivatedMailUser.setDeactviatedUntil(null);
                     mailUserRepository.save(deactivatedMailUser);
