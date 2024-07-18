@@ -7,7 +7,7 @@ import java.util.Locale;
 
 public class GermanDatePicker extends DatePicker {
 
-    public GermanDatePicker(){
+    public GermanDatePicker() {
         DatePicker.DatePickerI18n germanI18n = new DatePicker.DatePickerI18n();
         germanI18n.setMonthNames(List.of("Januar", "Februar", "März", "April",
                 "Mai", "Juni", "Juli", "August", "September", "Oktober",

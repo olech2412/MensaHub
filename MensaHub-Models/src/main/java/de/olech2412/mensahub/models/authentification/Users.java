@@ -23,11 +23,15 @@ public class Users {
     @Column(name = "password", nullable = false)
     private String password; // the password will be used for the login
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "role", nullable = false)
-    private String role; // the role of the user
+    private Role role; // the role of the user
 
     @Column(name = "enabled", nullable = false)
     private Boolean enabled; // if the user is enabled
+
+    @Column(name = "proponent", nullable = false)
+    private Boolean proponent;
 
     /**
      * Constructor for the user.
@@ -36,11 +40,12 @@ public class Users {
      * @param role the role
      * @param enabled if the user is enabled
      */
-    public Users(String username, String password, String role, Boolean enabled) {
+    public Users(String username, String password, Role role, boolean enabled, boolean proponent) {
         this.username = username;
         this.password = password;
         this.role = role;
         this.enabled = enabled;
+        this.proponent = proponent;
     }
 
     /**

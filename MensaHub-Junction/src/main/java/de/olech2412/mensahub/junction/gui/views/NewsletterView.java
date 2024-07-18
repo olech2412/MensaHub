@@ -33,6 +33,7 @@ import de.olech2412.mensahub.models.Mensa;
 import de.olech2412.mensahub.models.authentification.ActivationCode;
 import de.olech2412.mensahub.models.authentification.DeactivationCode;
 import de.olech2412.mensahub.models.authentification.MailUser;
+import de.olech2412.mensahub.models.authentification.Role;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.mail.MessagingException;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -53,7 +54,7 @@ import java.util.regex.Pattern;
 
 @PageTitle("MensaHub")
 @Route(value = "newsletter")
-@RolesAllowed({"ROLE_ADMIN", "ROLE_SUPERADMIN"})
+@RolesAllowed({Role.Names.ADMIN, Role.Names.SUPER_ADMIN})
 public class UserView extends HorizontalLayout implements BeforeEnterObserver {
 
     private final String welcomeText = "Willkommen bei MensaHub";
