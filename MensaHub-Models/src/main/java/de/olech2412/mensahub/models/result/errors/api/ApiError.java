@@ -19,7 +19,7 @@ public record ApiError(String message, APIErrors apiError) implements Error {
     public String toString() {
         return "ApiError{" +
                 "message='" + message + '\'' +
-                ", apiError=" + apiError.getCode() +
+                ", jobDTOError=" + apiError.getCode() +
                 '}';
     }
 }
