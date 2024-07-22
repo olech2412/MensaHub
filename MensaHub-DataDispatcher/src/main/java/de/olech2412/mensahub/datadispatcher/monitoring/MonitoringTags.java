@@ -5,7 +5,8 @@ import lombok.Getter;
 @Getter
 public enum MonitoringTags {
     MENSAHUB_DATA_DISPATCHER_APPLICATION_TAG("mensaHub-data-dispatcher"),
-    APPLICATION_TAG("application"),;
+    APPLICATION_TAG("application"),
+    ;
 
     private final String value;
 

@@ -6,6 +6,7 @@ import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import de.olech2412.mensahub.junction.security.SecurityService;
+import de.olech2412.mensahub.models.authentification.Role;
 import jakarta.annotation.security.PermitAll;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -29,7 +30,7 @@ public class RedirectView extends HorizontalLayout implements BeforeEnterObserve
      */
     @Override
     public void beforeEnter(BeforeEnterEvent beforeEnterEvent) {
-        if (securityService.getAuthenticatedUser().getAuthorities().contains(new SimpleGrantedAuthority("ROLE_DEV"))) {
+        if (securityService.getAuthenticatedUser().getAuthorities().contains(new SimpleGrantedAuthority(Role.Names.API_USER))) {
             beforeEnterEvent.forwardTo("/dev");
         } else {
             beforeEnterEvent.forwardTo("/newsletter");

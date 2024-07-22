@@ -23,10 +23,10 @@ import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.*;
-import de.olech2412.mensahub.junction.JPA.repository.ActivationCodeRepository;
-import de.olech2412.mensahub.junction.JPA.repository.DeactivationCodeRepository;
-import de.olech2412.mensahub.junction.JPA.services.MailUserService;
-import de.olech2412.mensahub.junction.JPA.services.mensen.MensaService;
+import de.olech2412.mensahub.junction.jpa.repository.ActivationCodeRepository;
+import de.olech2412.mensahub.junction.jpa.repository.DeactivationCodeRepository;
+import de.olech2412.mensahub.junction.jpa.services.MailUserService;
+import de.olech2412.mensahub.junction.jpa.services.mensen.MensaService;
 import de.olech2412.mensahub.junction.config.Config;
 import de.olech2412.mensahub.junction.email.Mailer;
 import de.olech2412.mensahub.models.Mensa;
@@ -54,12 +54,12 @@ import java.util.regex.Pattern;
 
 @PageTitle("MensaHub")
 @Route(value = "newsletter")
-@RolesAllowed({Role.Names.ADMIN, Role.Names.SUPER_ADMIN})
-public class UserView extends HorizontalLayout implements BeforeEnterObserver {
+@RolesAllowed({Role.Names.ADMIN, Role.Names.SUPER_ADMIN, Role.Names.LOGIN_USER})
+public class NewsletterView extends HorizontalLayout implements BeforeEnterObserver {
 
     private final String welcomeText = "Willkommen bei MensaHub";
     private final MensaService mensaService;
-    Logger logger = LoggerFactory.getLogger(UserView.class);
+    Logger logger = LoggerFactory.getLogger(NewsletterView.class);
     private EmailField emailField;
     private TextField firstName;
     private TextField lastName;
@@ -74,7 +74,7 @@ public class UserView extends HorizontalLayout implements BeforeEnterObserver {
     private Checkbox wantUpdates;
 
 
-    public UserView(MensaService mensaService) throws IOException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
+    public NewsletterView(MensaService mensaService) throws IOException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
         this.mensaService = mensaService;
 
         VerticalLayout mainLayout = init();

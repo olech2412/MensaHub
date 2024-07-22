@@ -3,6 +3,7 @@ package de.olech2412.mensahub.datadispatcher.jpa.services;
 import de.olech2412.mensahub.datadispatcher.jpa.repository.MailUserRepository;
 import de.olech2412.mensahub.models.Mensa;
 import de.olech2412.mensahub.models.authentification.MailUser;
+import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -39,5 +40,12 @@ public class MailUserService {
 
     public List<MailUser> findAllByMensasAndEnabled(Mensa mensa, boolean enabled) {
         return mailUserRepository.findAllByMensasAndEnabled(mensa, enabled);
+    }
+
+    @Transactional
+    public MailUser findByEmail(String email) {
+        MailUser mailUser = mailUserRepository.findByEmail(email);
+        Hibernate.initialize(mailUser.getMensas());
+        return mailUser;
     }
 }

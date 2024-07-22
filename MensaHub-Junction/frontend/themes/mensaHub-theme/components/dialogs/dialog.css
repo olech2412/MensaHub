@@ -1,0 +1,13 @@
+/* Standard Dialog Style */
+.vaadin-dialog-overlay {
+    width: 60%;
+    height: auto;
+}
+
+/* Mobile Styles */
+@media (max-width: 600px) {
+    .vaadin-dialog-overlay {
+        width: 90%;
+        height: auto;
+    }
+}

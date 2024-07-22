@@ -31,7 +31,7 @@ public class RouteNotFoundError extends VerticalLayout
         message.addClassNames(LumoUtility.FontSize.LARGE, LumoUtility.TextColor.SECONDARY);
 
         Button homeButton = new Button("Zur Newsletter-Anmeldung", buttonClickEvent -> {
-            getUI().ifPresent(ui -> ui.navigate(UserView.class));
+            getUI().ifPresent(ui -> ui.navigate(NewsletterView.class));
         });
         homeButton.addClassNames(LumoUtility.Margin.Top.MEDIUM);
         homeButton.addClassName("button-link");

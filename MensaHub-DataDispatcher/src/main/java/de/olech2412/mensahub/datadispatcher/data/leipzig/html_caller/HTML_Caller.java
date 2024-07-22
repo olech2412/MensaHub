@@ -3,6 +3,9 @@ package de.olech2412.mensahub.datadispatcher.data.leipzig.html_caller;
 import de.olech2412.mensahub.datadispatcher.config.Config;
 import de.olech2412.mensahub.models.Meal;
 import de.olech2412.mensahub.models.Mensa;
+import de.olech2412.mensahub.models.result.Result;
+import de.olech2412.mensahub.models.result.errors.parser.ParserError;
+import de.olech2412.mensahub.models.result.errors.parser.ParserErrors;
 import io.micrometer.core.instrument.Counter;
 import lombok.extern.log4j.Log4j2;
 import org.jsoup.Jsoup;
@@ -23,18 +26,16 @@ import java.util.List;
 @Log4j2
 public class HTML_Caller {
 
-    private Counter callCounterSuccess;
-
-    private Counter callCounterFailure;
-
     private final String notAvailableSign = Config.getInstance().getProperty("mensaHub.dataDispatcher.notAvailable.sign");
+    private final Counter callCounterSuccess;
+    private final Counter callCounterFailure;
 
     public HTML_Caller(Counter callCounterSuccess, Counter callCounterFails) throws IOException, IllegalBlockSizeException, NoSuchPaddingException, BadPaddingException, NoSuchAlgorithmException, InvalidKeyException {
         this.callCounterSuccess = callCounterSuccess;
         this.callCounterFailure = callCounterFails;
     }
 
-    public List<Meal> callDataFromStudentenwerk(String url, Mensa mensa) {
+    public Result<List<Meal>, ParserError> callDataFromStudentenwerk(String url, Mensa mensa) {
         try {
             Document doc = Jsoup.connect(url).get();
             Elements meals = doc.select(".meal-overview .card.type--meal");
@@ -101,11 +102,11 @@ public class HTML_Caller {
 
             log.info("Parser found: {} individual meals", mealsList.size());
             callCounterSuccess.increment();
-            return mealsList;
+            return Result.success(mealsList);
         } catch (IOException e) {
             callCounterFailure.increment();
             log.fatal("Error while parsing the HTML document: {}", e.getMessage());
-            return null;
+            return Result.error(new ParserError("Error while parsing the HTML document: " + e.getMessage(), ParserErrors.UNKNOWN));
         }
     }
 }

@@ -1,4 +1,4 @@
-package de.olech2412.mensahub.models.result.errors.api;
+package de.olech2412.mensahub.models.result.errors.parser;
 
 import de.olech2412.mensahub.models.result.errors.Error;
 import de.olech2412.mensahub.models.result.errors.ErrorCodes;
@@ -8,18 +8,18 @@ import de.olech2412.mensahub.models.result.errors.ErrorCodes;
  *
  * @since 0.0.1
  */
-public record ApiError(String message, APIErrors apiError) implements Error {
+public record ParserError(String message, ParserErrors parserErrors) implements Error {
 
     @Override
     public ErrorCodes error() {
-        return apiError;
+        return parserErrors;
     }
 
     @Override
     public String toString() {
-        return "ApiError{" +
+        return "ParserError{" +
                 "message='" + message + '\'' +
-                ", jobDTOError=" + apiError.getCode() +
+                ", parserErrors=" + parserErrors.getCode() +
                 '}';
     }
 }

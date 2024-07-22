@@ -1,4 +1,4 @@
-package de.olech2412.mensahub.junction.gui.components.vaadin;
+package de.olech2412.mensahub.junction.gui.components.vaadin.datetimepicker;
 
 import com.vaadin.flow.component.datepicker.DatePicker;
 

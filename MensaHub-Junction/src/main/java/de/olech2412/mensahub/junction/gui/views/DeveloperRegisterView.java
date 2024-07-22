@@ -23,15 +23,16 @@ import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.StreamResource;
 import com.vaadin.flow.server.VaadinSession;
 import com.vaadin.flow.server.WebBrowser;
-import de.olech2412.mensahub.junction.JPA.repository.API_UserRepository;
-import de.olech2412.mensahub.junction.JPA.repository.ActivationCodeRepository;
-import de.olech2412.mensahub.junction.JPA.repository.DeactivationCodeRepository;
+import de.olech2412.mensahub.junction.jpa.repository.API_UserRepository;
+import de.olech2412.mensahub.junction.jpa.repository.ActivationCodeRepository;
+import de.olech2412.mensahub.junction.jpa.repository.DeactivationCodeRepository;
 import de.olech2412.mensahub.junction.config.Config;
 import de.olech2412.mensahub.junction.email.Mailer;
 import de.olech2412.mensahub.models.authentification.API_User;
 import de.olech2412.mensahub.models.authentification.ActivationCode;
 import de.olech2412.mensahub.models.authentification.DeactivationCode;
-import jakarta.annotation.security.PermitAll;
+import de.olech2412.mensahub.models.authentification.Role;
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.mail.MessagingException;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
@@ -52,7 +53,7 @@ import java.util.Set;
 
 @Route("registerDev")
 @PageTitle("MensaHub-Dev")
-@PermitAll
+@RolesAllowed(value = {Role.Names.ADMIN, Role.Names.API_USER, Role.Names.LOGIN_USER, Role.Names.SUPER_ADMIN})
 @Log4j2
 public class DeveloperRegisterView extends Composite implements BeforeEnterObserver {
     @Autowired
@@ -134,7 +135,6 @@ public class DeveloperRegisterView extends Composite implements BeforeEnterObser
                     apiUser.setDescription(description.getValue());
                     apiUser.setVerified_email(false);
                     apiUser.setEnabledByAdmin(false);
-                    apiUser.setRole("ROLE_DEV");
 
                     if (validate(apiUser)) {
                         registerUser(apiUser);

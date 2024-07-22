@@ -1,15 +1,14 @@
-package de.olech2412.mensahub.models.result.errors.api;
+package de.olech2412.mensahub.models.result.errors.mail;
 
 import de.olech2412.mensahub.models.result.errors.ErrorCodes;
 
-public enum APIErrors implements ErrorCodes {
+public enum MailErrors implements ErrorCodes {
 
-    UNKNOWN("API_400"),
-    MISSING_DATA("API_401");
-    
+    UNKNOWN("MAIL_400");
+
     private final String code;
 
-    APIErrors(String code){
+    MailErrors(String code){
         this.code = code;
     }
 

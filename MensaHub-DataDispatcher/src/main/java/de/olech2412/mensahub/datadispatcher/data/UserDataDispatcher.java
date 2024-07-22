@@ -2,6 +2,7 @@ package de.olech2412.mensahub.datadispatcher.data;
 
 import de.olech2412.mensahub.datadispatcher.jpa.repository.MailUserRepository;
 import de.olech2412.mensahub.models.authentification.MailUser;
+import io.micrometer.core.annotation.Counted;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -26,6 +27,7 @@ public class UserDataDispatcher {
     }
 
     @Scheduled(cron = "0 0 * * * *")
+    @Counted(value = "check_for_deactivated_user", description = "How often a check for deactivated users were executed")
     public void checkForDeactivatedUsers() {
         List<MailUser> deactivatedMailUsers = mailUserRepository.findUsersByEnabled(false);
         for (MailUser deactivatedMailUser : deactivatedMailUsers) {

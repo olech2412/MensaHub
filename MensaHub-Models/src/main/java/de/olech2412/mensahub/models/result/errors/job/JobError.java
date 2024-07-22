@@ -1,9 +1,9 @@
-package de.olech2412.mensahub.models.result.errors.helper.jobdto;
+package de.olech2412.mensahub.models.result.errors.job;
 
 import de.olech2412.mensahub.models.result.errors.Error;
 import de.olech2412.mensahub.models.result.errors.ErrorCodes;
 
-public record JobDTOError(String message, JobDTOErrors jobDTOError) implements Error {
+public record JobError(String message, JobErrors jobDTOError) implements Error {
 
     @Override
     public ErrorCodes error() {

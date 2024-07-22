@@ -1,5 +1,6 @@
 package de.olech2412.mensahub.models.authentification;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -21,6 +22,7 @@ public class Users {
     private String username; // the username will be used for the login
 
     @Column(name = "password", nullable = false)
+    @JsonIgnore
     private String password; // the password will be used for the login
 
     @Enumerated(EnumType.STRING)

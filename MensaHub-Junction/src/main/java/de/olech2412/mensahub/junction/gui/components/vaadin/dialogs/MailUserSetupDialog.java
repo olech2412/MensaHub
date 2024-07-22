@@ -1,4 +1,4 @@
-package de.olech2412.mensahub.junction.gui.components.vaadin;
+package de.olech2412.mensahub.junction.gui.components.vaadin.dialogs;
 
 import com.vaadin.flow.component.Unit;
 import com.vaadin.flow.component.button.Button;

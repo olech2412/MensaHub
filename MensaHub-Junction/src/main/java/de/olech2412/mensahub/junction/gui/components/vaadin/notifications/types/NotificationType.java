@@ -1,12 +1,11 @@
 package de.olech2412.mensahub.junction.gui.components.vaadin.notifications.types;
 
-public enum ButtonType {
+public enum NotificationType {
 
-    ABORT,
+    SUCCESS,
+    ERROR,
     WARN,
-    ACCEPT,
-    DELETE,
-    SAVE,
-    CUSTOM
+    INFO,
+    CUSTOM,
 
 }

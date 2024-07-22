@@ -20,14 +20,14 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.StreamResource;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
-import de.olech2412.mensahub.junction.JPA.repository.API_UserRepository;
-import de.olech2412.mensahub.junction.JPA.repository.ActivationCodeRepository;
-import de.olech2412.mensahub.junction.JPA.repository.DeactivationCodeRepository;
-import de.olech2412.mensahub.junction.JPA.repository.mensen.MensaRepository;
-import de.olech2412.mensahub.junction.JPA.services.MailUserService;
+import de.olech2412.mensahub.junction.jpa.repository.API_UserRepository;
+import de.olech2412.mensahub.junction.jpa.repository.ActivationCodeRepository;
+import de.olech2412.mensahub.junction.jpa.repository.DeactivationCodeRepository;
+import de.olech2412.mensahub.junction.jpa.repository.mensen.MensaRepository;
+import de.olech2412.mensahub.junction.jpa.services.MailUserService;
 import de.olech2412.mensahub.junction.email.Mailer;
-import de.olech2412.mensahub.junction.gui.components.vaadin.GermanDatePicker;
-import de.olech2412.mensahub.junction.gui.components.vaadin.MailUserSetupDialog;
+import de.olech2412.mensahub.junction.gui.components.vaadin.datetimepicker.GermanDatePicker;
+import de.olech2412.mensahub.junction.gui.components.vaadin.dialogs.MailUserSetupDialog;
 import de.olech2412.mensahub.models.Mensa;
 import de.olech2412.mensahub.models.authentification.MailUser;
 import jakarta.mail.MessagingException;
@@ -54,12 +54,11 @@ public class MailSettingsView extends Composite implements BeforeEnterObserver {
     private final MailUserService mailUserService;
     private final ActivationCodeRepository activationCodeRepository;
     private final VerticalLayout content = new VerticalLayout();
+    private final MensaRepository mensaRepository;
     @Autowired
     API_UserRepository apiUserRepository;
     Logger logger = LoggerFactory.getLogger(MailSettingsView.class);
     private VerticalLayout layout;
-
-    private final MensaRepository mensaRepository;
 
     public MailSettingsView(DeactivationCodeRepository deactivationCodeRepository, MailUserService mailUserService, ActivationCodeRepository activationCodeRepository, MensaRepository mensaRepository) {
         this.deactivationCodeRepository = deactivationCodeRepository;
@@ -112,7 +111,7 @@ public class MailSettingsView extends Composite implements BeforeEnterObserver {
     protected void initDeactivationView(String code) throws MessagingException {
         MailUser mailUser = mailUserService.findMailUserByDeactivationCode(code);
 
-        if(mailUser == null){
+        if (mailUser == null) {
             layout.add(new Paragraph("Der Nutzer konnte nicht identifiziert werden. Wenn du der Meinung bist, es " +
                     "handelt sich um einen Fehler, kontaktiere bitte den Administrator."));
             return;
