@@ -29,7 +29,7 @@ public class ExtendedConfLayout extends FormLayout {
         executeAtTimePicker.setMin(LocalDateTime.now().plusMinutes(10));
 
         Span infoSpan = new Span(VaadinIcon.EXCLAMATION_CIRCLE.create(),
-                new Span("Bei den folgenden Feldern handelt es sich um optionale Felder."));
+                new Span(" Bei den folgenden Feldern handelt es sich um optionale Felder."));
         infoSpan.getElement().getThemeList().add("badge error");
 
         add(infoSpan);
