@@ -5,10 +5,10 @@ import lombok.Getter;
 @Getter
 public enum Role {
 
-    LOGIN_USER(Names.LOGIN_USER),
-    ADMIN(Names.ADMIN),
-    API_USER(Names.API_USER),
-    SUPER_ADMIN(Names.SUPER_ADMIN);
+    ROLE_LOGIN_USER(Names.ROLE_LOGIN_USER),
+    ROLE_ADMIN(Names.ROLE_ADMIN),
+    ROLE_API_USER(Names.ROLE_API_USER),
+    ROLE_SUPER_ADMIN(Names.ROLE_SUPER_ADMIN);
 
     private final String text;
 
@@ -17,10 +17,10 @@ public enum Role {
     }
 
     public static class Names{
-        public static final String LOGIN_USER = "LOGIN_USER";
-        public static final String ADMIN = "ADMIN";
-        public static final String API_USER = "API_USER";
-        public static final String SUPER_ADMIN = "SUPER_ADMIN";
+        public static final String ROLE_LOGIN_USER = "ROLE_LOGIN_USER";
+        public static final String ROLE_ADMIN = "ROLE_ADMIN";
+        public static final String ROLE_API_USER = "ROLE_API_USER";
+        public static final String ROLE_SUPER_ADMIN = "ROLE_SUPER_ADMIN";
     }
 
 }

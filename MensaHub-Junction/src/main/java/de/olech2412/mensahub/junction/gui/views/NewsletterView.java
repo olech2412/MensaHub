@@ -54,7 +54,7 @@ import java.util.regex.Pattern;
 
 @PageTitle("MensaHub")
 @Route(value = "newsletter")
-@RolesAllowed({Role.Names.ADMIN, Role.Names.SUPER_ADMIN, Role.Names.LOGIN_USER})
+@RolesAllowed({Role.Names.ROLE_ADMIN, Role.Names.ROLE_SUPER_ADMIN, Role.Names.ROLE_LOGIN_USER})
 public class NewsletterView extends HorizontalLayout implements BeforeEnterObserver {
 
     private final String welcomeText = "Willkommen bei MensaHub";

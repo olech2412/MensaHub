@@ -9,7 +9,12 @@ import de.olech2412.mensahub.junction.security.SecurityService;
 import de.olech2412.mensahub.models.authentification.Role;
 import jakarta.annotation.security.PermitAll;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
+
+import java.util.List;
 
 @PageTitle("MensaHub-Redirect")
 @Route(value = "")
@@ -30,10 +35,14 @@ public class RedirectView extends HorizontalLayout implements BeforeEnterObserve
      */
     @Override
     public void beforeEnter(BeforeEnterEvent beforeEnterEvent) {
-        if (securityService.getAuthenticatedUser().getAuthorities().contains(new SimpleGrantedAuthority(Role.Names.API_USER))) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        List<? extends GrantedAuthority> authorities = securityService.getAuthenticatedUser().getAuthorities().stream().toList();
+        if (authorities.contains(new SimpleGrantedAuthority(Role.Names.ROLE_API_USER))) {
             beforeEnterEvent.forwardTo("/dev");
-        } else {
+        } else if (authorities.contains(new SimpleGrantedAuthority(Role.Names.ROLE_LOGIN_USER))){
             beforeEnterEvent.forwardTo("/newsletter");
+        } else {
+            beforeEnterEvent.forwardTo("/admin");
         }
     }
 }

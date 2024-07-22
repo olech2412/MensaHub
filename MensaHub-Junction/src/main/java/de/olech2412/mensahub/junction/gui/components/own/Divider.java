@@ -1,4 +1,4 @@
-package de.olech2412.mensahub.junction.gui.components.vaadin;
+package de.olech2412.mensahub.junction.gui.components.own;
 
 import com.vaadin.flow.component.html.Hr;
 

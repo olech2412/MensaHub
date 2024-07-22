@@ -32,7 +32,7 @@ import java.util.Objects;
 
 @Route("dev")
 @PageTitle("Developer Portal")
-@RolesAllowed({Role.Names.API_USER})
+@RolesAllowed({Role.Names.ROLE_API_USER})
 public class DeveloperView extends Composite implements BeforeEnterObserver {
     Logger logger = LoggerFactory.getLogger(MailSettingsView.class);
 

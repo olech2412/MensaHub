@@ -4,7 +4,7 @@ import com.vaadin.flow.component.Key;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-import de.olech2412.mensahub.junction.gui.components.vaadin.Divider;
+import de.olech2412.mensahub.junction.gui.components.own.Divider;
 import de.olech2412.mensahub.junction.gui.components.vaadin.buttons.ButtonFactory;
 import de.olech2412.mensahub.junction.gui.components.vaadin.buttons.types.ButtonType;
 import lombok.Getter;

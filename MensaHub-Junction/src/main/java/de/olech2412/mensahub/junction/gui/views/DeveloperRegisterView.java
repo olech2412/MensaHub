@@ -53,7 +53,7 @@ import java.util.Set;
 
 @Route("registerDev")
 @PageTitle("MensaHub-Dev")
-@RolesAllowed(value = {Role.Names.ADMIN, Role.Names.API_USER, Role.Names.LOGIN_USER, Role.Names.SUPER_ADMIN})
+@RolesAllowed(value = {Role.Names.ROLE_ADMIN, Role.Names.ROLE_API_USER, Role.Names.ROLE_LOGIN_USER, Role.Names.ROLE_SUPER_ADMIN})
 @Log4j2
 public class DeveloperRegisterView extends Composite implements BeforeEnterObserver {
     @Autowired

@@ -1,17 +1,12 @@
 package de.olech2412.mensahub.junction.gui.components.vaadin.dialogs;
 
-import com.vaadin.flow.component.Unit;
 import com.vaadin.flow.component.accordion.Accordion;
 import com.vaadin.flow.component.accordion.AccordionPanel;
 import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.component.combobox.ComboBox;
-import com.vaadin.flow.component.combobox.MultiSelectComboBox;
 import com.vaadin.flow.component.dialog.Dialog;
-import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.icon.VaadinIcon;
-import com.vaadin.flow.component.textfield.TextField;
 import de.olech2412.mensahub.junction.config.Config;
-import de.olech2412.mensahub.junction.gui.components.vaadin.Divider;
+import de.olech2412.mensahub.junction.gui.components.own.Divider;
 import de.olech2412.mensahub.junction.gui.components.vaadin.layouts.dialogs.create_job_dialog.ExtendedConfLayout;
 import de.olech2412.mensahub.junction.gui.components.vaadin.layouts.dialogs.create_job_dialog.SimpleConfLayout;
 import de.olech2412.mensahub.junction.gui.components.vaadin.layouts.generic.FooterButtonLayout;

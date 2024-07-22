@@ -11,6 +11,8 @@ import de.olech2412.mensahub.junction.gui.components.vaadin.buttons.types.Button
 import de.olech2412.mensahub.junction.gui.components.vaadin.dialogs.CreateJobDialog;
 import de.olech2412.mensahub.junction.gui.components.vaadin.notifications.NotificationFactory;
 import de.olech2412.mensahub.junction.gui.components.vaadin.notifications.types.NotificationType;
+import de.olech2412.mensahub.junction.jpa.repository.ErrorEntityRepository;
+import de.olech2412.mensahub.junction.jpa.repository.JobRepository;
 import de.olech2412.mensahub.junction.jpa.repository.UsersRepository;
 import de.olech2412.mensahub.junction.jpa.services.JobService;
 import de.olech2412.mensahub.junction.jpa.services.MailUserService;
@@ -19,6 +21,8 @@ import de.olech2412.mensahub.models.authentification.Users;
 import de.olech2412.mensahub.models.jobs.Job;
 import de.olech2412.mensahub.models.result.Result;
 import de.olech2412.mensahub.models.helper.JobBuilder;
+import de.olech2412.mensahub.models.result.errors.Application;
+import de.olech2412.mensahub.models.result.errors.ErrorEntity;
 import de.olech2412.mensahub.models.result.errors.job.JobError;
 import de.olech2412.mensahub.models.result.errors.jpa.JPAError;
 import lombok.extern.slf4j.Slf4j;
@@ -35,11 +39,14 @@ public class AdminPanel extends VerticalLayout {
 
     CreateJobDialog createJobDialog;
 
-    JobService jobService;
+    private final JobService jobService;
+
+    private final ErrorEntityRepository errorEntityRepository;
 
     public AdminPanel(MailUserService mailUserService, UsersRepository usersRepository, SecurityService securityService,
-                      JobService jobService) throws NoSuchPaddingException, IllegalBlockSizeException, IOException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
+                      JobService jobService, ErrorEntityRepository errorEntityRepository) throws NoSuchPaddingException, IllegalBlockSizeException, IOException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
         this.jobService = jobService;
+        this.errorEntityRepository = errorEntityRepository;
 
         setSizeFull();
         setAlignItems(Alignment.CENTER);
@@ -55,7 +62,7 @@ public class AdminPanel extends VerticalLayout {
 
         createJobDialog.getFooterButtonLayout().getAcceptButton().addClickListener(buttonClickEvent -> {
             try {
-                createJob(usersRepository.findAll().get(0));
+                createJob(usersRepository.findByUsername(securityService.getAuthenticatedUser().getUsername()));
             } catch (NoSuchPaddingException | IllegalBlockSizeException | IOException | NoSuchAlgorithmException |
                      BadPaddingException | InvalidKeyException e) {
                 throw new RuntimeException(e);
@@ -83,7 +90,10 @@ public class AdminPanel extends VerticalLayout {
                 .proponent(createJobDialog.getExtendedConfLayout().getProponentComboBox().getValue())
                 .build(jobCreator);
 
-        if (!jobBuildResult.isSuccess()) throw new IllegalArgumentException(jobBuildResult.getError().toString());
+        if (!jobBuildResult.isSuccess()) {
+            errorEntityRepository.save(new ErrorEntity(jobBuildResult.getError().message(), jobBuildResult.getError().error().getCode(), Application.JUNCTION));
+            return;
+        }
 
         // save the job
         Result<Job, JPAError> saveResult = jobService.saveJob(jobBuildResult.getData());
@@ -91,6 +101,7 @@ public class AdminPanel extends VerticalLayout {
         if(!saveResult.isSuccess()) {
             NotificationFactory.create(NotificationType.ERROR, "Fehler beim Anlegen des Jobs: " +
                     jobBuildResult.getError().jobDTOError().getCode()).open();
+            return;
         }
         NotificationFactory.create(NotificationType.SUCCESS, "Der Job wurde erfolgreich angelegt").open();
         createJobDialog.close();
