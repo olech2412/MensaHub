@@ -2,8 +2,10 @@ package de.olech2412.mensahub.datadispatcher;
 
 import de.olech2412.mensahub.datadispatcher.config.Config;
 import de.olech2412.mensahub.datadispatcher.data.leipzig.leipzigDispatcher.LeipzigDataDispatcher;
+import de.olech2412.mensahub.datadispatcher.jpa.repository.Leipzig.meals.MealsRepository;
+import de.olech2412.mensahub.datadispatcher.jpa.repository.Leipzig.mensen.MensasRepository;
+import de.olech2412.mensahub.models.Mensa;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
@@ -26,13 +28,14 @@ import java.util.Arrays;
 @EntityScan(basePackages = {"de.olech2412.mensahub.models.authentification", "de.olech2412.mensahub.models"})
 public class MensaHub_DataDispatcher {
 
-    @Autowired
-    LeipzigDataDispatcher leipzigDataDispatcher;
+    static Mensa mensa;
 
     public static void main(String[] args) throws Exception {
         configureEnvironment();
         ConfigurableApplicationContext configurableApplicationContext = SpringApplication.run(MensaHub_DataDispatcher.class, args);
         LeipzigDataDispatcher leipzigDataDispatcher = configurableApplicationContext.getBean(LeipzigDataDispatcher.class);
+        MealsRepository mealsRepository = configurableApplicationContext.getBean(MealsRepository.class);
+        MensasRepository mensasRepository = configurableApplicationContext.getBean(MensasRepository.class);
 
         if (Arrays.stream(args).toList().contains("sendMailManual")) {
             log.info("Sending emails manually");

@@ -57,7 +57,6 @@ public class LeipzigDataDispatcher {
     }
 
     @Scheduled(cron = "0 */10 * * * *")
-    @Transactional
     public void callData() throws Exception {
         HTML_Caller dataCaller = new HTML_Caller(
                 monitoringConfig.customCounter("stuwe_call_counter_success",

@@ -93,10 +93,45 @@ public class HTML_Caller {
                     }
                 }
 
-                // finally set the correct mensa
-                mealObject.setMensa(mensa);
+                // Check for subitems (variations)
+                Element subItemsContainer = meal.selectFirst(".meal-subitems");
+                if (subItemsContainer != null) {
+                    Elements subItems = subItemsContainer.select(".meal-subitem");
+                    for (Element subItem : subItems) {
+                        Meal subMeal = new Meal();
 
-                mealsList.add(mealObject);
+                        // Sub meal name
+                        Element subMealNameElement = subItem.selectFirst("h5");
+                        if (subMealNameElement != null) {
+                            String subMealName = subMealNameElement.text().trim();
+                            // remove any "oder"
+                            subMealName = subMealName.replace("oder", "");
+                            subMeal.setName(subMealName);
+                        }
+
+                        // Sub meal description (allergens and additives)
+                        Element subAllergensElement = subItem.selectFirst("p");
+                        if (subAllergensElement != null) {
+                            subMeal.setAllergens(subAllergensElement.childNodes().get(1).toString().replace(":", ""));
+                        } else {
+                            subMeal.setAllergens(notAvailableSign);
+                        }
+
+                        subMeal.setDescription(notAvailableSign);
+
+                        // Set other properties like category, price, allergens, etc., if applicable
+                        subMeal.setCategory(mealObject.getCategory());
+                        subMeal.setPrice(mealObject.getPrice());
+                        subMeal.setMensa(mensa);
+                        subMeal.setServingDate(mealObject.getServingDate());
+
+                        mealsList.add(subMeal);
+                    }
+                } else {
+                    // If there are no subitems, add the main meal
+                    mealObject.setMensa(mensa);
+                    mealsList.add(mealObject);
+                }
             }
 
             log.info("Parser found: {} individual meals", mealsList.size());
