@@ -65,7 +65,7 @@ public class LeipzigDataDispatcher {
         this.monitoringConfig = monitoringConfig;
     }
 
-    //@Scheduled(cron = "0 */10 * * * *")
+    @Scheduled(cron = "0 */10 * * * *")
     public void callData() throws Exception {
         HTML_Caller dataCaller = new HTML_Caller(
                 monitoringConfig.customCounter("stuwe_call_counter_success",
