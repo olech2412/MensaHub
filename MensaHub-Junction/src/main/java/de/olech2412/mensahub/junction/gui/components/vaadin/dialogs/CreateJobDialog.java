@@ -61,7 +61,7 @@ public class CreateJobDialog extends Dialog {
         footerButtonLayout.declineButton.addClickListener(buttonClickEvent -> close());
     }
 
-    public boolean isFilledCorrect(){
+    public boolean isFilledCorrect() {
         return simpleConfLayout.isFilledCorrect() && extendedConfLayout.isFilledCorrect();
     }
 

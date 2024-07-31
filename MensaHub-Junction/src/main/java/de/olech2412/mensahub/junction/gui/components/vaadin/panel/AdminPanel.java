@@ -1,26 +1,33 @@
 package de.olech2412.mensahub.junction.gui.components.vaadin.panel;
 
+import com.vaadin.flow.component.Unit;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.html.H3;
 import com.vaadin.flow.component.html.Paragraph;
+import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.tabs.Tab;
+import com.vaadin.flow.component.tabs.TabVariant;
+import com.vaadin.flow.component.tabs.Tabs;
 import de.olech2412.mensahub.junction.gui.components.vaadin.buttons.ButtonFactory;
 import de.olech2412.mensahub.junction.gui.components.vaadin.buttons.types.ButtonType;
 import de.olech2412.mensahub.junction.gui.components.vaadin.dialogs.CreateJobDialog;
+import de.olech2412.mensahub.junction.gui.components.vaadin.layouts.panels.adminPanel.JobPanel;
+import de.olech2412.mensahub.junction.gui.components.vaadin.layouts.panels.adminPanel.UserPanel;
 import de.olech2412.mensahub.junction.gui.components.vaadin.notifications.NotificationFactory;
 import de.olech2412.mensahub.junction.gui.components.vaadin.notifications.types.NotificationType;
 import de.olech2412.mensahub.junction.jpa.repository.ErrorEntityRepository;
-import de.olech2412.mensahub.junction.jpa.repository.JobRepository;
 import de.olech2412.mensahub.junction.jpa.repository.UsersRepository;
 import de.olech2412.mensahub.junction.jpa.services.JobService;
 import de.olech2412.mensahub.junction.jpa.services.MailUserService;
+import de.olech2412.mensahub.junction.jpa.services.UserService;
 import de.olech2412.mensahub.junction.security.SecurityService;
 import de.olech2412.mensahub.models.authentification.Users;
+import de.olech2412.mensahub.models.helper.JobBuilder;
 import de.olech2412.mensahub.models.jobs.Job;
 import de.olech2412.mensahub.models.result.Result;
-import de.olech2412.mensahub.models.helper.JobBuilder;
 import de.olech2412.mensahub.models.result.errors.Application;
 import de.olech2412.mensahub.models.result.errors.ErrorEntity;
 import de.olech2412.mensahub.models.result.errors.job.JobError;
@@ -37,50 +44,96 @@ import java.security.NoSuchAlgorithmException;
 @Slf4j
 public class AdminPanel extends VerticalLayout {
 
-    CreateJobDialog createJobDialog;
-
     private final JobService jobService;
-
     private final ErrorEntityRepository errorEntityRepository;
+    CreateJobDialog createJobDialog;
+    private final Users currentUser;
 
-    public AdminPanel(MailUserService mailUserService, UsersRepository usersRepository, SecurityService securityService,
-                      JobService jobService, ErrorEntityRepository errorEntityRepository) throws NoSuchPaddingException, IllegalBlockSizeException, IOException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
+    private final VerticalLayout content = new VerticalLayout();
+
+    private final JobPanel jobPanelLayout;
+
+    private final UserPanel userPanelLayout;
+
+    public AdminPanel(MailUserService mailUserService, UserService userService, SecurityService securityService,
+                      JobService jobService, UsersRepository usersRepository, ErrorEntityRepository errorEntityRepository) throws NoSuchPaddingException, IllegalBlockSizeException, IOException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
         this.jobService = jobService;
         this.errorEntityRepository = errorEntityRepository;
+        setWidth(70f, Unit.PERCENTAGE);
+        setAlignItems(Alignment.CENTER);
+        setJustifyContentMode(JustifyContentMode.CENTER);
+
+        currentUser = usersRepository.findByUsername(securityService.getAuthenticatedUser().getUsername());
 
         setSizeFull();
         setAlignItems(Alignment.CENTER);
         setJustifyContentMode(JustifyContentMode.CENTER);
 
-        Button executeJobButton = ButtonFactory.create(ButtonType.CUSTOM, "Einen neuen Job anlegen");
-        executeJobButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
-        executeJobButton.setIcon(VaadinIcon.FILE_PROCESS.create());
-
-        createJobDialog = new CreateJobDialog(mailUserService.findAll(), usersRepository.findAll());
-
-        executeJobButton.addClickListener(buttonClickEvent -> createJobDialog.open());
+        createJobDialog = new CreateJobDialog(mailUserService.findAll(), usersRepository.findAllByEnabledTrueAndProponentTrueAndUsernameNot(securityService.getAuthenticatedUser().getUsername()));
 
         createJobDialog.getFooterButtonLayout().getAcceptButton().addClickListener(buttonClickEvent -> {
             try {
-                createJob(usersRepository.findByUsername(securityService.getAuthenticatedUser().getUsername()));
+                createJob(currentUser);
             } catch (NoSuchPaddingException | IllegalBlockSizeException | IOException | NoSuchAlgorithmException |
                      BadPaddingException | InvalidKeyException e) {
                 throw new RuntimeException(e);
             }
         });
 
-        add(new H3("Hallo Admin!"));
-        add(new Paragraph("Das Admin Panel befindet sich gerade im Aufbau. Aktuell kannst du nur einen neuen Job erstellen."));
-        add(executeJobButton);
+        Tab jobPanel = new Tab(
+                VaadinIcon.AUTOMATION.create(),
+                new Span("Job-Panel")
+        );
+        Tab userPanel = new Tab(
+                VaadinIcon.USER.create(),
+                new Span("Nutzer-Panel")
+        );
+        Tab mailUserPanel = new Tab(
+                VaadinIcon.ENVELOPE.create(),
+                new Span("Newsletter-Panel")
+        );
+        Tab systemPanel = new Tab(
+                VaadinIcon.DATABASE.create(),
+                new Span("System-Panel")
+        );
+
+        for (Tab tab : new Tab[]{jobPanel, userPanel, mailUserPanel, systemPanel}) {
+            tab.addThemeVariants(TabVariant.LUMO_ICON_ON_TOP);
+        }
+
+        Tabs tabs = new Tabs(jobPanel, userPanel, mailUserPanel, systemPanel);
+
+        jobPanelLayout = new JobPanel(jobService, currentUser, mailUserService);
+        jobPanelLayout.getExecuteJobButton().addClickListener(buttonClickEvent -> createJobDialog.open());
+
+        userPanelLayout = new UserPanel(userService, currentUser);
+
+        tabs.addSelectedChangeListener(selectedChangeEvent -> {
+            content.removeAll();
+            if (selectedChangeEvent.getSelectedTab().equals(jobPanel)) {
+                content.add(jobPanelLayout);
+            } else {
+                content.add(userPanelLayout);
+            }
+        });
+
+        content.add(jobPanelLayout);
+
+        add(new H3(String.format("Hallo \"%s\"! Willkommen im Admin Panel", currentUser.getUsername())));
+        add(new Paragraph("Denke dran, mit viel Macht kommt viel Verantwortung. Handle also mit bedacht!"));
+        add(tabs);
+        add(content);
     }
 
     /**
      * Build the job, fix potential stupid inputs from user and save the job in the database
+     *
      * @param jobCreator The user (admin) who created the job
      */
     private void createJob(Users jobCreator) throws NoSuchPaddingException, IllegalBlockSizeException, IOException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
         if (!createJobDialog.isFilledCorrect()) {
             NotificationFactory.create(NotificationType.ERROR, "Bitte fehlerhafte Eingaben prüfen").open();
+            return;
         }
 
         Result<Job, JobError> jobBuildResult = new JobBuilder()
@@ -98,7 +151,7 @@ public class AdminPanel extends VerticalLayout {
         // save the job
         Result<Job, JPAError> saveResult = jobService.saveJob(jobBuildResult.getData());
 
-        if(!saveResult.isSuccess()) {
+        if (!saveResult.isSuccess()) {
             NotificationFactory.create(NotificationType.ERROR, "Fehler beim Anlegen des Jobs: " +
                     jobBuildResult.getError().jobDTOError().getCode()).open();
             return;

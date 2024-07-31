@@ -1,0 +1,15 @@
+.job-grid::part(pending-job) {
+    background-color: rgba(248,255,42,0.69);
+}
+
+.job-grid::part(done) {
+    background-color: rgba(58,255,64,0.69);
+}
+
+.job-grid::part(error) {
+    background-color: rgba(255,2,39,0.69);
+}
+
+.job-grid::part(font-weight-bold) {
+    font-weight: bold;
+}

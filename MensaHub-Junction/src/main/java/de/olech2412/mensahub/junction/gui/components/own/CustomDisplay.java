@@ -2,23 +2,36 @@ package de.olech2412.mensahub.junction.gui.components.own;
 
 import com.vaadin.flow.component.Composite;
 import com.vaadin.flow.component.html.Div;
-import com.vaadin.flow.component.dependency.CssImport;
+import com.vaadin.flow.component.html.Span;
+import com.vaadin.flow.component.orderedlayout.FlexComponent;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-import com.vaadin.flow.router.Route;
 
-@CssImport("./styles/custom-display.css")
 public class CustomDisplay extends Composite<VerticalLayout> {
 
-    private Div valueDisplay;
+    private final Div titleDisplay;
+    private final Div valueDisplay;
+    private final Span statusBadge;
     private int thresholdGreen;
     private int thresholdYellow;
     private int thresholdRed;
 
-    public CustomDisplay() {
+    public CustomDisplay(String title) {
+        addClassName("custom-display");
+        titleDisplay = new Div();
+        titleDisplay.setText(title);
+        titleDisplay.setClassName("title-display");
+
+        statusBadge = new Span();
+        statusBadge.setClassName("status-badge");
+
+        HorizontalLayout titleLayout = new HorizontalLayout(titleDisplay);
+        titleLayout.setDefaultVerticalComponentAlignment(FlexComponent.Alignment.START);
+
         valueDisplay = new Div();
         valueDisplay.setClassName("value-display");
 
-        getContent().add(valueDisplay);
+        getContent().add(statusBadge, titleLayout, valueDisplay);
         setThresholds(10, 20, 30); // default thresholds
     }
 
@@ -35,17 +48,17 @@ public class CustomDisplay extends Composite<VerticalLayout> {
 
     private void updateColor(int value) {
         if (value <= thresholdGreen) {
-            valueDisplay.getElement().getClassList().add("green");
-            valueDisplay.getElement().getClassList().remove("yellow");
-            valueDisplay.getElement().getClassList().remove("red");
+            statusBadge.setText("Normal");
+            statusBadge.getElement().getThemeList().add("badge success");
+            statusBadge.getElement().getStyle().set("background-color", "white");
         } else if (value <= thresholdYellow) {
-            valueDisplay.getElement().getClassList().remove("green");
-            valueDisplay.getElement().getClassList().add("yellow");
-            valueDisplay.getElement().getClassList().remove("red");
+            statusBadge.setText("Achtung!");
+            statusBadge.getElement().getThemeList().add("badge");
+            statusBadge.getElement().getStyle().set("background-color", "white");
         } else if (value >= thresholdRed) {
-            valueDisplay.getElement().getClassList().remove("green");
-            valueDisplay.getElement().getClassList().remove("yellow");
-            valueDisplay.getElement().getClassList().add("red");
+            statusBadge.setText("Kritisch");
+            statusBadge.getElement().getThemeList().add("badge error");
+            statusBadge.getElement().getStyle().set("background-color", "white");
         }
     }
 }

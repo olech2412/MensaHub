@@ -39,7 +39,7 @@ public class RedirectView extends HorizontalLayout implements BeforeEnterObserve
         List<? extends GrantedAuthority> authorities = securityService.getAuthenticatedUser().getAuthorities().stream().toList();
         if (authorities.contains(new SimpleGrantedAuthority(Role.Names.ROLE_API_USER))) {
             beforeEnterEvent.forwardTo("/dev");
-        } else if (authorities.contains(new SimpleGrantedAuthority(Role.Names.ROLE_LOGIN_USER))){
+        } else if (authorities.contains(new SimpleGrantedAuthority(Role.Names.ROLE_LOGIN_USER))) {
             beforeEnterEvent.forwardTo("/newsletter");
         } else {
             beforeEnterEvent.forwardTo("/admin");

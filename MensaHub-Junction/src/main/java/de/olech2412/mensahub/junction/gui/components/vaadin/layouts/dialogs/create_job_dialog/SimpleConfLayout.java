@@ -38,8 +38,8 @@ public class SimpleConfLayout extends FormLayout {
         setColspan(destinationTextField, 2);
     }
 
-    public boolean isFilledCorrect(){
-        if (mailUserComboBox.isEmpty() || mailUserComboBox.getValue().isEmpty()){
+    public boolean isFilledCorrect() {
+        if (mailUserComboBox.isEmpty() || mailUserComboBox.getValue().isEmpty()) {
             mailUserComboBox.setInvalid(true);
             mailUserComboBox.setHelperText("Es müssen Nutzer ausgewählt werden.");
             return false;
@@ -47,7 +47,7 @@ public class SimpleConfLayout extends FormLayout {
             mailUserComboBox.setInvalid(false);
         }
 
-        if(jobToExecuteComboBox.isEmpty() || jobToExecuteComboBox.getValue() == null){
+        if (jobToExecuteComboBox.isEmpty() || jobToExecuteComboBox.getValue() == null) {
             jobToExecuteComboBox.setInvalid(true);
             jobToExecuteComboBox.setHelperText("Die Art des Jobs muss angegeben werden.");
             return false;
@@ -55,7 +55,7 @@ public class SimpleConfLayout extends FormLayout {
             jobToExecuteComboBox.setInvalid(false);
         }
 
-        if(destinationTextField.isEmpty()){
+        if (destinationTextField.isEmpty()) {
             destinationTextField.setInvalid(true);
             jobToExecuteComboBox.setHelperText("Der Zielendpunkt muss bekannt sein");
             return false;

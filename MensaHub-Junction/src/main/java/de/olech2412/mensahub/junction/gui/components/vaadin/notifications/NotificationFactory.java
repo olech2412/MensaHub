@@ -4,8 +4,8 @@ import de.olech2412.mensahub.junction.gui.components.vaadin.notifications.types.
 
 public class NotificationFactory {
 
-    public static MensaHubNotification create(NotificationType type, String message){
-        switch (type){
+    public static MensaHubNotification create(NotificationType type, String message) {
+        switch (type) {
             case INFO:
                 return new InfoNotification(message);
             case WARN:

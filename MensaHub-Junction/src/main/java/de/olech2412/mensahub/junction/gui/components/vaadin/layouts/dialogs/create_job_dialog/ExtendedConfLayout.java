@@ -8,7 +8,6 @@ import de.olech2412.mensahub.junction.gui.components.vaadin.datetimepicker.Germa
 import de.olech2412.mensahub.models.authentification.Users;
 import lombok.Getter;
 
-import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -22,6 +21,11 @@ public class ExtendedConfLayout extends FormLayout {
         proponentComboBox.setItems(proponents);
         proponentComboBox.setAllowCustomValue(false);
         proponentComboBox.setItemLabelGenerator(Users::getUsername);
+
+        if (proponents.isEmpty()) {
+            proponentComboBox.setHelperText("Du musst zuerst einen gültigen Befürworter anlegen um diesen nutzen zu können.");
+            proponentComboBox.setEnabled(false);
+        }
 
         executeAtTimePicker.setTooltipText("Es wird alle 5 Minuten auf Jobs geprüft. Wenn z.B. 12:12 Uhr ausgewählt wird," +
                 " wird dieser Job erst um 12:15 Uhr ausgeführt.");

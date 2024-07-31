@@ -3,6 +3,7 @@ package de.olech2412.mensahub.junction.gui.views;
 import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.login.LoginForm;
+import com.vaadin.flow.component.login.LoginI18n;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
@@ -28,6 +29,27 @@ public class LoginView extends VerticalLayout implements BeforeEnterObserver {
 
         login.setAction("login");
         login.setForgotPasswordButtonVisible(false);
+
+        LoginI18n loginI18n = new LoginI18n();
+
+        LoginI18n.ErrorMessage loginI18nError = new LoginI18n.ErrorMessage();
+        loginI18nError.setMessage("Korrigiere deine Eingaben");
+        loginI18nError.setTitle("Anmeldung fehlgeschlagen");
+
+        LoginI18n.Header loginI18nHeader = new LoginI18n.Header();
+        loginI18nHeader.setTitle("Anmeldung");
+
+        LoginI18n.Form loginI18nForm = new LoginI18n.Form();
+        loginI18nForm.setTitle("Anmeldung");
+        loginI18nForm.setPassword("Passwort");
+        loginI18nForm.setSubmit("Anmelden");
+        loginI18nForm.setUsername("Nutzerkennung");
+
+        loginI18n.setErrorMessage(loginI18nError);
+        loginI18n.setForm(loginI18nForm);
+        loginI18n.setHeader(loginI18nHeader);
+
+        login.setI18n(loginI18n);
 
         StreamResource logoStream = new StreamResource("MensaHub_logo.png", () -> getClass().getResourceAsStream("/static/img/MensaHub_logo.PNG"));
         Image logoImage = new Image(logoStream, "Logo");

@@ -72,6 +72,7 @@ public class JobBuilder {
         job.setExecuted(this.executed);
         job.setEnabled(this.enabled);
         job.setCreator(user);
+        job.setJobStatus(JobStatus.PENDING);
 
         Result<Job, JobError> correctResult = correctJobDTO(job);
 
@@ -87,7 +88,6 @@ public class JobBuilder {
         if(job.getMailUsers().size() >= 2){ // if more than 1 MailUser is affected by the job a permission is required
             job.setNeedsPermission(true);
             job.setEnabled(false);
-            job.setJobStatus(JobStatus.PENDING);
         }
 
         if(job.getProponent() != null){
