@@ -1,5 +1,6 @@
 package de.olech2412.mensahub.models.authentification;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import de.olech2412.mensahub.models.Mensa;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -47,6 +48,7 @@ public class MailUser {
             joinColumns = {@JoinColumn(name = "mail_users_id")},
             inverseJoinColumns = {@JoinColumn(name = "mensas_id")}
     )
+    @JsonIgnore
     Set<Mensa> mensas = new HashSet<>();
 
     /**

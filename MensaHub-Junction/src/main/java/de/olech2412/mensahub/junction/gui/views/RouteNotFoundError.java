@@ -11,16 +11,19 @@ import com.vaadin.flow.router.*;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
 
 @PageTitle("Not Found")
 @Tag(Tag.DIV)
 @AnonymousAllowed
+@Slf4j
 public class RouteNotFoundError extends VerticalLayout
         implements HasErrorParameter<NotFoundException> {
 
     @Override
     public int setErrorParameter(BeforeEnterEvent event,
                                  ErrorParameter<NotFoundException> parameter) {
+        log.warn("404 View accessed while try to reach: {}. Reason: {}", event.getLocation().getPath(), parameter.getCustomMessage());
         VerticalLayout layout = new VerticalLayout();
         layout.addClassNames("custom-404-view");
 
@@ -31,7 +34,7 @@ public class RouteNotFoundError extends VerticalLayout
         message.addClassNames(LumoUtility.FontSize.LARGE, LumoUtility.TextColor.SECONDARY);
 
         Button homeButton = new Button("Zur Newsletter-Anmeldung", buttonClickEvent -> {
-            getUI().ifPresent(ui -> ui.navigate(UserView.class));
+            getUI().ifPresent(ui -> ui.navigate(NewsletterView.class));
         });
         homeButton.addClassNames(LumoUtility.Margin.Top.MEDIUM);
         homeButton.addClassName("button-link");

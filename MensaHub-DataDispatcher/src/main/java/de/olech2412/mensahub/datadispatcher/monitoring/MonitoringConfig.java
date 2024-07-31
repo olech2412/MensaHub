@@ -1,11 +1,7 @@
-
 package de.olech2412.mensahub.datadispatcher.monitoring;
 
-import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Counter;
-import io.micrometer.core.instrument.Timer;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+import io.micrometer.core.instrument.MeterRegistry;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -20,7 +16,7 @@ public class MonitoringConfig {
     public Counter customCounter(String name, String tagValue, String description) {
         return Counter.builder(name)
                 .tag(MonitoringTags.APPLICATION_TAG.getValue(), tagValue)
-                      .description(description)
-                      .register(meterRegistry);
+                .description(description)
+                .register(meterRegistry);
     }
 }

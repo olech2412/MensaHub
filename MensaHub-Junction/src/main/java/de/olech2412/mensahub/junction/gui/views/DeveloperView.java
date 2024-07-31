@@ -17,9 +17,10 @@ import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.StreamResource;
-import de.olech2412.mensahub.junction.JPA.repository.API_UserRepository;
+import de.olech2412.mensahub.junction.jpa.repository.API_UserRepository;
 import de.olech2412.mensahub.junction.security.SecurityService;
 import de.olech2412.mensahub.models.authentification.API_User;
+import de.olech2412.mensahub.models.authentification.Role;
 import jakarta.annotation.security.RolesAllowed;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,7 +32,7 @@ import java.util.Objects;
 
 @Route("dev")
 @PageTitle("Developer Portal")
-@RolesAllowed({"ROLE_SUPERADMIN", "ROLE_DEV"})
+@RolesAllowed({Role.Names.ROLE_API_USER})
 public class DeveloperView extends Composite implements BeforeEnterObserver {
     Logger logger = LoggerFactory.getLogger(MailSettingsView.class);
 

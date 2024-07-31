@@ -11,7 +11,7 @@ import java.util.List;
 public interface MailUserRepository extends ListCrudRepository<MailUser, Long> {
 
 
-    List<MailUser> findByEmail(String email);
+    MailUser findByEmail(String email);
 
     MailUser findByActivationCode_Code(String code);
 

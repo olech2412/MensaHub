@@ -11,11 +11,11 @@ import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
-import de.olech2412.mensahub.junction.JPA.services.meals.MealsService;
-import de.olech2412.mensahub.junction.JPA.services.mensen.MensaService;
 import de.olech2412.mensahub.junction.gui.components.own.boxes.InfoBox;
 import de.olech2412.mensahub.junction.gui.components.own.boxes.MealBox;
-import de.olech2412.mensahub.junction.gui.components.vaadin.GermanDatePicker;
+import de.olech2412.mensahub.junction.gui.components.vaadin.datetimepicker.GermanDatePicker;
+import de.olech2412.mensahub.junction.jpa.services.meals.MealsService;
+import de.olech2412.mensahub.junction.jpa.services.mensen.MensaService;
 import de.olech2412.mensahub.models.Meal;
 import de.olech2412.mensahub.models.Mensa;
 import lombok.extern.slf4j.Slf4j;
@@ -35,9 +35,9 @@ public class MealPlan extends VerticalLayout implements BeforeEnterObserver {
 
     private final MensaService mensaService;
 
-    private ComboBox<Mensa> mensaComboBox = new ComboBox<>();
+    private final ComboBox<Mensa> mensaComboBox = new ComboBox<>();
 
-    private GermanDatePicker datePicker = new GermanDatePicker();
+    private final GermanDatePicker datePicker = new GermanDatePicker();
 
     private List<Meal> meals;
 
@@ -164,7 +164,7 @@ public class MealPlan extends VerticalLayout implements BeforeEnterObserver {
         mensa.ifPresent(value -> mensaComboBox.setValue(finalMensa.get()));
 
         if (!date.isEmpty()) {
-            if(date.equals("today")){
+            if (date.equals("today")) {
                 datePicker.setValue(LocalDate.now());
             } else {
                 datePicker.setValue(LocalDate.parse(date));

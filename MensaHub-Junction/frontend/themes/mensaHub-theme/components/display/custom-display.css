@@ -1,0 +1,40 @@
+.custom-display {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 10px;
+    box-shadow: 0 6px 8px rgba(0, 0, 0, 0.1);
+    background-color: rgb(26, 128, 248);
+    color: white;
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.custom-display:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+.custom-display .value-display {
+    font-size: 2em;
+    text-align: center;
+    padding: 1em;
+    border-radius: 5px;
+    background-color: transparent;
+}
+
+.custom-display .title-display {
+    font-size: small;
+    text-align: center;
+    width: 100%;
+    padding: 0.5em;
+    color: white;
+}
+
+.status-badge {
+    font-size: 0.8em;
+    padding: 0.3em 0.6em;
+    border-radius: 5px;
+    text-align: center;
+    margin-left: 1em;
+    background-color: white;
+}

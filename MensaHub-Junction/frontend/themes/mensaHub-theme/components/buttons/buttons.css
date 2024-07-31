@@ -1,0 +1,4 @@
+.warn-button {
+    background-color: var(--lumo-warning-color);
+    color: white;
+}

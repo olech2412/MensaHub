@@ -25,6 +25,7 @@ public class Meal {
 
     protected String name; // this is the name of the meal
 
+    @Column(columnDefinition = "TEXT", length = 2000)
     private String description; // this is the description of the meal
 
     private String price; // this is the price of the meal

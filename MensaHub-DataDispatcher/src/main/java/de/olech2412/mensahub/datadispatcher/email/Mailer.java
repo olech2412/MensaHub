@@ -4,6 +4,9 @@ import de.olech2412.mensahub.datadispatcher.config.Config;
 import de.olech2412.mensahub.models.Meal;
 import de.olech2412.mensahub.models.Mensa;
 import de.olech2412.mensahub.models.authentification.MailUser;
+import de.olech2412.mensahub.models.result.Result;
+import de.olech2412.mensahub.models.result.errors.mail.MailError;
+import de.olech2412.mensahub.models.result.errors.mail.MailErrors;
 import jakarta.mail.*;
 import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeBodyPart;
@@ -66,70 +69,73 @@ public class Mailer {
 
     /**
      * Sends an email to the given email address with the current menu
-     *
-     * @throws MessagingException
      */
-    public void sendSpeiseplan(MailUser emailTarget, List<Meal> menu, Mensa mensa, boolean update) throws Exception {
-        Properties prop = new Properties();
-        prop.put("mail.smtp.auth", Boolean.parseBoolean(Config.getInstance().getProperty("mensaHub.dataDispatcher.mail.smtpAuth")));
-        prop.put("mail.smtp.host", Config.getInstance().getProperty("mensaHub.dataDispatcher.mail.smtpHost"));
-        prop.put("mail.smtp.port", Config.getInstance().getProperty("mensaHub.dataDispatcher.mail.smtpPort"));
-        prop.put("mail.smtp.starttls.enable", "true");
-        prop.put("mail.smtp.ssl.enable", "true");
+    public Result<MailUser, MailError> sendSpeiseplan(MailUser emailTarget, List<Meal> menu, Mensa mensa, boolean update) {
+        try {
+            Properties prop = new Properties();
+            prop.put("mail.smtp.auth", Boolean.parseBoolean(Config.getInstance().getProperty("mensaHub.dataDispatcher.mail.smtpAuth")));
+            prop.put("mail.smtp.host", Config.getInstance().getProperty("mensaHub.dataDispatcher.mail.smtpHost"));
+            prop.put("mail.smtp.port", Config.getInstance().getProperty("mensaHub.dataDispatcher.mail.smtpPort"));
+            prop.put("mail.smtp.starttls.enable", "true");
+            prop.put("mail.smtp.ssl.enable", "true");
 
-        String senderMail = Config.getInstance().getProperty("mensaHub.dataDispatcher.mail.sender");
-        String senderPassword = Config.getInstance().getProperty("mensaHub.dataDispatcher.mail.sender.password");
+            String senderMail = Config.getInstance().getProperty("mensaHub.dataDispatcher.mail.sender");
+            String senderPassword = Config.getInstance().getProperty("mensaHub.dataDispatcher.mail.sender.password");
 
 
-        Session mailSession = Session.getDefaultInstance(prop, new Authenticator() {
+            Session mailSession = Session.getDefaultInstance(prop, new Authenticator() {
 
-            @Override
-            protected PasswordAuthentication getPasswordAuthentication() {
-                return new PasswordAuthentication(senderMail, senderPassword);
+                @Override
+                protected PasswordAuthentication getPasswordAuthentication() {
+                    return new PasswordAuthentication(senderMail, senderPassword);
+                }
+            });
+
+
+            String deactivateUrl = Config.getInstance().getProperty("mensaHub.dataDispatcher.junction.address") + "/deactivate?code=" + emailTarget.getDeactivationCode().getCode();
+            MimeMessage message = new MimeMessage(mailSession);
+            message.setFrom(new InternetAddress(senderMail));
+            message.setRecipients(
+                    Message.RecipientType.TO, InternetAddress.parse(emailTarget.getEmail()));
+
+            String msg = "";
+            if (!update) {
+                msg = createEmail(menu, emailTarget.getFirstname(), deactivateUrl, mensa);
+                message.setSubject("Speiseplan " +
+                        LocalDate.now().format(java.time.format.DateTimeFormatter.ofPattern("dd.MM.yyyy")) + " - " +
+                        mensa.getName());
+            } else {
+                msg = createUpdateEmail(menu, emailTarget.getFirstname(), deactivateUrl, mensa);
+                message.setSubject("Update zu deinem Speiseplan " +
+                        LocalDate.now().format(java.time.format.DateTimeFormatter.ofPattern("dd.MM.yyyy")) + " - " +
+                        mensa.getName());
             }
-        });
 
+            MimeBodyPart mimeBodyPart = new MimeBodyPart();
+            mimeBodyPart.setContent(msg, "text/html; charset=utf-8");
+            Multipart multipart = new MimeMultipart();
+            multipart.addBodyPart(mimeBodyPart);
+            message.setContent(multipart);
 
-        String deactivateUrl = Config.getInstance().getProperty("mensaHub.dataDispatcher.junction.address") + "/deactivate?code=" + emailTarget.getDeactivationCode().getCode();
-        MimeMessage message = new MimeMessage(mailSession);
-        message.setFrom(new InternetAddress(senderMail));
-        message.setRecipients(
-                Message.RecipientType.TO, InternetAddress.parse(emailTarget.getEmail()));
+            // Lade den privaten Schlüssel
+            PrivateKey privateKey = loadPrivateKey(Config.getInstance().getProperty("mensaHub.dataDispatcher.mail.dkim_priv_path"));
 
-        String msg = "";
-        if (!update) {
-            msg = createEmail(menu, emailTarget.getFirstname(), deactivateUrl, mensa);
-            message.setSubject("Speiseplan " +
-                    LocalDate.now().format(java.time.format.DateTimeFormatter.ofPattern("dd.MM.yyyy")) + " - " +
-                    mensa.getName());
-        } else {
-            msg = createUpdateEmail(menu, emailTarget.getFirstname(), deactivateUrl, mensa);
-            message.setSubject("Update zu deinem Speiseplan " +
-                    LocalDate.now().format(java.time.format.DateTimeFormatter.ofPattern("dd.MM.yyyy")) + " - " +
-                    mensa.getName());
+            RSAPrivateKey rsaPrivateKey = (RSAPrivateKey) privateKey;
+
+            // Erstelle den DKIM-Signer
+            DkimSigner signer = new DkimSigner(Config.getInstance().getProperty("mensaHub.dataDispatcher.mail.dkim_signing_domain"),
+                    Config.getInstance().getProperty("mensaHub.dataDispatcher.mail.dkim_seperator"), rsaPrivateKey);
+
+            // Signiere die Nachricht mit DKIM
+            DkimMessage dkimMessage = new DkimMessage(message, signer);
+
+            Transport.send(dkimMessage);
+            return Result.success(emailTarget);
+        } catch (Exception exception) {
+            log.error("Error while sending email for user {}", emailTarget.getEmail(), exception);
+            return Result.error(new MailError("Error while sending email for user " + emailTarget.getEmail() + " with" +
+                    " error: " + exception.getMessage(), MailErrors.UNKNOWN));
         }
-
-        MimeBodyPart mimeBodyPart = new MimeBodyPart();
-        mimeBodyPart.setContent(msg, "text/html; charset=utf-8");
-        Multipart multipart = new MimeMultipart();
-        multipart.addBodyPart(mimeBodyPart);
-        message.setContent(multipart);
-
-        // Lade den privaten Schlüssel
-        PrivateKey privateKey = loadPrivateKey(Config.getInstance().getProperty("mensaHub.dataDispatcher.mail.dkim_priv_path"));
-
-        RSAPrivateKey rsaPrivateKey = (RSAPrivateKey) privateKey;
-
-        // Erstelle den DKIM-Signer
-        DkimSigner signer = new DkimSigner(Config.getInstance().getProperty("mensaHub.dataDispatcher.mail.dkim_signing_domain"),
-                Config.getInstance().getProperty("mensaHub.dataDispatcher.mail.dkim_seperator"), rsaPrivateKey);
-
-        // Signiere die Nachricht mit DKIM
-        DkimMessage dkimMessage = new DkimMessage(message, signer);
-
-        Transport.send(dkimMessage);
-        log.debug("Email sent to {}", emailTarget.getEmail());
-
     }
 
     private String createUpdateEmail(List<Meal> menu, String firstname, String deactivateUrl, Mensa mensa) throws NoSuchPaddingException, IllegalBlockSizeException, IOException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
