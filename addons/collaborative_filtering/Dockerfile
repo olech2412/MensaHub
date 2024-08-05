@@ -1,22 +1,25 @@
-# Verwenden eines offiziellen Python-Images als Basis
-FROM python:3.8-slim
+FROM python:3.9-slim
 
-# Arbeitsverzeichnis im Container festlegen
+# Install necessary system dependencies
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    libmariadb-dev-compat \
+    libmariadb-dev
+
+# Set work directory
 WORKDIR /app
 
-# Anforderungen kopieren und installieren
+# Copy requirements file
 COPY requirements.txt requirements.txt
+
+# Install Python dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Anwendungscode kopieren
+# Copy application code
 COPY . .
 
-# Flask-Umgebungsvariablen setzen
-ENV FLASK_APP=collaborative_filtering.py
-ENV FLASK_RUN_HOST=0.0.0.0
-
-# Port für Flask öffnen
+# Expose the port the app runs on
 EXPOSE 5000
 
-# Befehl zum Starten der Flask-Anwendung
-CMD ["flask", "run"]
+# Command to run the app
+CMD ["python", "collaborative_filtering.py"]

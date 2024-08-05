@@ -5,8 +5,6 @@ services:
     build: .
     ports:
       - "5000:5000"
-    volumes:
-      - /home/christopho/Workspace/Coding/IntelliJ/EssensGetter API/addons/collaborative_filtering/:/mnt/data
     environment:
       - FLASK_ENV=production
       - DB_USER=root
