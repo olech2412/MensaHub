@@ -115,7 +115,7 @@ public class LeipzigDataDispatcher {
                     Result<MailUser, MailError> mailResult = mailer.sendSpeiseplan(mailUser, mealsService.findAllMealsByServingDateAndMensa(today, mensa), mensa, false);
                     if (mailResult.isSuccess()) {
                         mailCounterSuccess.increment();
-                        log.info("Update sent to {} for mensa {}", mailUser.getEmail(), mensa.getName());
+                        log.info("Regular mail sent to {} for mensa {}", mailUser.getEmail(), mensa.getName());
                     } else {
                         mailCounterFailure.increment();
                         errorEntityRepository.save(new ErrorEntity(mailResult.getError().message(), mailResult.getError().error().getCode(), Application.DATA_DISPATCHER));
@@ -125,7 +125,6 @@ public class LeipzigDataDispatcher {
         }
     }
 
-    @Transactional
     public void checkTheData(List<Meal> data, Mensa mensa) {
         for (Meal newMeal : data) {
             List<Meal> databaseMeals = mealsService.findAllMealsByServingDateAndMensa(newMeal.getServingDate(), mensa);
