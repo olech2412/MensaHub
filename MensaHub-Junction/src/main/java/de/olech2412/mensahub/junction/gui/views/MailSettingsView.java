@@ -30,6 +30,8 @@ import de.olech2412.mensahub.junction.jpa.repository.mensen.MensaRepository;
 import de.olech2412.mensahub.junction.jpa.services.MailUserService;
 import de.olech2412.mensahub.models.Mensa;
 import de.olech2412.mensahub.models.authentification.MailUser;
+import de.olech2412.mensahub.models.result.Result;
+import de.olech2412.mensahub.models.result.errors.jpa.JPAError;
 import jakarta.mail.MessagingException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -109,13 +111,15 @@ public class MailSettingsView extends Composite implements BeforeEnterObserver {
 
     @Transactional
     protected void initDeactivationView(String code) throws MessagingException {
-        MailUser mailUser = mailUserService.findMailUserByDeactivationCode(code);
+        Result<MailUser, JPAError> mailUserResult = mailUserService.findMailUserByDeactivationCode(code);
 
-        if (mailUser == null) {
+        if (!mailUserResult.isSuccess()) {
             layout.add(new Paragraph("Der Nutzer konnte nicht identifiziert werden. Wenn du der Meinung bist, es " +
                     "handelt sich um einen Fehler, kontaktiere bitte den Administrator."));
             return;
         }
+
+        MailUser mailUser = mailUserResult.getData();
 
         H3 headlineDelete = new H3("Du möchtest keine weiteren Emails von uns oder deine Einstellungen bearbeiten? Hier sind deine Optionen...");
         Text explanationDelete = new Text("Der klick auf \"Vollständig Deaktivieren\" hat eine sofortige Löschung deiner Daten zur Folge." +

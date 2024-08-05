@@ -15,7 +15,7 @@ public interface MealsRepository extends ListCrudRepository<Meal, Long> {
 
     List<Meal> findAllMealsByServingDateAndMensa(LocalDate servingDate, Mensa mensa);
 
-    void deleteAllByServingDateAndMensa(LocalDate servingDate, Mensa mensa);
+    List<Meal> findAllByServingDateAndMensa(LocalDate servingDate, Mensa mensa);
 
     List<Meal> findAllByNameAndMensaAndServingDateBeforeOrderByServingDateDesc(String name, Mensa mensa, LocalDate servingDate);
 

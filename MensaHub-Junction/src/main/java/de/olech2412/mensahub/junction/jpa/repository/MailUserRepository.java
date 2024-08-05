@@ -5,6 +5,7 @@ import org.springframework.data.repository.ListCrudRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface MailUserRepository extends ListCrudRepository<MailUser, Long> {
@@ -14,7 +15,7 @@ public interface MailUserRepository extends ListCrudRepository<MailUser, Long> {
 
     MailUser findByActivationCode_Code(String code);
 
-    MailUser findByDeactivationCode_Code(String code);
+    Optional<MailUser> findByDeactivationCode_Code(String code);
 
     /**
      * Finds all enabled users

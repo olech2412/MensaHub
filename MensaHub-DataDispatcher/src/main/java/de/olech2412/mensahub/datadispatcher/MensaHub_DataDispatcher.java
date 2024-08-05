@@ -34,8 +34,6 @@ public class MensaHub_DataDispatcher {
         configureEnvironment();
         ConfigurableApplicationContext configurableApplicationContext = SpringApplication.run(MensaHub_DataDispatcher.class, args);
         LeipzigDataDispatcher leipzigDataDispatcher = configurableApplicationContext.getBean(LeipzigDataDispatcher.class);
-        MealsRepository mealsRepository = configurableApplicationContext.getBean(MealsRepository.class);
-        MensasRepository mensasRepository = configurableApplicationContext.getBean(MensasRepository.class);
 
         if (Arrays.stream(args).toList().contains("sendMailManual")) {
             log.info("Sending emails manually");

@@ -1,8 +1,10 @@
 package de.olech2412.mensahub.datadispatcher.jpa.services.leipzig.meals;
 
 import de.olech2412.mensahub.datadispatcher.jpa.repository.Leipzig.meals.MealsRepository;
+import de.olech2412.mensahub.datadispatcher.jpa.repository.RatingRepository;
 import de.olech2412.mensahub.models.Meal;
 import de.olech2412.mensahub.models.Mensa;
+import de.olech2412.mensahub.models.Rating;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Import;
@@ -11,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Log4j2
@@ -19,6 +22,9 @@ public class MealsService {
 
     @Autowired
     MealsRepository meals_Repository;
+
+    @Autowired
+    RatingRepository ratingRepository;
 
 
     /**
@@ -66,7 +72,15 @@ public class MealsService {
 
     @Transactional
     public void deleteAllByServingDate(LocalDate servingDate, Mensa mensa) {
-        meals_Repository.deleteAllByServingDateAndMensa(servingDate, mensa);
+        List<Meal> meals = meals_Repository.findAllByServingDateAndMensa(servingDate, mensa);
+        for (Meal meal : meals) {
+            Optional<Rating> ratingOptional = ratingRepository.findByMealId(meal.getId());
+            if (ratingOptional.isPresent()) {
+                ratingRepository.delete(ratingOptional.get());
+                log.info("Deleted rating for meal {} for mensa {} from user {}", meal.getName(), mensa.getName(), ratingOptional.get().getMailUser().getEmail());
+            }
+            meals_Repository.delete(meal);
+        }
     }
 
     /**

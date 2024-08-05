@@ -4,12 +4,21 @@ import numpy as np
 from sklearn.decomposition import TruncatedSVD
 from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.neighbors import NearestNeighbors
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
 
 app = Flask(__name__)
 
-# CSV-Datei laden und verarbeiten
-def load_csv(file_path):
-    df = pd.read_csv(file_path)
+# Konfiguration der Datenbankverbindung
+DATABASE_URI = 'mysql+pymysql://root:password@127.0.0.1/mensaHub'
+engine = create_engine(DATABASE_URI)
+Session = sessionmaker(bind=engine)
+session = Session()
+
+# Funktion zum Laden der Daten aus der Datenbank
+def load_data():
+    query = "SELECT user_user_id AS user_id, meal_name AS meal, rating FROM ratings"
+    df = pd.read_sql(query, con=engine)
     return df
 
 # Funktion zur Vorhersage
@@ -55,9 +64,8 @@ def predict():
     # Erhaltene JSON-Daten
     data = request.json
     
-    # CSV-Datei laden
-    file_path = '/mnt/data/meals_votings.csv'
-    df = load_csv(file_path)
+    # Daten aus der Datenbank laden
+    df = load_data()
     
     # Benutzermatrix erstellen (Zeilen: Benutzer, Spalten: Gerichte)
     user_meal_matrix = df.pivot_table(index='user_id', columns='meal', values='rating')

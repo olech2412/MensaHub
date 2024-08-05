@@ -1,5 +1,6 @@
 package de.olech2412.mensahub.models;
 
+import de.olech2412.mensahub.models.authentification.MailUser;
 import de.olech2412.mensahub.models.authentification.Users;
 import jakarta.persistence.*;
 import lombok.*;
@@ -20,7 +21,7 @@ public class Rating {
     private Long id;
 
     @ManyToOne
-    private Users user;
+    private MailUser mailUser;
 
     private Integer rating;
 

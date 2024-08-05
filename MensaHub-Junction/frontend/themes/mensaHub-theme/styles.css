@@ -39,3 +39,31 @@ html {
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
     transform: scale(1.05);
 }
+
+
+@keyframes shimmer {
+    0% {
+        background-position: -200px 0;
+    }
+    100% {
+        background-position: 200px 0;
+    }
+}
+
+.shimmer {
+    display: inline-block;
+    background: linear-gradient(
+            to right,
+            red,
+            orange,
+            yellow,
+            green,
+            blue,
+            indigo,
+            violet
+    );
+    background-size: 400px 100%;
+    animation: shimmer 8.0s infinite linear;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}

@@ -5,9 +5,9 @@ services:
     build: .
     ports:
       - "5000:5000"
-    volumes:
-      - /home/christopho/Workspace/Coding/IntelliJ/EssensGetter API/addons/collaborative_filtering/:/mnt/data
-      - /home/christopho/Workspace/Coding/IntelliJ/EssensGetter API/addons/collaborative_filtering/output:/home/output
-      - ./logs:/app/logs  # Volume für Logs
     environment:
       - FLASK_ENV=production
+      - DB_USER=root
+      - DB_PASSWORD=password
+      - DB_HOST=mariadb
+      - DB_NAME=mensaHub
