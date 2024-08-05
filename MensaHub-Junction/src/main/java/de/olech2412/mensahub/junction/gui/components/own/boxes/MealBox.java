@@ -2,12 +2,21 @@ package de.olech2412.mensahub.junction.gui.components.own.boxes;
 
 import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.accordion.Accordion;
+import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.html.H4;
 import com.vaadin.flow.component.html.Span;
+import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import de.olech2412.mensahub.junction.gui.components.own.RatingComponent;
+import lombok.Getter;
 
+@Getter
 public class MealBox extends VerticalLayout {
+
+    Button ratingButton = new Button("Bewerten");
+
+    RatingComponent ratingComponent = new RatingComponent();
 
     public MealBox(String mealName, String description, String price, String allergens, String category) {
         addClassName("meal-box");
@@ -37,6 +46,13 @@ public class MealBox extends VerticalLayout {
         Span priceText = new Span(price);
         priceText.addClassName("price");
 
-        add(categoryLayout, h4, new Text(description), priceText, accordion);
+        ratingButton.setIcon(VaadinIcon.CHECK.create());
+
+        HorizontalLayout ratingLayout = new HorizontalLayout();
+        ratingLayout.addClassName("rating-layout");
+        ratingLayout.add(ratingComponent, ratingButton);
+
+
+        add(categoryLayout, h4, new Text(description), priceText, accordion, ratingLayout);
     }
 }

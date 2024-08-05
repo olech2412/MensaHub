@@ -11,14 +11,19 @@ import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
+import de.olech2412.mensahub.junction.gui.components.own.RatingComponent;
 import de.olech2412.mensahub.junction.gui.components.own.boxes.InfoBox;
 import de.olech2412.mensahub.junction.gui.components.own.boxes.MealBox;
 import de.olech2412.mensahub.junction.gui.components.vaadin.datetimepicker.GermanDatePicker;
+import de.olech2412.mensahub.junction.jpa.repository.RatingRepository;
+import de.olech2412.mensahub.junction.jpa.repository.UsersRepository;
 import de.olech2412.mensahub.junction.jpa.services.meals.MealsService;
 import de.olech2412.mensahub.junction.jpa.services.mensen.MensaService;
 import de.olech2412.mensahub.models.Meal;
 import de.olech2412.mensahub.models.Mensa;
+import de.olech2412.mensahub.models.Rating;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -40,6 +45,13 @@ public class MealPlan extends VerticalLayout implements BeforeEnterObserver {
     private final GermanDatePicker datePicker = new GermanDatePicker();
 
     private List<Meal> meals;
+
+    HorizontalLayout row = new HorizontalLayout();
+
+    @Autowired
+    RatingRepository ratingRepository;
+    @Autowired
+    private UsersRepository usersRepository;
 
     public MealPlan(MealsService mealsService, MensaService mensaService) {
         this.mealsService = mealsService;
@@ -76,7 +88,7 @@ public class MealPlan extends VerticalLayout implements BeforeEnterObserver {
 
         pageSelHeader.add(headerContent);
 
-        HorizontalLayout row = new HorizontalLayout();
+
         row.setJustifyContentMode(JustifyContentMode.CENTER);
 
         mensaComboBox.addValueChangeListener(comboBoxMensaComponentValueChangeEvent -> {
@@ -93,10 +105,8 @@ public class MealPlan extends VerticalLayout implements BeforeEnterObserver {
             row.setWidthFull();
             row.getStyle().set("flex-wrap", "wrap");
 
-            for (Meal meal : meals) {
-                MealBox mealBox = new MealBox(meal.getName(), meal.getDescription(), meal.getPrice(), meal.getAllergens(), meal.getCategory());
-                row.add(mealBox);
-            }
+            updateRows(meals);
+
             UI.getCurrent().getPage().getHistory().replaceState(null, String.format("/mealPlan?mensa=%s" + String.format("&date=%s", datePicker.getValue()), comboBoxMensaComponentValueChangeEvent.getValue().getId()));
             add(row);
         });
@@ -116,10 +126,8 @@ public class MealPlan extends VerticalLayout implements BeforeEnterObserver {
             row.setWidthFull();
             row.getStyle().set("flex-wrap", "wrap");
 
-            for (Meal meal : meals) {
-                MealBox mealBox = new MealBox(meal.getName(), meal.getDescription(), meal.getPrice(), meal.getAllergens(), meal.getCategory());
-                row.add(mealBox);
-            }
+            updateRows(meals);
+
             UI.getCurrent().getPage().getHistory().replaceState(null, String.format("/mealPlan?date=%s" + String.format("&mensa=%s", mensaComboBox.getValue().getId()), comboBoxMensaComponentValueChangeEvent.getValue()));
             add(row);
         });
@@ -129,6 +137,25 @@ public class MealPlan extends VerticalLayout implements BeforeEnterObserver {
         // adjust the layout to center all elements in it
         setAlignItems(Alignment.CENTER);
         setJustifyContentMode(JustifyContentMode.CENTER);
+    }
+
+    private void updateRows(List<Meal> meals) {
+        for (Meal meal : meals) {
+            MealBox mealBox = new MealBox(meal.getName(), meal.getDescription(), meal.getPrice(), meal.getAllergens(), meal.getCategory());
+            mealBox.getRatingButton().addClickListener(buttonClickEvent -> {
+                if (mealBox.getRatingComponent().getRating() != 0){
+                    Rating rating = new Rating();
+                    rating.setMeal(meal);
+                    rating.setRating(mealBox.getRatingComponent().getRating());
+                    rating.setMealName(meal.getName());
+                    rating.setUser(usersRepository.findAll().get(0));
+                    ratingRepository.save(rating);
+                    mealBox.getRatingButton().setEnabled(false);
+                    mealBox.getRatingComponent().setEnabled(false);
+                }
+            });
+            row.add(mealBox);
+        }
     }
 
     /**
