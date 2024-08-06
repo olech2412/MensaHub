@@ -6,18 +6,24 @@ from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.neighbors import NearestNeighbors
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
+import os
 
 app = Flask(__name__)
 
-# Konfiguration der Datenbankverbindung
-DATABASE_URI = 'mysql+pymysql://root:password@127.0.0.1/mensaHub'
+# Konfiguration der Datenbankverbindung aus Umgebungsvariablen
+DB_USER = os.getenv('DB_USER', 'root')
+DB_PASSWORD = os.getenv('DB_PASSWORD', 'password')
+DB_HOST = os.getenv('DB_HOST', '127.0.0.1')
+DB_NAME = os.getenv('DB_NAME', 'mensaHub')
+
+DATABASE_URI = f'mysql+pymysql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}/{DB_NAME}'
 engine = create_engine(DATABASE_URI)
 Session = sessionmaker(bind=engine)
 session = Session()
 
 # Funktion zum Laden der Daten aus der Datenbank
 def load_data():
-    query = "SELECT user_user_id AS user_id, meal_name AS meal, rating FROM ratings"
+    query = "SELECT mail_user_id AS user_id, meal_name AS meal, rating FROM ratings"
     df = pd.read_sql(query, con=engine)
     return df
 
