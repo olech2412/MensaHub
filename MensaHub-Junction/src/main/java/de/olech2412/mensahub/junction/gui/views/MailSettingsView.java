@@ -210,6 +210,7 @@ public class MailSettingsView extends Composite implements BeforeEnterObserver {
 
         GermanDatePicker datePicker = new GermanDatePicker();
         datePicker.setWidth(30f, Unit.PERCENTAGE);
+        datePicker.setMinWidth(320f, Unit.PIXELS);
         datePicker.setLabel("Wähle den Zeitpunkt der Reaktivierung");
         if (mailUser.getDeactviatedUntil() != null) {
             datePicker.setValue(mailUser.getDeactviatedUntil());
