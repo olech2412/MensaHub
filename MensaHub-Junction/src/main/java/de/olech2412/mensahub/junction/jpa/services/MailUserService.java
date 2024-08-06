@@ -2,8 +2,10 @@ package de.olech2412.mensahub.junction.jpa.services;
 
 import de.olech2412.mensahub.junction.jpa.repository.ErrorEntityRepository;
 import de.olech2412.mensahub.junction.jpa.repository.MailUserRepository;
+import de.olech2412.mensahub.junction.jpa.repository.RatingRepository;
 import de.olech2412.mensahub.junction.jpa.repository.mensen.MensaRepository;
 import de.olech2412.mensahub.models.Mensa;
+import de.olech2412.mensahub.models.Rating;
 import de.olech2412.mensahub.models.authentification.MailUser;
 import de.olech2412.mensahub.models.result.Result;
 import de.olech2412.mensahub.models.result.errors.Application;
@@ -31,6 +33,9 @@ public class MailUserService {
 
     @Autowired
     MensaRepository mensaRepository;
+
+    @Autowired
+    RatingRepository ratingRepository;
 
     @Autowired
     ErrorEntityRepository errorEntityRepository;
@@ -85,6 +90,11 @@ public class MailUserService {
     }
 
     public void deleteMailUser(MailUser mailUser) {
+        List<Rating> ratings = ratingRepository.findAllByMailUser(mailUser);
+        for (Rating rating : ratings){
+            rating.setMailUser(null);
+            ratingRepository.save(rating);
+        }
         mailUserRepository.delete(mailUser);
     }
 }
