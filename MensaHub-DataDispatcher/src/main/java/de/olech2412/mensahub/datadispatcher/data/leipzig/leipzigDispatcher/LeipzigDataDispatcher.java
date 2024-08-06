@@ -5,12 +5,14 @@ import de.olech2412.mensahub.datadispatcher.data.leipzig.html_caller.HTML_Caller
 import de.olech2412.mensahub.datadispatcher.email.Mailer;
 import de.olech2412.mensahub.datadispatcher.jpa.repository.ErrorEntityRepository;
 import de.olech2412.mensahub.datadispatcher.jpa.services.MailUserService;
+import de.olech2412.mensahub.datadispatcher.jpa.services.RatingService;
 import de.olech2412.mensahub.datadispatcher.jpa.services.leipzig.meals.MealsService;
 import de.olech2412.mensahub.datadispatcher.jpa.services.leipzig.mensen.MensasService;
 import de.olech2412.mensahub.datadispatcher.monitoring.MonitoringConfig;
 import de.olech2412.mensahub.datadispatcher.monitoring.MonitoringTags;
 import de.olech2412.mensahub.models.Meal;
 import de.olech2412.mensahub.models.Mensa;
+import de.olech2412.mensahub.models.Rating;
 import de.olech2412.mensahub.models.authentification.MailUser;
 import de.olech2412.mensahub.models.result.Result;
 import de.olech2412.mensahub.models.result.errors.Application;
@@ -29,7 +31,9 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Log4j2
@@ -51,6 +55,8 @@ public class LeipzigDataDispatcher {
 
     @Autowired
     private ErrorEntityRepository errorEntityRepository;
+    @Autowired
+    private RatingService ratingService;
 
 
     public LeipzigDataDispatcher(
@@ -145,8 +151,9 @@ public class LeipzigDataDispatcher {
                             }
                         }
                     }
-                    mealsService.deleteAllByServingDate(newMeal.getServingDate(), mensa);
+                    HashMap<Rating, Meal> deletedRatings = mealsService.deleteAllByServingDate(newMeal.getServingDate(), mensa);
                     mealsService.saveAll(data, mensa);
+                    takeOldRatings(deletedRatings, data);
                     log.info("Meal updated: {}", newMeal);
 
                     if (newMeal.getServingDate().isEqual(LocalDate.now())) {
@@ -159,6 +166,19 @@ public class LeipzigDataDispatcher {
                     }
                 }
 
+            }
+        }
+    }
+
+    private void takeOldRatings(HashMap<Rating, Meal> deletedRatings, List<Meal> newMeals) {
+        for (Rating rating : deletedRatings.keySet()) {
+            Optional<Meal> newMeal = newMeals.stream().filter(meal -> meal.getName().equals(rating.getMealName())).findFirst();
+            if (newMeal.isPresent()) {
+                rating.setMeal(newMeal.get());
+                ratingService.saveRating(rating);
+            } else {
+                log.warn("Cannot find the new meal for a deleted rating {}. The deleted meal was {}. Rating will be deleted.", rating, deletedRatings.get(rating));
+                ratingService.deleteRating(rating);
             }
         }
     }
@@ -223,16 +243,5 @@ public class LeipzigDataDispatcher {
             }
         }
         return results;
-    }
-
-    protected Meal takeOldVotes(MealsService mealsService, Meal meal, Mensa mensa) {
-        List<Meal> meals = mealsService.findAllByNameAndMensaAndServingDateBeforeOrderByServingDateDesc(meal.getName(), mensa, LocalDate.now());
-        if (!meals.isEmpty()) {
-            meal.setRating(meals.get(0).getRating());
-            meal.setVotes(meals.get(0).getVotes());
-            meal.setStarsTotal(meals.get(0).getStarsTotal());
-            log.info("Old votes taken for meal: " + meal.getName());
-        }
-        return meal;
     }
 }
