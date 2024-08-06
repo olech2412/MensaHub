@@ -6,36 +6,8 @@ on:
       - master
 
 jobs:
-  format-code:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4.1.7
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '16'
-
-      - name: Install Prettier
-        run: npm install --global prettier
-
-      - name: Install Google Java Format
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y google-java-format
-
-      - name: Run Prettier for HTML and CSS
-        run: prettier --write "**/*.{html,css}"
-
-      - name: Run Google Java Format
-        run: |
-          find . -name "*.java" | xargs google-java-format -i
-
   build-mensahub-models:
     runs-on: ubuntu-latest
-    needs: format-code
   
     steps:
       - name: Checkout Repository
