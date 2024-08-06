@@ -1,5 +1,6 @@
 package de.olech2412.mensahub.junction.jpa.repository;
 
+import de.olech2412.mensahub.models.authentification.MailUser;
 import de.olech2412.mensahub.models.authentification.Users;
 import de.olech2412.mensahub.models.jobs.Job;
 import de.olech2412.mensahub.models.jobs.JobStatus;
@@ -16,5 +17,7 @@ public interface JobRepository extends JpaRepository<Job, UUID> {
     List<Job> findAllByExecuteAtAfter(LocalDateTime localDateTime);
 
     List<Job> findAllByJobStatus(JobStatus jobStatus);
+
+    List<Job> findAllByMailUsers(List<MailUser> mailUsers);
 
 }

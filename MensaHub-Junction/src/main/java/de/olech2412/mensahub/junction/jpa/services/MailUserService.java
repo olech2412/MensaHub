@@ -1,12 +1,14 @@
 package de.olech2412.mensahub.junction.jpa.services;
 
 import de.olech2412.mensahub.junction.jpa.repository.ErrorEntityRepository;
+import de.olech2412.mensahub.junction.jpa.repository.JobRepository;
 import de.olech2412.mensahub.junction.jpa.repository.MailUserRepository;
 import de.olech2412.mensahub.junction.jpa.repository.RatingRepository;
 import de.olech2412.mensahub.junction.jpa.repository.mensen.MensaRepository;
 import de.olech2412.mensahub.models.Mensa;
 import de.olech2412.mensahub.models.Rating;
 import de.olech2412.mensahub.models.authentification.MailUser;
+import de.olech2412.mensahub.models.jobs.Job;
 import de.olech2412.mensahub.models.result.Result;
 import de.olech2412.mensahub.models.result.errors.Application;
 import de.olech2412.mensahub.models.result.errors.ErrorEntity;
@@ -39,6 +41,9 @@ public class MailUserService {
 
     @Autowired
     ErrorEntityRepository errorEntityRepository;
+
+    @Autowired
+    private JobRepository jobRepository;
 
     /**
      * Saves a meal for the database
@@ -90,6 +95,19 @@ public class MailUserService {
     }
 
     public void deleteMailUser(MailUser mailUser) {
+        List<Job> jobs = jobRepository.findAllByMailUsers(List.of(mailUser));
+        for (Job job : jobs){
+            List<MailUser> mailUsers = job.getMailUsers();
+            mailUsers.remove(mailUser);
+            log.info("Removed mailuser {} from job {} because of account deletion", mailUser.getEmail(), job.getUuid());
+            if(mailUsers.isEmpty()){
+                job.setMailUsers(null);
+            } else {
+                job.setMailUsers(mailUsers);
+            }
+            jobRepository.save(job);
+        }
+
         List<Rating> ratings = ratingRepository.findAllByMailUser(mailUser);
         for (Rating rating : ratings){
             rating.setMailUser(null);
