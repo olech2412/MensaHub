@@ -62,7 +62,6 @@ public class API_User {
     private String description; // a description of the user
 
     @Column(name = "role", nullable = false)
-    @NotEmpty
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @Enumerated(EnumType.STRING)
     private Role role = Role.ROLE_API_USER; // default value

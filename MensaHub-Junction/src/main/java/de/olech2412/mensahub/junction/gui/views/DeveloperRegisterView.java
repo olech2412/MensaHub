@@ -25,13 +25,13 @@ import com.vaadin.flow.server.VaadinSession;
 import com.vaadin.flow.server.WebBrowser;
 import de.olech2412.mensahub.junction.config.Config;
 import de.olech2412.mensahub.junction.email.Mailer;
+import de.olech2412.mensahub.junction.gui.components.vaadin.notifications.NotificationFactory;
+import de.olech2412.mensahub.junction.gui.components.vaadin.notifications.types.NotificationType;
 import de.olech2412.mensahub.junction.jpa.repository.API_UserRepository;
 import de.olech2412.mensahub.junction.jpa.repository.ActivationCodeRepository;
 import de.olech2412.mensahub.junction.jpa.repository.DeactivationCodeRepository;
-import de.olech2412.mensahub.models.authentification.API_User;
-import de.olech2412.mensahub.models.authentification.ActivationCode;
-import de.olech2412.mensahub.models.authentification.DeactivationCode;
-import de.olech2412.mensahub.models.authentification.Role;
+import de.olech2412.mensahub.junction.jpa.repository.UsersRepository;
+import de.olech2412.mensahub.models.authentification.*;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.mail.MessagingException;
 import jakarta.validation.ConstraintViolation;
@@ -62,6 +62,9 @@ public class DeveloperRegisterView extends Composite implements BeforeEnterObser
     DeactivationCodeRepository deactivationCodeRepository;
     @Autowired
     API_UserRepository apiUserRepository;
+    @Autowired
+    UsersRepository usersRepository;
+
     private VerticalLayout layout;
     private EmailField emailField;
     private TextField apiUsername;
@@ -136,6 +139,13 @@ public class DeveloperRegisterView extends Composite implements BeforeEnterObser
                     apiUser.setVerified_email(false);
                     apiUser.setEnabledByAdmin(false);
 
+                    Users user = usersRepository.findByUsername(apiUsername.getValue());
+
+                    if(user != null){
+                        NotificationFactory.create(NotificationType.ERROR, "Nutzerkennung bereits belegt").open();
+                        return;
+                    }
+
                     if (validate(apiUser)) {
                         registerUser(apiUser);
                     } else {
@@ -161,7 +171,8 @@ public class DeveloperRegisterView extends Composite implements BeforeEnterObser
         Image logoImage = new Image(logoStream, "Logo");
         HorizontalLayout image = new HorizontalLayout(logoImage);
         image.setWidth(100f, Unit.PERCENTAGE);
-        image.setAlignItems(FlexComponent.Alignment.START);
+        image.setAlignItems(FlexComponent.Alignment.CENTER);
+        image.setJustifyContentMode(FlexComponent.JustifyContentMode.CENTER);
         image.setSpacing(false);
 
         VerticalLayout mainLayout = new VerticalLayout(image, header); // the mainlayout is the layout of the whole page
@@ -291,7 +302,7 @@ public class DeveloperRegisterView extends Composite implements BeforeEnterObser
             return false; // Validierung fehlgeschlagen
         }
 
-        return user.getApiUsername().equals("user");
+        return true;
     }
 
     /**
