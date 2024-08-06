@@ -2,9 +2,9 @@ package de.olech2412.mensahub.models.helper;
 
 import de.olech2412.mensahub.models.authentification.MailUser;
 import de.olech2412.mensahub.models.authentification.Users;
-import de.olech2412.mensahub.models.jobs.JobType;
 import de.olech2412.mensahub.models.jobs.Job;
 import de.olech2412.mensahub.models.jobs.JobStatus;
+import de.olech2412.mensahub.models.jobs.JobType;
 import de.olech2412.mensahub.models.result.Result;
 import de.olech2412.mensahub.models.result.errors.job.JobError;
 import de.olech2412.mensahub.models.result.errors.job.JobErrors;
@@ -76,7 +76,7 @@ public class JobBuilder {
 
         Result<Job, JobError> correctResult = correctJobDTO(job);
 
-        if(!correctResult.isSuccess()) {
+        if (!correctResult.isSuccess()) {
             return Result.error(correctResult.getError());
         }
 
@@ -85,22 +85,22 @@ public class JobBuilder {
 
     private Result<Job, JobError> correctJobDTO(Job job) {
         // first repair the stupid input
-        if(job.getMailUsers().size() >= 2){ // if more than 1 MailUser is affected by the job a permission is required
+        if (job.getMailUsers().size() >= 2) { // if more than 1 MailUser is affected by the job a permission is required
             job.setNeedsPermission(true);
             job.setEnabled(false);
         }
 
-        if(job.getProponent() != null){
+        if (job.getProponent() != null) {
             job.setNeedsPermission(true);
         }
 
-        if(job.isNeedsPermission()){
-            if(job.getProponent() == null){
+        if (job.isNeedsPermission()) {
+            if (job.getProponent() == null) {
                 return Result.error(new JobError("Job benötigt Erlaubnis, hat aber keinen Befürworter zugeordnet", JobErrors.INVALID_CONFIGURATION));
             }
         }
 
-        if(job.getCreator() == null || !job.getCreator().getProponent()){
+        if (job.getCreator() == null || !job.getCreator().getProponent()) {
             return Result.error(new JobError("Es muss ein gültiger und ausreichend berechtigter Befürworter angegeben werden", JobErrors.INVALID_CONFIGURATION));
         }
 

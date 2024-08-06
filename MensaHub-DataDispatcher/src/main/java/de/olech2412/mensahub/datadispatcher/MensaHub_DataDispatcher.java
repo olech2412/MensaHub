@@ -2,8 +2,6 @@ package de.olech2412.mensahub.datadispatcher;
 
 import de.olech2412.mensahub.datadispatcher.config.Config;
 import de.olech2412.mensahub.datadispatcher.data.leipzig.leipzigDispatcher.LeipzigDataDispatcher;
-import de.olech2412.mensahub.datadispatcher.jpa.repository.Leipzig.meals.MealsRepository;
-import de.olech2412.mensahub.datadispatcher.jpa.repository.Leipzig.mensen.MensasRepository;
 import de.olech2412.mensahub.models.Mensa;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.boot.SpringApplication;

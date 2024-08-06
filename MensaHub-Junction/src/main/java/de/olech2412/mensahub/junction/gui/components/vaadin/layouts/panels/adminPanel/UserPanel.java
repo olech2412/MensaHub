@@ -14,25 +14,18 @@ import de.olech2412.mensahub.junction.gui.components.own.CustomDisplay;
 import de.olech2412.mensahub.junction.gui.components.vaadin.buttons.ButtonFactory;
 import de.olech2412.mensahub.junction.gui.components.vaadin.buttons.types.ButtonType;
 import de.olech2412.mensahub.junction.gui.components.vaadin.dialogs.ConfirmDialog;
-import de.olech2412.mensahub.junction.gui.components.vaadin.dialogs.EditJobDialog;
-import de.olech2412.mensahub.junction.gui.components.vaadin.grids.JobGrid;
 import de.olech2412.mensahub.junction.gui.components.vaadin.grids.UserGrid;
 import de.olech2412.mensahub.junction.gui.components.vaadin.notifications.NotificationFactory;
 import de.olech2412.mensahub.junction.gui.components.vaadin.notifications.types.NotificationType;
 import de.olech2412.mensahub.junction.jpa.services.UserService;
 import de.olech2412.mensahub.models.authentification.Role;
 import de.olech2412.mensahub.models.authentification.Users;
-import de.olech2412.mensahub.models.jobs.Job;
-import de.olech2412.mensahub.models.jobs.JobStatus;
 import de.olech2412.mensahub.models.result.Result;
 import de.olech2412.mensahub.models.result.errors.jpa.JPAError;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.Locale;
 
 @Slf4j
 @Getter
@@ -127,9 +120,9 @@ public class UserPanel extends VerticalLayout {
         });
         edit.addComponentAsFirst(VaadinIcon.EDIT.create());
         GridMenuItem<Users> allow = usersGridContextMenu.addItem("", event -> {
-            if (event.getItem().isPresent()){
+            if (event.getItem().isPresent()) {
                 Users user = event.getItem().get();
-                if(user.getEnabled()){
+                if (user.getEnabled()) {
                     user.setEnabled(false);
                 } else {
                     //user.setEnabled(true);
@@ -149,7 +142,7 @@ public class UserPanel extends VerticalLayout {
         usersGridContextMenu.addGridContextMenuOpenedListener(usersGridContextMenuOpenedEvent -> {
             if (usersGridContextMenuOpenedEvent.getItem().isPresent()) {
                 Users user = usersGridContextMenuOpenedEvent.getItem().get();
-                if(user.getEnabled()){
+                if (user.getEnabled()) {
                     allow.setText("Sperren");
                     allow.addComponentAsFirst(VaadinIcon.BAN.create());
                 } else {

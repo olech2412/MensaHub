@@ -7,8 +7,8 @@ import lombok.Setter;
 /**
  * This class represents the deactivation code for a user.
  *
- * @since 1.0.0
  * @author olech2412
+ * @since 1.0.0
  */
 @Setter
 @Getter
@@ -24,6 +24,7 @@ public class DeactivationCode {
 
     /**
      * Constructor for the deactivation code.
+     *
      * @param code the code
      */
     public DeactivationCode(String code) {

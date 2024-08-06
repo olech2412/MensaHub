@@ -8,7 +8,7 @@ public enum MailErrors implements ErrorCodes {
 
     private final String code;
 
-    MailErrors(String code){
+    MailErrors(String code) {
         this.code = code;
     }
 

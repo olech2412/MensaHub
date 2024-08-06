@@ -8,7 +8,7 @@ public enum ParserErrors implements ErrorCodes {
 
     private final String code;
 
-    ParserErrors(String code){
+    ParserErrors(String code) {
         this.code = code;
     }
 

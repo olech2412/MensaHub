@@ -37,10 +37,11 @@ public class Users {
 
     /**
      * Constructor for the user.
+     *
      * @param username the username
      * @param password the password
-     * @param role the role
-     * @param enabled if the user is enabled
+     * @param role     the role
+     * @param enabled  if the user is enabled
      */
     public Users(String username, String password, Role role, boolean enabled, boolean proponent) {
         this.username = username;

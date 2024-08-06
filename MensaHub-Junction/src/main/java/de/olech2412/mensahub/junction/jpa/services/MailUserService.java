@@ -1,13 +1,10 @@
 package de.olech2412.mensahub.junction.jpa.services;
 
 import de.olech2412.mensahub.junction.jpa.repository.ErrorEntityRepository;
-import de.olech2412.mensahub.junction.jpa.repository.JobRepository;
 import de.olech2412.mensahub.junction.jpa.repository.MailUserRepository;
 import de.olech2412.mensahub.junction.jpa.repository.mensen.MensaRepository;
 import de.olech2412.mensahub.models.Mensa;
 import de.olech2412.mensahub.models.authentification.MailUser;
-import de.olech2412.mensahub.models.authentification.Users;
-import de.olech2412.mensahub.models.jobs.Job;
 import de.olech2412.mensahub.models.result.Result;
 import de.olech2412.mensahub.models.result.errors.Application;
 import de.olech2412.mensahub.models.result.errors.ErrorEntity;

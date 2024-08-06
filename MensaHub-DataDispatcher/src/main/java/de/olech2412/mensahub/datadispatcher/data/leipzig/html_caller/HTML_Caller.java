@@ -48,7 +48,8 @@ public class HTML_Caller {
                 // Meal name
                 Element mealNameElement = meal.selectFirst("h4");
                 if (mealNameElement != null) {
-                    mealObject.setName(mealNameElement.text().trim());
+                    String mealName = mealNameElement.text().trim();
+                    mealObject.setName(mealName);
                 }
 
                 // Meal category from the first tag in .meal-tags
@@ -104,7 +105,7 @@ public class HTML_Caller {
                         // Sub meal name
                         Element subMealNameElement = subItem.selectFirst("h5");
                         if (subMealNameElement != null) {
-                            String subMealName = subMealNameElement.text().trim();
+                            String subMealName = subMealNameElement.childNodes().get(0).toString();
                             // remove any "oder"
                             subMealName = subMealName.replace("oder", "");
                             subMeal.setName(subMealName);

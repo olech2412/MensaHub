@@ -47,7 +47,8 @@ public class Mensa {
 
     /**
      * This is the constructor with all parameters.
-     * @param name the name of the mensa
+     *
+     * @param name   the name of the mensa
      * @param apiUrl the url to the api of the mensa
      */
     public Mensa(Long id, String name, String apiUrl) {

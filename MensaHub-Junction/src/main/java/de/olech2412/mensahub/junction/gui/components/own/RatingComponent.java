@@ -2,16 +2,16 @@ package de.olech2412.mensahub.junction.gui.components.own;
 
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
+import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import lombok.Getter;
 
 @Getter
 public class RatingComponent extends VerticalLayout {
 
-    private int rating = 0;
     private final Button[] stars = new Button[5];
+    private int rating = 0;
 
     public RatingComponent() {
         setSpacing(false);
@@ -56,7 +56,7 @@ public class RatingComponent extends VerticalLayout {
         }
     }
 
-    public void setEnabled(boolean enabled){
+    public void setEnabled(boolean enabled) {
         for (Button b : stars) {
             b.setEnabled(enabled);
         }

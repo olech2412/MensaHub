@@ -12,8 +12,8 @@ import java.time.LocalDateTime;
 /**
  * This class represents the API_User entity in the database.
  *
- * @since 1.0.0
  * @author olech2412
+ * @since 1.0.0
  */
 @Entity
 @Getter
@@ -62,6 +62,7 @@ public class API_User {
     private String description; // a description of the user
 
     @Column(name = "role", nullable = false)
+    @NotEmpty
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @Enumerated(EnumType.STRING)
     private Role role = Role.ROLE_API_USER; // default value
