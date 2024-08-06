@@ -1,8 +1,6 @@
 package de.olech2412.mensahub.junction.gui.components.vaadin.panel;
 
 import com.vaadin.flow.component.Unit;
-import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.html.H3;
 import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.html.Span;
@@ -11,8 +9,6 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.tabs.Tab;
 import com.vaadin.flow.component.tabs.TabVariant;
 import com.vaadin.flow.component.tabs.Tabs;
-import de.olech2412.mensahub.junction.gui.components.vaadin.buttons.ButtonFactory;
-import de.olech2412.mensahub.junction.gui.components.vaadin.buttons.types.ButtonType;
 import de.olech2412.mensahub.junction.gui.components.vaadin.dialogs.CreateJobDialog;
 import de.olech2412.mensahub.junction.gui.components.vaadin.layouts.panels.adminPanel.JobPanel;
 import de.olech2412.mensahub.junction.gui.components.vaadin.layouts.panels.adminPanel.UserPanel;
@@ -46,14 +42,11 @@ public class AdminPanel extends VerticalLayout {
 
     private final JobService jobService;
     private final ErrorEntityRepository errorEntityRepository;
-    CreateJobDialog createJobDialog;
     private final Users currentUser;
-
     private final VerticalLayout content = new VerticalLayout();
-
     private final JobPanel jobPanelLayout;
-
     private final UserPanel userPanelLayout;
+    CreateJobDialog createJobDialog;
 
     public AdminPanel(MailUserService mailUserService, UserService userService, SecurityService securityService,
                       JobService jobService, UsersRepository usersRepository, ErrorEntityRepository errorEntityRepository) throws NoSuchPaddingException, IllegalBlockSizeException, IOException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {

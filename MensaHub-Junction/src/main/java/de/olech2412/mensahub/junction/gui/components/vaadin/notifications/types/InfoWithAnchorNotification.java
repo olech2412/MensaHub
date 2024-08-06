@@ -4,15 +4,12 @@ import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
+import com.vaadin.flow.component.dependency.JavaScript;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
-import com.vaadin.flow.function.SerializableConsumer;
 import com.vaadin.flow.router.RouterLink;
-
-import com.vaadin.flow.component.dependency.JavaScript;
-import com.vaadin.flow.component.page.Page;
 import lombok.Getter;
 
 @JavaScript("frontend://local-storage.js")
@@ -26,7 +23,7 @@ public class InfoWithAnchorNotification extends MensaHubNotification {
 
         RouterLink link = new RouterLink(anchorText, navigationTarget);
         link.addClassName("shimmer");
-        Div text = new Div(new Text(message),link);
+        Div text = new Div(new Text(message), link);
 
         closeButton = new Button(new Icon("lumo", "cross"));
         closeButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY_INLINE);

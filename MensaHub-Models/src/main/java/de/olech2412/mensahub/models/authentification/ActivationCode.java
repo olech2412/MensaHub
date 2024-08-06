@@ -7,8 +7,8 @@ import lombok.Setter;
 /**
  * This class represents the activation code for a user.
  *
- * @since 1.0.0
  * @author olech2412
+ * @since 1.0.0
  */
 @Setter
 @Getter
@@ -23,6 +23,7 @@ public class ActivationCode {
 
     /**
      * Constructor for the activation code.
+     *
      * @param code the code
      */
     public ActivationCode(String code) {

@@ -27,7 +27,7 @@ public class AdminView extends VerticalLayout {
 
     public AdminView(MailUserService mailUserService, UsersRepository usersRepository, SecurityService securityService,
                      JobService jobService, ErrorEntityRepository errorEntityRepository, UserService userService) throws NoSuchPaddingException, IllegalBlockSizeException, IOException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
-        AdminPanel adminPanel = new AdminPanel(mailUserService, userService, securityService, jobService,usersRepository, errorEntityRepository);
+        AdminPanel adminPanel = new AdminPanel(mailUserService, userService, securityService, jobService, usersRepository, errorEntityRepository);
 
         add(adminPanel);
     }

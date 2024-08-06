@@ -57,10 +57,11 @@ public class Meal {
 
     /**
      * This is the constructor with all parameters.
-     * @param name the name of the meal
+     *
+     * @param name        the name of the meal
      * @param description the description of the meal
-     * @param price the price of the meal
-     * @param category the category of the meal
+     * @param price       the price of the meal
+     * @param category    the category of the meal
      * @param servingDate the date the meal is served
      */
     public Meal(String name, String description, String price, String category, LocalDate servingDate) {

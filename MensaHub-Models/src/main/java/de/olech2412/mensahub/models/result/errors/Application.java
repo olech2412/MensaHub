@@ -4,6 +4,6 @@ public enum Application {
 
     DATA_DISPATCHER,
     JUNCTION,
-    GATEWAY;
+    GATEWAY
 
 }

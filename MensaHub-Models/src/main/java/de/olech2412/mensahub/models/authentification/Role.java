@@ -12,11 +12,11 @@ public enum Role {
 
     private final String text;
 
-    Role(String text){
+    Role(String text) {
         this.text = text;
     }
 
-    public static class Names{
+    public static class Names {
         public static final String ROLE_LOGIN_USER = "ROLE_LOGIN_USER";
         public static final String ROLE_ADMIN = "ROLE_ADMIN";
         public static final String ROLE_API_USER = "ROLE_API_USER";

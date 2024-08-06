@@ -13,7 +13,7 @@ public enum JPAErrors implements ErrorCodes {
 
     private final String code;
 
-    JPAErrors(String code){
+    JPAErrors(String code) {
         this.code = code;
     }
 

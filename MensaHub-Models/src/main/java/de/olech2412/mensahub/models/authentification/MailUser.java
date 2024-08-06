@@ -18,30 +18,6 @@ import java.util.Set;
 @Entity
 @Table(name = "mail_users")
 public class MailUser {
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "id", nullable = false)
-    private Long id; // primary key
-
-    @Column(name = "email", nullable = false, unique = true)
-    private String email; // the email from the user
-
-    @OneToOne
-    private ActivationCode activationCode; // the activation code for the user
-
-    @OneToOne
-    private DeactivationCode deactivationCode; // the deactivation code for the user
-
-    private String firstname; // the firstname from the user
-
-    private String lastname; // the lastname from the user
-
-    private boolean enabled; // if the user is enabled
-
-    private LocalDate deactviatedUntil; // the date until the user is deactivated
-
-    private boolean wantsUpdate;
-
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(
             name = "mail_user_mensa_abbo",
@@ -50,6 +26,21 @@ public class MailUser {
     )
     @JsonIgnore
     Set<Mensa> mensas = new HashSet<>();
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "id", nullable = false)
+    private Long id; // primary key
+    @Column(name = "email", nullable = false, unique = true)
+    private String email; // the email from the user
+    @OneToOne
+    private ActivationCode activationCode; // the activation code for the user
+    @OneToOne
+    private DeactivationCode deactivationCode; // the deactivation code for the user
+    private String firstname; // the firstname from the user
+    private String lastname; // the lastname from the user
+    private boolean enabled; // if the user is enabled
+    private LocalDate deactviatedUntil; // the date until the user is deactivated
+    private boolean wantsUpdate;
 
     /**
      * Default constructor for the mail-user.
@@ -59,10 +50,11 @@ public class MailUser {
 
     /**
      * Constructor for the mail-user.
-     * @param email the email
+     *
+     * @param email     the email
      * @param firstname the firstname
-     * @param lastname the lastname
-     * @param enabled if the user is enabled
+     * @param lastname  the lastname
+     * @param enabled   if the user is enabled
      */
     public MailUser(String email, String firstname, String lastname,
                     boolean enabled) {

@@ -6,10 +6,10 @@ public enum JobErrors implements ErrorCodes {
 
     UNKNOWN("JOB_C_400"),
     INVALID_CONFIGURATION("JOB_C_401");
-    
+
     private final String code;
 
-    JobErrors(String code){
+    JobErrors(String code) {
         this.code = code;
     }
 

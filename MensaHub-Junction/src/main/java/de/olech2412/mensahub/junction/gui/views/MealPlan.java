@@ -7,18 +7,15 @@ import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-import com.vaadin.flow.function.SerializableConsumer;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
-import de.olech2412.mensahub.junction.gui.components.own.RatingComponent;
 import de.olech2412.mensahub.junction.gui.components.own.boxes.InfoBox;
 import de.olech2412.mensahub.junction.gui.components.own.boxes.MealBox;
 import de.olech2412.mensahub.junction.gui.components.vaadin.datetimepicker.GermanDatePicker;
 import de.olech2412.mensahub.junction.gui.components.vaadin.notifications.NotificationFactory;
-import de.olech2412.mensahub.junction.gui.components.vaadin.notifications.types.InfoNotification;
 import de.olech2412.mensahub.junction.gui.components.vaadin.notifications.types.InfoWithAnchorNotification;
 import de.olech2412.mensahub.junction.gui.components.vaadin.notifications.types.NotificationType;
 import de.olech2412.mensahub.junction.jpa.repository.RatingRepository;
@@ -54,13 +51,10 @@ public class MealPlan extends VerticalLayout implements BeforeEnterObserver {
     private final ComboBox<Mensa> mensaComboBox = new ComboBox<>();
 
     private final GermanDatePicker datePicker = new GermanDatePicker();
-
-    private List<Meal> meals;
-
     HorizontalLayout row = new HorizontalLayout();
-
     @Autowired
     RatingRepository ratingRepository;
+    private List<Meal> meals;
     @Autowired
     private UsersRepository usersRepository;
     @Autowired
@@ -121,7 +115,7 @@ public class MealPlan extends VerticalLayout implements BeforeEnterObserver {
 
             updateRows(meals);
 
-            if(mailUser == null){
+            if (mailUser == null) {
                 UI.getCurrent().getPage().getHistory().replaceState(null, String.format("/mealPlan?mensa=%s" +
                         String.format("&date=%s", datePicker.getValue()), changeEvent.getValue().getId()));
             } else {
@@ -149,7 +143,7 @@ public class MealPlan extends VerticalLayout implements BeforeEnterObserver {
 
             updateRows(meals);
 
-            if(mailUser == null) {
+            if (mailUser == null) {
                 UI.getCurrent().getPage().getHistory().replaceState(null, String.format("/mealPlan?date=%s" +
                         String.format("&mensa=%s", mensaComboBox.getValue().getId()), changeEvent.getValue()));
             } else {
@@ -170,17 +164,17 @@ public class MealPlan extends VerticalLayout implements BeforeEnterObserver {
     private void updateRows(List<Meal> meals) {
         for (Meal meal : meals) {
             MealBox mealBox = new MealBox(meal.getName(), meal.getDescription(), meal.getPrice(), meal.getAllergens(), meal.getCategory());
-            if(!isUserIdentified()){
+            if (!isUserIdentified()) {
                 mealBox.getRatingComponent().setEnabled(false);
                 mealBox.getRatingButton().setEnabled(false);
             } else {
-                Result<List<Rating> , JPAError> ratings = ratingService.findAllByMailUserAndMealName(mailUser, meal.getName());
+                Result<List<Rating>, JPAError> ratings = ratingService.findAllByMailUserAndMealName(mailUser, meal.getName());
 
-                if (ratings.isSuccess()){
+                if (ratings.isSuccess()) {
                     List<Rating> ratingList = ratings.getData();
                     for (Rating rating : ratingList) {
                         if (rating.getMealName().equals(meal.getName()) && rating.getMeal().getServingDate().equals(meal.getServingDate())
-                        && rating.getMeal().getMensa().getId().equals(meal.getMensa().getId())) {
+                                && rating.getMeal().getMensa().getId().equals(meal.getMensa().getId())) {
                             mealBox.getRatingButton().setEnabled(false);
                             mealBox.getRatingComponent().setEnabled(false);
                             mealBox.getRatingComponent().setRating(rating.getRating());
@@ -192,7 +186,7 @@ public class MealPlan extends VerticalLayout implements BeforeEnterObserver {
                 }
 
                 mealBox.getRatingButton().addClickListener(buttonClickEvent -> {
-                    if (mealBox.getRatingComponent().getRating() != 0){
+                    if (mealBox.getRatingComponent().getRating() != 0) {
                         Rating rating = new Rating();
                         rating.setMeal(meal);
                         rating.setRating(mealBox.getRatingComponent().getRating());
@@ -216,12 +210,12 @@ public class MealPlan extends VerticalLayout implements BeforeEnterObserver {
         String date = "";
         String userCode;
 
-        if(params.containsKey("userCode")){
+        if (params.containsKey("userCode")) {
             userCode = params.get("userCode").get(0);
 
             Result<MailUser, JPAError> mailUserJPAErrorResult = mailUserService.findMailUserByDeactivationCode(userCode);
 
-            if(mailUserJPAErrorResult.isSuccess()){
+            if (mailUserJPAErrorResult.isSuccess()) {
                 mailUser = mailUserJPAErrorResult.getData();
                 log.info("Mail User erfolgreich identifiziert");
             } else {
@@ -278,7 +272,7 @@ public class MealPlan extends VerticalLayout implements BeforeEnterObserver {
         }
     }
 
-    private boolean isUserIdentified(){
+    private boolean isUserIdentified() {
         return mailUser != null;
     }
 }
