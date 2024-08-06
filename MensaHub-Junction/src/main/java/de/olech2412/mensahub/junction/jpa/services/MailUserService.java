@@ -1,9 +1,6 @@
 package de.olech2412.mensahub.junction.jpa.services;
 
-import de.olech2412.mensahub.junction.jpa.repository.ErrorEntityRepository;
-import de.olech2412.mensahub.junction.jpa.repository.JobRepository;
-import de.olech2412.mensahub.junction.jpa.repository.MailUserRepository;
-import de.olech2412.mensahub.junction.jpa.repository.RatingRepository;
+import de.olech2412.mensahub.junction.jpa.repository.*;
 import de.olech2412.mensahub.junction.jpa.repository.mensen.MensaRepository;
 import de.olech2412.mensahub.models.Mensa;
 import de.olech2412.mensahub.models.Rating;
@@ -44,6 +41,8 @@ public class MailUserService {
 
     @Autowired
     private JobRepository jobRepository;
+    @Autowired
+    private DeactivationCodeRepository deactivationCodeRepository;
 
     /**
      * Saves a meal for the database
@@ -98,7 +97,7 @@ public class MailUserService {
         List<Job> jobs = jobRepository.findAllByMailUsers(List.of(mailUser));
         for (Job job : jobs){
             List<MailUser> mailUsers = job.getMailUsers();
-            mailUsers.remove(mailUser);
+            mailUsers.removeIf(mailUser1 -> mailUser1.getEmail().equals(mailUser.getEmail()));
             log.info("Removed mailuser {} from job {} because of account deletion", mailUser.getEmail(), job.getUuid());
             if(mailUsers.isEmpty()){
                 job.setMailUsers(null);
