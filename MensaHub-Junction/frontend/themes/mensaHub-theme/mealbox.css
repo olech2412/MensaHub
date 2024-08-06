@@ -6,11 +6,11 @@
     padding: 20px;
     transition: box-shadow 0.3s ease-in-out;
     margin: 10px;
-    flex: 1 1 10%; /* Flexbox properties for responsive layout */
-    min-height: 20%;
-    max-height: 20%;
-    min-width: 30%;
-    max-width: 30%; /* Ensure the boxes don't get too wide */
+    flex: 1 1 calc(33.333% - 20px); /* Flexbox properties for responsive layout */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
 }
 
 .meal-box:hover {
@@ -21,6 +21,7 @@
     color: #333333;
     font-size: 1.5em;
     margin-bottom: 10px;
+    min-height: 3em; /* Ensure consistent height for titles */
 }
 
 .meal-box .price {
@@ -28,6 +29,7 @@
     font-weight: bold;
     font-size: 1.2em;
     margin-top: 10px;
+    min-height: 2em; /* Ensure consistent height for prices */
 }
 
 .meal-box .category {
@@ -71,58 +73,23 @@
     background-color: #c1ce0b;
 }
 
-.category.Hauptkomponente {
-    background-color: #9e9e9e;
-}
-
-.category.Schneller-Teller {
-    background-color: #ff9800;
-}
-
-.category.Gemüsebeilage {
-    background-color: #8bc34a;
-}
-
-.category.Sättigungsbeilage {
-    background-color: #cddc39;
-}
-
-.category.Fleischgericht {
-    background-color: #f44336;
-}
-
-.category.WOK {
-    background-color: #009688;
-}
-
-.category.Fischgericht {
-    background-color: #03a9f4;
-}
-
-.category.Pizza {
-    background-color: #ff5722;
-}
-
-.category.Vegetarisches-Gericht {
-    background-color: #4caf50;
-}
-
-.category.Grill {
-    background-color: #795548;
-}
-
-.category.Regio-Teller {
-    background-color: #8d6e63;
-}
-
-.category.Suppe-Eintopf {
-    background-color: #3f51b5;
-}
+/* Weitere Category-Styles */
 
 /* Responsive layout */
-@media (max-width: 600px) {
+@media (max-width: 1200px) {
     .meal-box {
-        flex: 1 1 100%;
-        max-width: 100%;
+        flex: 1 1 calc(50% - 20px); /* 2 columns */
+        min-width: calc(50% - 20px);
     }
+}
+
+@media (max-width: 800px) {
+    .meal-box {
+        flex: 1 1 calc(100% - 20px); /* Full width */
+        min-width: calc(100% - 20px);
+    }
+}
+
+.rating-layout {
+    margin-top: auto; /* Push rating layout to the bottom */
 }

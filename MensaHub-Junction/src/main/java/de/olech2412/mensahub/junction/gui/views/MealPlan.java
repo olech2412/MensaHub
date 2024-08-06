@@ -80,20 +80,17 @@ public class MealPlan extends VerticalLayout implements BeforeEnterObserver {
         mensaComboBox.setItems(mensaService.getAllMensas());
         mensaComboBox.setItemLabelGenerator(Mensa::getName);
 
-        HorizontalLayout headerComboboxLayout = new HorizontalLayout();
+        VerticalLayout headerComboboxLayout = new VerticalLayout();
         headerComboboxLayout.setWidth(100f, Unit.PERCENTAGE);
         headerComboboxLayout.setAlignItems(Alignment.CENTER);
         headerComboboxLayout.setJustifyContentMode(JustifyContentMode.CENTER);
         headerComboboxLayout.add(mensaComboBox, datePicker);
 
-        HorizontalLayout filterLayout = new HorizontalLayout();
-        filterLayout.setWidth(80f, Unit.PERCENTAGE);
-        filterLayout.setAlignItems(Alignment.CENTER);
-        filterLayout.setJustifyContentMode(JustifyContentMode.CENTER);
-
         //adjust the width of the combobox and datePicker
         mensaComboBox.setWidth(60f, Unit.PERCENTAGE);
+        mensaComboBox.setMinWidth(320f, Unit.PIXELS);
         datePicker.setWidth(40f, Unit.PERCENTAGE);
+        datePicker.setMinWidth(320f, Unit.PIXELS);
 
         VerticalLayout headerContent = new VerticalLayout();
         headerContent.setWidth(100f, Unit.PERCENTAGE);
@@ -101,7 +98,7 @@ public class MealPlan extends VerticalLayout implements BeforeEnterObserver {
         headerContent.setJustifyContentMode(JustifyContentMode.CENTER);
         headerContent.getStyle().set("text-align", "center");
         headerContent.add(new H2("Wähle deine Mensa aus, sowie das gewünschte Datum"));
-        headerContent.add(headerComboboxLayout, filterLayout);
+        headerContent.add(headerComboboxLayout);
 
         pageSelHeader.add(headerContent);
 
