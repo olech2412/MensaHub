@@ -48,10 +48,11 @@ public class MealBox extends VerticalLayout {
 
         ratingButton.setIcon(VaadinIcon.CHECK.create());
 
-        HorizontalLayout ratingLayout = new HorizontalLayout();
+        VerticalLayout ratingLayout = new VerticalLayout();
+        ratingLayout.setAlignItems(Alignment.CENTER);
+        ratingLayout.setJustifyContentMode(JustifyContentMode.CENTER);
         ratingLayout.addClassName("rating-layout");
         ratingLayout.add(ratingComponent, ratingButton);
-
 
         add(categoryLayout, h4, new Text(description), priceText, accordion, ratingLayout);
     }
