@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
@@ -71,16 +72,21 @@ public class MealsService {
     }
 
     @Transactional
-    public void deleteAllByServingDate(LocalDate servingDate, Mensa mensa) {
+    public HashMap<Rating, Meal> deleteAllByServingDate(LocalDate servingDate, Mensa mensa) {
         List<Meal> meals = meals_Repository.findAllByServingDateAndMensa(servingDate, mensa);
+        HashMap<Rating, Meal> deletedRatings = new HashMap<>();
         for (Meal meal : meals) {
             Optional<Rating> ratingOptional = ratingRepository.findByMealId(meal.getId());
             if (ratingOptional.isPresent()) {
-                ratingRepository.delete(ratingOptional.get());
-                log.info("Deleted rating for meal {} for mensa {} from user {}", meal.getName(), mensa.getName(), ratingOptional.get().getMailUser().getEmail());
+                deletedRatings.put(ratingOptional.get(), meal);
+                Rating unchainedRating = ratingOptional.get();
+                unchainedRating.setMeal(null);
+                ratingRepository.save(unchainedRating);
+                log.info("Unchained rating for meal {} for mensa {} from user {}", meal.getName(), mensa.getName(), ratingOptional.get().getMailUser().getEmail());
             }
             meals_Repository.delete(meal);
         }
+        return deletedRatings;
     }
 
     /**
