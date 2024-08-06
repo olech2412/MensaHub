@@ -105,7 +105,7 @@ public class Mailer {
                         LocalDate.now().format(java.time.format.DateTimeFormatter.ofPattern("dd.MM.yyyy")) + " - " +
                         mensa.getName());
             } else {
-                msg = createUpdateEmail(menu, emailTarget.getFirstname(), deactivateUrl, mensa);
+                msg = createUpdateEmail(menu, emailTarget.getFirstname(), deactivateUrl, mensa, emailTarget.getDeactivationCode().getCode());
                 message.setSubject("Update zu deinem Speiseplan " +
                         LocalDate.now().format(java.time.format.DateTimeFormatter.ofPattern("dd.MM.yyyy")) + " - " +
                         mensa.getName());
@@ -138,7 +138,7 @@ public class Mailer {
         }
     }
 
-    private String createUpdateEmail(List<Meal> menu, String firstname, String deactivateUrl, Mensa mensa) throws NoSuchPaddingException, IllegalBlockSizeException, IOException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
+    private String createUpdateEmail(List<Meal> menu, String firstname, String deactivateUrl, Mensa mensa, String deactivateCode) throws NoSuchPaddingException, IllegalBlockSizeException, IOException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
         StringBuilder menuText = new StringBuilder();
 
         if (!menu.isEmpty()) {
@@ -211,7 +211,8 @@ public class Mailer {
         String footer = StaticEmailText.FOOD_PLAN_FOOTER;
         footer = footer.replaceFirst("%s", getRandomGreetingsText());
         footer = footer.replaceFirst("%s", deactivateUrl);
-        footer = footer.replaceFirst("%s", Config.getInstance().getProperty("mensaHub.dataDispatcher.junction.address") + "/mealPlan?date=today&mensa=" + mensa.getId());
+        footer = footer.replaceFirst("%s", Config.getInstance().getProperty("mensaHub.dataDispatcher.junction.address")
+                + "/mealPlan?date=today&mensa=" + mensa.getId() + "&userCode=" + deactivateCode);
 
 
         String msg = header +
