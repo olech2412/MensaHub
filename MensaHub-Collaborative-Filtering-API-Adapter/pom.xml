@@ -17,7 +17,7 @@
     </developers>
     <version>1.0.0</version>
 
-    <artifactId>MensaHub-Collaborative-Filtering-API-Adapter</artifactId>
+    <artifactId>mensaHub-collaborative-filtering-api-adapter</artifactId>
 
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
@@ -41,6 +41,14 @@
             </releases>
         </repository>
     </distributionManagement>
+
+    <repositories>
+        <repository>
+            <id>github</id>
+            <name>GitHub Packages</name>
+            <url>https://maven.pkg.github.com/olech2412/MensaHub</url>
+        </repository>
+    </repositories>
 
     <dependencies>
         <dependency>
