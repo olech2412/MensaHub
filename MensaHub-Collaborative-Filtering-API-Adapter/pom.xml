@@ -11,6 +11,7 @@
         </developer>
     </developers>
     <artifactId>mensahub-collaborative-filtering-api-adapter</artifactId>
+    <groupId>de.olech2412.mensahub</groupId>
     <name>MensaHub-Collaborative-Filtering-API-Adapter</name>
     <version>1.0.1</version>
 
