@@ -121,7 +121,55 @@
     background-color: #3f51b5;
 }
 
-/* Weitere Category-Styles */
+@keyframes gradient-animation {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+.prediction {
+    color: #FFFFFF;
+    font-size: 0.9em;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    background: linear-gradient(45deg, #005fff, #4000ff, #f305fb, #4800ff);
+    background-size: 200% 200%;
+    animation: gradient-animation 5s ease infinite;
+    padding: 4px 8px;
+    border-radius: 4px;
+    transition: transform 0.3s ease;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    display: inline-block;
+    margin: 0 4px;
+}
+
+/* Media Query für kleinere Bildschirme */
+@media (max-width: 600px) {
+    .prediction {
+        font-size: 0.8em;
+        padding: 3px 6px;
+    }
+}
+
+/* Zusätzliche Anpassungen für eine bessere Integration in die mobile Ansicht */
+.prediction-container {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+@media (max-width: 600px) {
+    .prediction-container {
+        align-items: center;
+    }
+}
 
 /* Responsive layout */
 @media (max-width: 1200px) {
