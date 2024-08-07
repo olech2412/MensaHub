@@ -4,8 +4,12 @@ services:
   mariadb:
     image: mariadb:latest
     restart: always
+    ports:
+      - "3306:3306"
     environment:
       MARIADB_ROOT_PASSWORD: password
+      MARIADB_USER: root
+      MARIADB_PASSWORD: password
     volumes:
       - /var/lib/mysqlDocker/:/var/lib/mysql/
     networks:
