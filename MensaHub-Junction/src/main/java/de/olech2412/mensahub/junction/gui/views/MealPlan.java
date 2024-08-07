@@ -4,6 +4,7 @@ import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.Unit;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.html.H2;
+import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -12,6 +13,8 @@ import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
+import de.olech2412.mensahub.APIConfiguration;
+import de.olech2412.mensahub.CollaborativeFilteringAPIAdapter;
 import de.olech2412.mensahub.junction.gui.components.own.boxes.InfoBox;
 import de.olech2412.mensahub.junction.gui.components.own.boxes.MealBox;
 import de.olech2412.mensahub.junction.gui.components.vaadin.datetimepicker.GermanDatePicker;
@@ -27,16 +30,18 @@ import de.olech2412.mensahub.junction.jpa.services.mensen.MensaService;
 import de.olech2412.mensahub.models.Meal;
 import de.olech2412.mensahub.models.Mensa;
 import de.olech2412.mensahub.models.Rating;
+import de.olech2412.mensahub.models.addons.predictions.PredictionRequest;
+import de.olech2412.mensahub.models.addons.predictions.PredictionResult;
 import de.olech2412.mensahub.models.authentification.MailUser;
 import de.olech2412.mensahub.models.result.Result;
+import de.olech2412.mensahub.models.result.errors.api.APIError;
 import de.olech2412.mensahub.models.result.errors.jpa.JPAError;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.io.IOException;
 import java.time.LocalDate;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @Route("mealPlan")
 @PageTitle("Speiseplan")
@@ -96,7 +101,6 @@ public class MealPlan extends VerticalLayout implements BeforeEnterObserver {
 
         pageSelHeader.add(headerContent);
 
-
         row.setJustifyContentMode(JustifyContentMode.CENTER);
 
         mensaComboBox.addValueChangeListener(changeEvent -> {
@@ -113,7 +117,11 @@ public class MealPlan extends VerticalLayout implements BeforeEnterObserver {
             row.setWidthFull();
             row.getStyle().set("flex-wrap", "wrap");
 
-            updateRows(meals);
+            try {
+                updateRows(meals);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
 
             if (mailUser == null) {
                 UI.getCurrent().getPage().getHistory().replaceState(null, String.format("/mealPlan?mensa=%s" +
@@ -141,7 +149,11 @@ public class MealPlan extends VerticalLayout implements BeforeEnterObserver {
             row.setWidthFull();
             row.getStyle().set("flex-wrap", "wrap");
 
-            updateRows(meals);
+            try {
+                updateRows(meals);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
 
             if (mailUser == null) {
                 UI.getCurrent().getPage().getHistory().replaceState(null, String.format("/mealPlan?date=%s" +
@@ -161,7 +173,8 @@ public class MealPlan extends VerticalLayout implements BeforeEnterObserver {
         setJustifyContentMode(JustifyContentMode.CENTER);
     }
 
-    private void updateRows(List<Meal> meals) {
+    private void updateRows(List<Meal> meals) throws IOException {
+        List<MealBox> mealBoxes = new ArrayList<>();
         for (Meal meal : meals) {
             MealBox mealBox = new MealBox(meal.getName(), meal.getDescription(), meal.getPrice(), meal.getAllergens(), meal.getCategory());
             if (!isUserIdentified()) {
@@ -199,7 +212,9 @@ public class MealPlan extends VerticalLayout implements BeforeEnterObserver {
                 });
             }
             row.add(mealBox);
+            mealBoxes.add(mealBox);
         }
+        addRecommendationScore(mealBoxes);
     }
 
     @Override
@@ -217,7 +232,6 @@ public class MealPlan extends VerticalLayout implements BeforeEnterObserver {
 
             if (mailUserJPAErrorResult.isSuccess()) {
                 mailUser = mailUserJPAErrorResult.getData();
-                log.info("Mail User erfolgreich identifiziert");
             } else {
                 NotificationFactory.create(NotificationType.ERROR, "Ungültige Nutzerkennung. Erweiterte Funktionen stehen nicht zur Verfügung");
             }
@@ -275,4 +289,43 @@ public class MealPlan extends VerticalLayout implements BeforeEnterObserver {
     private boolean isUserIdentified() {
         return mailUser != null;
     }
+
+    private void addRecommendationScore(List<MealBox> mealBoxes) throws IOException {
+        if (mailUser == null) {
+            return;
+        }
+
+        if(mealBoxes == null || mealBoxes.isEmpty()) {
+            return;
+        }
+
+        APIConfiguration apiConfiguration = new APIConfiguration();
+        CollaborativeFilteringAPIAdapter collaborativeFilteringAPIAdapter = new CollaborativeFilteringAPIAdapter(apiConfiguration);
+        if (collaborativeFilteringAPIAdapter.isAPIAvailable()) {
+            List<PredictionRequest> predictionRequests = new ArrayList<>();
+            for (MealBox mealBox : mealBoxes) {
+                PredictionRequest predictionRequest = new PredictionRequest(mailUser.getId().intValue(), mealBox.getMealName());
+                predictionRequests.add(predictionRequest);
+            }
+            Result<List<Result<PredictionResult, APIError>>, APIError> predictionResults = collaborativeFilteringAPIAdapter.predict(predictionRequests);
+            if (predictionResults.isSuccess()) {
+                for (Result<PredictionResult, APIError> predictionResult : predictionResults.getData()) {
+                    if (predictionResult.isSuccess()){ // if not, the user or meal is not in db just ignore it
+                        Optional<MealBox> mealBoxOptional = mealBoxes.stream().filter(mealBox1 -> mealBox1.getMealName().equals(predictionResult.getData().getMeal())).findFirst();
+                        if (mealBoxOptional.isPresent()) {
+                            MealBox mealBox = mealBoxOptional.get();
+                            mealBox.showRecommendation(predictionResult.getData());
+                        }
+                    }
+                }
+            } else {
+                log.error("Error while prediction results: {}. Error: {}", predictionResults, predictionResults.getError());
+            }
+        } else {
+            log.error("Collaborative filtering API is not available");
+            NotificationFactory.create(NotificationType.WARN, "Aufgrund technischer Probleme können aktuell " +
+                    "keine Empfehlungen angezeigt werden").open();
+        }
+    }
+
 }

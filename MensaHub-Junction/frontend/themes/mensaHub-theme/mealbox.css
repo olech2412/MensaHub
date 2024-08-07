@@ -121,6 +121,53 @@
     background-color: #3f51b5;
 }
 
+/* Grundlegende Vorhersageklassen */
+.prediction {
+    color: #ffffff;
+    border-radius: 5px;
+    padding: 5px 10px;
+    font-size: 0.9em;
+    display: inline-block;
+    margin-right: 2px;
+    animation: shimmer 3s infinite linear;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Sehr hoch vertrauenswürdig */
+.prediction.Sehr-hoch {
+    background-color: #30ff00; /* Gelb */
+}
+
+/* Hoch vertrauenswürdig */
+.prediction.Hoch {
+    background-color: #4CAF50; /* Grün */
+    color: black; /* Schwarz für bessere Lesbarkeit */
+}
+
+/* Mittel vertrauenswürdig */
+.prediction.Mittel {
+    background-color: #FF9800; /* Orange */
+}
+
+/* Niedrig vertrauenswürdig */
+.prediction.Niedrig {
+    background-color: #F44336; /* Rot */
+}
+
+/* Schimmer-Animation */
+@keyframes shimmer {
+    0% {
+        background-position: -200% 0;
+    }
+    100% {
+        background-position: 200% 0;
+    }
+}
+
+.prediction {
+    background: linear-gradient(to right, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.3) 50%, rgba(255, 255, 255, 0.1) 100%);
+}
+
 /* Weitere Category-Styles */
 
 /* Responsive layout */
