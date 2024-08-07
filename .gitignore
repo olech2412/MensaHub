@@ -35,6 +35,6 @@ package-lock.json
 **/vite.generated.ts
 node_modules/
 package.json
-**/mensahub/
 **/.vscode/
 /.vscode/
+/mensahub/
