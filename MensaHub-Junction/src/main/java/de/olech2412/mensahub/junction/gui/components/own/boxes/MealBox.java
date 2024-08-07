@@ -3,6 +3,7 @@ package de.olech2412.mensahub.junction.gui.components.own.boxes;
 import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.accordion.Accordion;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H4;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.VaadinIcon;
@@ -48,7 +49,9 @@ public class MealBox extends VerticalLayout {
 
         HorizontalLayout categoryLayout = new HorizontalLayout(badge);
         categoryLayout.addClassName("category-layout");
-        categoryLayout.add(recommendationBadge);
+        Div predictionContainer = new Div(recommendationBadge);
+        predictionContainer.addClassName("prediction-container");
+        categoryLayout.add(predictionContainer);
 
         Span priceText = new Span(price);
         priceText.addClassName("price");
@@ -66,7 +69,7 @@ public class MealBox extends VerticalLayout {
 
     public void showRecommendation(PredictionResult predictionResult){
         long predictionScore = Math.round(predictionResult.getPredictedRating());
-        recommendationBadge.setText("Deine Empfehlung: " + predictionScore + "/5");
-        recommendationBadge.addClassNames("prediction", predictionResult.getTrustScore().replace(" ", "-"));
+        recommendationBadge.setText("Deine Empfehlung: " + predictionScore + "/5" + " | Genauigkeit: " + predictionResult.getTrustScore());
+        recommendationBadge.addClassName("prediction");
     }
 }
