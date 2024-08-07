@@ -1,6 +1,7 @@
 package de.olech2412.mensahub.junction.gui.views;
 
 import com.vaadin.flow.component.AbstractField;
+import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.Unit;
 import com.vaadin.flow.component.combobox.ComboBox;
@@ -8,10 +9,7 @@ import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-import com.vaadin.flow.router.BeforeEnterEvent;
-import com.vaadin.flow.router.BeforeEnterObserver;
-import com.vaadin.flow.router.PageTitle;
-import com.vaadin.flow.router.Route;
+import com.vaadin.flow.router.*;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
 import de.olech2412.mensahub.APIConfiguration;
 import de.olech2412.mensahub.CollaborativeFilteringAPIAdapter;
@@ -149,11 +147,11 @@ public class MealPlan extends VerticalLayout implements BeforeEnterObserver {
 
         if (mailUser == null) {
             UI.getCurrent().getPage().getHistory().replaceState(null, String.format("/mealPlan?date=%s" +
-                    String.format("&mensa=%s", mensaComboBox.getValue().getId()), servingDate) + "&request=user");
+                    String.format("&mensa=%s", mensaComboBox.getValue().getId()), servingDate));
         } else {
             UI.getCurrent().getPage().getHistory().replaceState(null, String.format("/mealPlan?date=%s" +
                     String.format("&mensa=%s", mensaComboBox.getValue().getId()) + String.format("&userCode=%s",
-                    mailUser.getDeactivationCode().getCode()) + "&request=user", servingDate));
+                    mailUser.getDeactivationCode().getCode()), servingDate));
         }
         add(row);
     }
@@ -217,11 +215,6 @@ public class MealPlan extends VerticalLayout implements BeforeEnterObserver {
         String mensaParam;
         String date = "";
         String userCode;
-        String request = "";
-
-        if (params.containsKey("request")) {
-            request = params.get("request").get(0);
-        }
 
         if (params.containsKey("userCode")) {
             userCode = params.get("userCode").get(0);
@@ -283,7 +276,7 @@ public class MealPlan extends VerticalLayout implements BeforeEnterObserver {
             }
         }
 
-        if (request.isEmpty()){
+        if (beforeEnterEvent.getTrigger().name().equals("PAGE_LOAD")){ // returns "PAGE_LOAD" if its refreshed and "HISTORY" if its refreshed by the valuechangelisteners
             if(!mensaComboBox.isEmpty() && !datePicker.isEmpty()){
                 buildMealPlan(datePicker.getValue(), mensaComboBox.getValue());
             }
