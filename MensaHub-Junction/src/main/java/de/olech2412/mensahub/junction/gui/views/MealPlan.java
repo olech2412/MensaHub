@@ -1,10 +1,10 @@
 package de.olech2412.mensahub.junction.gui.views;
 
+import com.vaadin.flow.component.AbstractField;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.Unit;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.html.H2;
-import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -41,6 +41,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.IOException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Route("mealPlan")
@@ -50,24 +51,23 @@ import java.util.*;
 public class MealPlan extends VerticalLayout implements BeforeEnterObserver {
 
     private final MealsService mealsService;
-
     private final MensaService mensaService;
 
     private final ComboBox<Mensa> mensaComboBox = new ComboBox<>();
-
     private final GermanDatePicker datePicker = new GermanDatePicker();
     HorizontalLayout row = new HorizontalLayout();
+
     @Autowired
     RatingRepository ratingRepository;
-    private List<Meal> meals;
     @Autowired
     private UsersRepository usersRepository;
     @Autowired
     private MailUserService mailUserService;
-
-    private MailUser mailUser;
     @Autowired
     private RatingService ratingService;
+
+    private List<Meal> meals;
+    private MailUser mailUser;
 
     public MealPlan(MealsService mealsService, MensaService mensaService) {
         this.mealsService = mealsService;
@@ -85,7 +85,7 @@ public class MealPlan extends VerticalLayout implements BeforeEnterObserver {
         headerComboboxLayout.setJustifyContentMode(JustifyContentMode.CENTER);
         headerComboboxLayout.add(mensaComboBox, datePicker);
 
-        //adjust the width of the combobox and datePicker
+        // adjust the width of the combobox and datePicker
         mensaComboBox.setWidth(60f, Unit.PERCENTAGE);
         mensaComboBox.setMinWidth(320f, Unit.PIXELS);
         datePicker.setWidth(40f, Unit.PERCENTAGE);
@@ -104,73 +104,58 @@ public class MealPlan extends VerticalLayout implements BeforeEnterObserver {
         row.setJustifyContentMode(JustifyContentMode.CENTER);
 
         mensaComboBox.addValueChangeListener(changeEvent -> {
+            if (!changeEvent.isFromClient()) return;
             if (changeEvent.getValue() == null) {
                 return;
             }
-            row.removeAll();
-            meals = mealsService.findAllMealsByServingDateAndMensa(datePicker.getValue(), changeEvent.getValue());
-
-            row.addClassName("meal-content");
-            row.add(new InfoBox(changeEvent.getValue().getName(),
-                    changeEvent.getValue().getApiUrl().replace("&date=$date", "")));
-            row.addClassName("meal-row");
-            row.setWidthFull();
-            row.getStyle().set("flex-wrap", "wrap");
-
-            try {
-                updateRows(meals);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-
-            if (mailUser == null) {
-                UI.getCurrent().getPage().getHistory().replaceState(null, String.format("/mealPlan?mensa=%s" +
-                        String.format("&date=%s", datePicker.getValue()), changeEvent.getValue().getId()));
-            } else {
-                UI.getCurrent().getPage().getHistory().replaceState(null, String.format("/mealPlan?date=%s" +
-                        String.format("&mensa=%s", mensaComboBox.getValue().getId()) + String.format("&userCode=%s",
-                        mailUser.getDeactivationCode().getCode()), datePicker.getValue()));
-            }
-            add(row);
+            buildMealPlan(datePicker.getValue(), changeEvent.getValue());
         });
 
         datePicker.addValueChangeListener(changeEvent -> {
+            if (!changeEvent.isFromClient()) return;
             if (changeEvent.getValue() == null || mensaComboBox.isEmpty()) {
                 return;
             }
-
-            row.removeAll();
-            meals = mealsService.findAllMealsByServingDateAndMensa(changeEvent.getValue(), mensaComboBox.getValue());
-
-            row.addClassName("meal-content");
-            row.add(new InfoBox(mensaComboBox.getValue().getName(),
-                    mensaComboBox.getValue().getApiUrl().replace("$date", changeEvent.getValue().toString())));
-            row.addClassName("meal-row");
-            row.setWidthFull();
-            row.getStyle().set("flex-wrap", "wrap");
-
-            try {
-                updateRows(meals);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-
-            if (mailUser == null) {
-                UI.getCurrent().getPage().getHistory().replaceState(null, String.format("/mealPlan?date=%s" +
-                        String.format("&mensa=%s", mensaComboBox.getValue().getId()), changeEvent.getValue()));
-            } else {
-                UI.getCurrent().getPage().getHistory().replaceState(null, String.format("/mealPlan?date=%s" +
-                        String.format("&mensa=%s", mensaComboBox.getValue().getId()) + String.format("&userCode=%s",
-                        mailUser.getDeactivationCode().getCode()), changeEvent.getValue()));
-            }
-            add(row);
+            buildMealPlan(changeEvent.getValue(), mensaComboBox.getValue());
         });
 
         add(pageSelHeader);
-
         // adjust the layout to center all elements in it
         setAlignItems(Alignment.CENTER);
         setJustifyContentMode(JustifyContentMode.CENTER);
+    }
+
+    /**
+     * Is accessed by the datepicker and mensaCombox and should build the view with the given parameters
+     * @param servingDate the serving date of the meals
+     * @param mensa the mensa where the food is served
+     */
+    public void buildMealPlan(LocalDate servingDate, Mensa mensa) {
+        row.removeAll();
+        meals = mealsService.findAllMealsByServingDateAndMensa(servingDate, mensa);
+
+        row.addClassName("meal-content");
+        row.add(new InfoBox(mensaComboBox.getValue().getName(),
+                mensaComboBox.getValue().getApiUrl().replace("$date", servingDate.toString())));
+        row.addClassName("meal-row");
+        row.setWidthFull();
+        row.getStyle().set("flex-wrap", "wrap");
+
+        try {
+            updateRows(meals);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        if (mailUser == null) {
+            UI.getCurrent().getPage().getHistory().replaceState(null, String.format("/mealPlan?date=%s" +
+                    String.format("&mensa=%s", mensaComboBox.getValue().getId()), servingDate) + "&request=user");
+        } else {
+            UI.getCurrent().getPage().getHistory().replaceState(null, String.format("/mealPlan?date=%s" +
+                    String.format("&mensa=%s", mensaComboBox.getValue().getId()) + String.format("&userCode=%s",
+                    mailUser.getDeactivationCode().getCode()) + "&request=user", servingDate));
+        }
+        add(row);
     }
 
     private void updateRows(List<Meal> meals) throws IOException {
@@ -214,7 +199,15 @@ public class MealPlan extends VerticalLayout implements BeforeEnterObserver {
             row.add(mealBox);
             mealBoxes.add(mealBox);
         }
-        addRecommendationScore(mealBoxes);
+
+        UI ui = UI.getCurrent();
+        new Thread(() -> { // execute the request to collaborative filtering api async because we don't want to fuck up the user
+            try {
+                addRecommendationScore(mealBoxes, ui);
+            } catch (IOException e) {
+                log.error("Error while adding recommendation scores", e);
+            }
+        }).start();
     }
 
     @Override
@@ -224,6 +217,11 @@ public class MealPlan extends VerticalLayout implements BeforeEnterObserver {
         String mensaParam;
         String date = "";
         String userCode;
+        String request = "";
+
+        if (params.containsKey("request")) {
+            request = params.get("request").get(0);
+        }
 
         if (params.containsKey("userCode")) {
             userCode = params.get("userCode").get(0);
@@ -284,13 +282,20 @@ public class MealPlan extends VerticalLayout implements BeforeEnterObserver {
                 datePicker.setValue(LocalDate.parse(date));
             }
         }
+
+        if (request.isEmpty()){
+            if(!mensaComboBox.isEmpty() && !datePicker.isEmpty()){
+                buildMealPlan(datePicker.getValue(), mensaComboBox.getValue());
+            }
+        }
+
     }
 
     private boolean isUserIdentified() {
         return mailUser != null;
     }
 
-    private void addRecommendationScore(List<MealBox> mealBoxes) throws IOException {
+    private void addRecommendationScore(List<MealBox> mealBoxes, UI ui) throws IOException {
         if (mailUser == null) {
             return;
         }
@@ -314,7 +319,9 @@ public class MealPlan extends VerticalLayout implements BeforeEnterObserver {
                         Optional<MealBox> mealBoxOptional = mealBoxes.stream().filter(mealBox1 -> mealBox1.getMealName().equals(predictionResult.getData().getMeal())).findFirst();
                         if (mealBoxOptional.isPresent()) {
                             MealBox mealBox = mealBoxOptional.get();
-                            mealBox.showRecommendation(predictionResult.getData());
+                            ui.access(() -> {
+                                mealBox.showRecommendation(predictionResult.getData());
+                            });
                         }
                     }
                 }
@@ -323,9 +330,10 @@ public class MealPlan extends VerticalLayout implements BeforeEnterObserver {
             }
         } else {
             log.error("Collaborative filtering API is not available");
-            NotificationFactory.create(NotificationType.WARN, "Aufgrund technischer Probleme können aktuell " +
-                    "keine Empfehlungen angezeigt werden").open();
+            ui.access(() -> {
+                NotificationFactory.create(NotificationType.WARN, "Aufgrund technischer Probleme können aktuell " +
+                        "keine Empfehlungen angezeigt werden").open();
+            });
         }
     }
-
 }
