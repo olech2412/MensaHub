@@ -15,9 +15,9 @@
             <url>https://github.com/olech2412</url>
         </developer>
     </developers>
+    <artifactId>mensahub-collaborative-filtering-api-adapter</artifactId>
+    <name>MensaHub-Collaborative-Filtering-API-Adapter</name>
     <version>1.0.1</version>
-
-    <artifactId>mensaHub-collaborative-filtering-api-adapter</artifactId>
 
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
