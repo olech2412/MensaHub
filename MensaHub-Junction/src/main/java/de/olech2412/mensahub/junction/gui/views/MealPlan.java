@@ -298,7 +298,7 @@ public class MealPlan extends VerticalLayout implements BeforeEnterObserver {
         }
 
         APIConfiguration apiConfiguration = new APIConfiguration();
-        apiConfiguration.setBaseUrl("http://host.docker.internal:5000");
+        apiConfiguration.setBaseUrl("http://mensahub-collaborative-filtering-app-1:5000");
         CollaborativeFilteringAPIAdapter collaborativeFilteringAPIAdapter = new CollaborativeFilteringAPIAdapter(apiConfiguration);
         if (collaborativeFilteringAPIAdapter.isAPIAvailable()) {
             List<PredictionRequest> predictionRequests = new ArrayList<>();
