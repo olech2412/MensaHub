@@ -1,10 +1,10 @@
-name: Publish package to GitHub Packages (Manually Triggered)
+name: Publish MensaHub-Models to GitHub Packages
 
 on:
   workflow_dispatch:
 
 jobs:
-  publish:
+  publish-mensahub-models:
     runs-on: ubuntu-latest
     permissions:
       contents: read
