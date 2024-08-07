@@ -19,7 +19,6 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 @Log4j2
 public class CollaborativeFilteringAPIAdapter {
@@ -92,5 +91,20 @@ public class CollaborativeFilteringAPIAdapter {
 
         JsonArray responseObject = JsonParser.parseString(responseString).getAsJsonArray();
         return Result.success(responseObject);
+    }
+
+    public boolean isAPIAvailable() {
+        try {
+            URL url = new URL(apiConfiguration.getBaseUrl() + RequestPath.HEALTH);
+            HttpURLConnection con = (HttpURLConnection) url.openConnection();
+            con.setRequestMethod("GET");
+            con.setConnectTimeout(5000);
+            con.setReadTimeout(5000);
+            int status = con.getResponseCode();
+            return (status == 200);
+        } catch (IOException e) {
+            log.error("Error while checking API availability: {}", e.getMessage());
+            return false;
+        }
     }
 }
