@@ -31,11 +31,11 @@ public class UserDataDispatcher {
     public void checkForDeactivatedUsers() {
         List<MailUser> deactivatedMailUsers = mailUserRepository.findUsersByEnabled(false);
         for (MailUser deactivatedMailUser : deactivatedMailUsers) {
-            if (deactivatedMailUser.getDeactviatedUntil() != null) {
-                if (deactivatedMailUser.getDeactviatedUntil().isEqual(LocalDate.now())) {
+            if (deactivatedMailUser.getDeactivatedUntil() != null) {
+                if (deactivatedMailUser.getDeactivatedUntil().isEqual(LocalDate.now())) {
                     log.info("Activating user: {}", deactivatedMailUser.getEmail());
                     deactivatedMailUser.setEnabled(true);
-                    deactivatedMailUser.setDeactviatedUntil(null);
+                    deactivatedMailUser.setDeactivatedUntil(null);
                     mailUserRepository.save(deactivatedMailUser);
                 }
             }

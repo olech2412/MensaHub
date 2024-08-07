@@ -39,8 +39,9 @@ public class MailUser {
     private String firstname; // the firstname from the user
     private String lastname; // the lastname from the user
     private boolean enabled; // if the user is enabled
-    private LocalDate deactviatedUntil; // the date until the user is deactivated
+    private LocalDate deactivatedUntil; // the date until the user is deactivated
     private boolean wantsUpdate;
+    private boolean accessToCollaborativeFiltering;
 
     /**
      * Default constructor for the mail-user.
