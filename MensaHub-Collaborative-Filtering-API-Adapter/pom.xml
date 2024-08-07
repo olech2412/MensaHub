@@ -3,16 +3,11 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-
-    <groupId>de.olech2412.mensahub</groupId>
-    <artifactId>mensahub-models</artifactId>
-    <name>MensaHub-Models</name>
-    <description>
-        MensaHub-Models is a Maven package that provides all entities for all MensaHub applications.
-        The module allows central control and customization of the entities.
-        In addition, the package enables the uncomplicated development of new applications that are compatible with
-        existing MensaHub applications.
-    </description>
+    <parent>
+        <groupId>de.olech2412.mensahub</groupId>
+        <artifactId>MensaHub</artifactId>
+        <version>1.0.0</version>
+    </parent>
     <developers>
         <developer>
             <id>olech2412</id>
@@ -20,8 +15,9 @@
             <url>https://github.com/olech2412</url>
         </developer>
     </developers>
-    <version>2.1.0</version>
+    <version>1.0.0</version>
 
+    <artifactId>MensaHub-Collaborative-Filtering-API-Adapter</artifactId>
 
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
@@ -47,48 +43,37 @@
     </distributionManagement>
 
     <dependencies>
-        <!-- Jakarta dependencies -->
-            <!-- https://mvnrepository.com/artifact/jakarta.persistence/jakarta.persistence-api -->
-            <dependency>
-                <groupId>jakarta.persistence</groupId>
-                <artifactId>jakarta.persistence-api</artifactId>
-                <version>3.2.0</version>
-                <scope>compile</scope>
-            </dependency>
-
-            <!-- https://mvnrepository.com/artifact/jakarta.validation/jakarta.validation-api -->
-            <dependency>
-                <groupId>jakarta.validation</groupId>
-                <artifactId>jakarta.validation-api</artifactId>
-                <version>3.1.0</version>
-                <scope>compile</scope>
-            </dependency>
-        <!-- Jakarta dependencies end -->
-
-        <!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-annotations -->
         <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-annotations</artifactId>
-            <version>2.17.2</version>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-api</artifactId>
+            <version>2.22.0</version>
         </dependency>
-
-        <!-- https://mvnrepository.com/artifact/org.projectlombok/lombok -->
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-core</artifactId>
+            <version>2.22.1</version>
+        </dependency>
+        <dependency>
+            <groupId>de.olech2412.mensahub</groupId>
+            <artifactId>mensahub-models</artifactId>
+            <version>2.1.0</version>
+        </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.18.34</version>
+            <version>1.18.30</version>
             <scope>provided</scope>
         </dependency>
-        <dependency>
-            <groupId>org.hibernate.orm</groupId>
-            <artifactId>hibernate-core</artifactId>
-            <version>6.5.2.Final</version>
-            <scope>compile</scope>
-        </dependency>
+        <!-- https://mvnrepository.com/artifact/com.google.code.gson/gson -->
         <dependency>
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
             <version>2.10.1</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>2.16.1</version>
             <scope>compile</scope>
         </dependency>
     </dependencies>
