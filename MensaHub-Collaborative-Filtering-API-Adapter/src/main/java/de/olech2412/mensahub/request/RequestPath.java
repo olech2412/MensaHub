@@ -4,7 +4,8 @@ import lombok.Getter;
 
 public enum RequestPath {
 
-    PREDICT("/predict");
+    PREDICT("/predict"),
+    HEALTH("/health");
 
     @Getter
     private final String path;
