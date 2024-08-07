@@ -1,0 +1,33 @@
+name: Publish Collaborative Filtering API Adapter to GitHub Packages
+
+on:
+  workflow_dispatch:
+
+jobs:
+  publish-collaborative-filtering-api-adapter:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v2
+        with:
+          distribution: 'adopt'
+          java-version: '17'
+
+      - name: Build and Publish Collaborative Filtering API Adapter
+        run: |
+          cd MensaHub-Collaborative-Filtering-API-Adapter
+          mvn --batch-mode deploy
+        env:
+          GITHUB_TOKEN: ${{ secrets.DEPLOY_PACKAGE }}
+
+      - name: Output Maven Version from settings.xml
+        run: |
+          # Read the Maven version from settings.xml
+          mvn --version
