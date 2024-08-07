@@ -8,6 +8,13 @@
         <artifactId>MensaHub</artifactId>
         <version>1.0.0</version>
     </parent>
+    <developers>
+        <developer>
+            <id>olech2412</id>
+            <name>Ole Christoph</name>
+            <url>https://github.com/olech2412</url>
+        </developer>
+    </developers>
     <version>1.0.0</version>
 
     <artifactId>MensaHub-Collaborative-Filtering-API-Adapter</artifactId>
@@ -17,6 +24,23 @@
         <maven.compiler.target>17</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
+
+    <!-- To upload this package to GitHub packages-->
+    <distributionManagement>
+        <repository>
+            <id>github</id>
+            <name>GitHub MensaHub-Package</name>
+            <url>https://maven.pkg.github.com/olech2412/MensaHub</url>
+            <snapshots>
+                <enabled>true</enabled>
+                <updatePolicy>always</updatePolicy>
+            </snapshots>
+            <releases>
+                <enabled>true</enabled>
+                <updatePolicy>always</updatePolicy>
+            </releases>
+        </repository>
+    </distributionManagement>
 
     <dependencies>
         <dependency>
@@ -53,5 +77,19 @@
             <scope>compile</scope>
         </dependency>
     </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.12.1</version>
+                <configuration>
+                    <source>17</source>
+                    <target>17</target>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 
 </project>
