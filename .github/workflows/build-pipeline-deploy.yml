@@ -45,6 +45,8 @@ jobs:
         run: |
           cd MensaHub-Collaborative-Filtering-API-Adapter
           mvn clean install
+        env:
+          PACKAGE_READ: ${{ secrets.PACKAGE_READ }}
 
       - name: Build Docker image for amd64
         run: |
