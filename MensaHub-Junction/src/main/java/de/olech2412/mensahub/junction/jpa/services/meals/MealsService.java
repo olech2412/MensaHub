@@ -83,5 +83,21 @@ public class MealsService extends Meal {
         log.warn("Meal deleted: {} from {}", meal.getName(), mensa.getName());
     }
 
+    public List<Meal> findTop20DistinctMeals() {
+        return mealRepository.findTop20DistinctMeals();
+    }
+
+    public List<Meal> findTop20DistinctMealsForSubscribedMensa(Long userId) {
+        return mealRepository.findTop20DistinctMealsByUser(userId);
+    }
+
+    public List<String> findTop20DistinctMealNamesForSubscribedMensa(Long userId) {
+        return mealRepository.findTop20DistinctMealNamesByUser(userId);
+    }
+
+    public List<Meal> findTop20DistinctMealsExcludingGoudaForSubscribedMensa(Long userId) {
+        return mealRepository.findTop20DistinctMealsExcludingGoudaByUser(userId);
+    }
+
 }
 

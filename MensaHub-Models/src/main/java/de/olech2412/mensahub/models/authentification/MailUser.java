@@ -40,8 +40,8 @@ public class MailUser {
     private String lastname; // the lastname from the user
     private boolean enabled; // if the user is enabled
     private LocalDate deactivatedUntil; // the date until the user is deactivated
-    private boolean wantsUpdate;
-    private boolean accessToCollaborativeFiltering;
+    private boolean wantsUpdate; // if the user wants to get update mails if meals changed
+    private boolean wantsCollaborationInfoMail; // if the user wants to get mails about collaborations only
 
     /**
      * Default constructor for the mail-user.
