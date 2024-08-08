@@ -47,11 +47,8 @@ public class MealBox extends VerticalLayout {
         Span badge = new Span(category);
         badge.addClassNames("category", category.replace(" ", "-"));
 
-        HorizontalLayout categoryLayout = new HorizontalLayout(badge);
+        HorizontalLayout categoryLayout = new HorizontalLayout(badge, recommendationBadge);
         categoryLayout.addClassName("category-layout");
-        Div predictionContainer = new Div(recommendationBadge);
-        predictionContainer.addClassName("prediction-container");
-        categoryLayout.add(predictionContainer);
 
         Span priceText = new Span(price);
         priceText.addClassName("price");
@@ -69,7 +66,7 @@ public class MealBox extends VerticalLayout {
 
     public void showRecommendation(PredictionResult predictionResult){
         long predictionScore = Math.round(predictionResult.getPredictedRating());
-        recommendationBadge.setText("Deine Empfehlung: " + predictionScore + "/5" + " | Genauigkeit: " + predictionResult.getTrustScore());
+        recommendationBadge.setText("Empfehlung: " + predictionScore + "/5" + " | " + predictionResult.getTrustScore());
         recommendationBadge.addClassName("prediction");
     }
 }
