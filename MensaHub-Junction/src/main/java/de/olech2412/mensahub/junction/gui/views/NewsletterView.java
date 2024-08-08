@@ -25,6 +25,7 @@ import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.*;
 import de.olech2412.mensahub.junction.config.Config;
 import de.olech2412.mensahub.junction.email.Mailer;
+import de.olech2412.mensahub.junction.gui.components.vaadin.notifications.types.InfoWithAnchorNotification2;
 import de.olech2412.mensahub.junction.jpa.repository.ActivationCodeRepository;
 import de.olech2412.mensahub.junction.jpa.repository.DeactivationCodeRepository;
 import de.olech2412.mensahub.junction.jpa.services.MailUserService;
@@ -72,6 +73,7 @@ public class NewsletterView extends HorizontalLayout implements BeforeEnterObser
     @Autowired
     private MailUserService mailUserService;
     private Checkbox wantUpdates;
+    private Checkbox wantsCollaborativeFiltering;
 
 
     public NewsletterView(MensaService mensaService) throws IOException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
@@ -211,7 +213,21 @@ public class NewsletterView extends HorizontalLayout implements BeforeEnterObser
         wantUpdates.setRequiredIndicatorVisible(true);
         wantUpdates.setValue(true);
 
-        VerticalLayout infoLayout = new VerticalLayout(new H3("Informationen zu deiner Registrierung: "), infoText, wantUpdates, accept);
+        wantsCollaborativeFiltering = new Checkbox("Möchtest du nur benachrichtigt werden, wenn neue Empfehlungen für dich verfügbar sind?");
+        wantsCollaborativeFiltering.addValueChangeListener(e -> {
+            if (e.getValue()) {
+                InfoWithAnchorNotification2 infoWithAnchorNotification2 = new InfoWithAnchorNotification2(
+                        "Wenn du diese Option aktivierst, senden wir dir nur eine E-Mail, wenn wir neue Empfehlungen für dich haben. " +
+                                "Diese Empfehlungen basieren auf deinem bisherigen Essverhalten und deinen Vorlieben. " +
+                                "Wenn du diese Einstellung nicht aktivierst, senden wir dir den typischen täglichen Newsletter als E-Mail.");
+                infoWithAnchorNotification2.open();
+            }
+        });
+        wantsCollaborativeFiltering.setRequiredIndicatorVisible(true);
+        wantsCollaborativeFiltering.setValue(false);
+
+
+        VerticalLayout infoLayout = new VerticalLayout(new H3("Informationen zu deiner Registrierung: "), infoText, wantUpdates, wantsCollaborativeFiltering, accept);
         infoLayout.setAlignItems(Alignment.CENTER);
 
         return infoLayout;
@@ -253,7 +269,7 @@ public class NewsletterView extends HorizontalLayout implements BeforeEnterObser
                     if (mailUserService.findMailUserByEmail(email).isEmpty()) {
                         if (accept.getValue()) {
                             try {
-                                createRegistratedUser(email, firstname, lastname, mensa, wantUpdates.getValue());
+                                createRegistratedUser(email, firstname, lastname, mensa, wantUpdates.getValue(), wantsCollaborativeFiltering.getValue());
                                 Notification notification = new Notification("Deine E-Mail-Adresse wurde erfolgreich registriert!. Klicke auf den Link in deiner Bestätigungsmail", 6000);
                                 notification.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
                                 notification.open();
@@ -303,7 +319,7 @@ public class NewsletterView extends HorizontalLayout implements BeforeEnterObser
      *
      * @param email
      */
-    private void createRegistratedUser(String email, String firstname, String lastname, Set<Mensa> mensa, boolean wantUpdates) {
+    private void createRegistratedUser(String email, String firstname, String lastname, Set<Mensa> mensa, boolean wantUpdates, boolean wantsCollaborativeFiltering) {
 
         try {
             ActivationCode activationCode = new ActivationCode(RandomStringUtils.randomAlphanumeric(32));
@@ -333,6 +349,7 @@ public class NewsletterView extends HorizontalLayout implements BeforeEnterObser
             mailUser.setActivationCode(activationCode);
             mailUser.setDeactivationCode(deactivationCode);
             mailUser.setWantsUpdate(wantUpdates);
+            mailUser.setWantsCollaborationInfoMail(wantsCollaborativeFiltering);
 
             mailUser.setMensas(mensa);
 
