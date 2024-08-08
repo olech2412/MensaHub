@@ -13,6 +13,7 @@ import com.vaadin.flow.router.*;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
 import de.olech2412.mensahub.APIConfiguration;
 import de.olech2412.mensahub.CollaborativeFilteringAPIAdapter;
+import de.olech2412.mensahub.junction.config.Config;
 import de.olech2412.mensahub.junction.gui.components.own.boxes.InfoBox;
 import de.olech2412.mensahub.junction.gui.components.own.boxes.MealBox;
 import de.olech2412.mensahub.junction.gui.components.vaadin.datetimepicker.GermanDatePicker;
@@ -37,7 +38,12 @@ import de.olech2412.mensahub.models.result.errors.jpa.JPAError;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 import java.io.IOException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -202,7 +208,8 @@ public class MealPlan extends VerticalLayout implements BeforeEnterObserver {
         new Thread(() -> { // execute the request to collaborative filtering api async because we don't want to fuck up the user
             try {
                 addRecommendationScore(mealBoxes, ui);
-            } catch (IOException e) {
+            } catch (IOException | NoSuchPaddingException | IllegalBlockSizeException | NoSuchAlgorithmException |
+                     BadPaddingException | InvalidKeyException e) {
                 log.error("Error while adding recommendation scores", e);
             }
         }).start();
@@ -288,7 +295,7 @@ public class MealPlan extends VerticalLayout implements BeforeEnterObserver {
         return mailUser != null;
     }
 
-    private void addRecommendationScore(List<MealBox> mealBoxes, UI ui) throws IOException {
+    private void addRecommendationScore(List<MealBox> mealBoxes, UI ui) throws IOException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
         if (mailUser == null) {
             return;
         }
@@ -298,7 +305,7 @@ public class MealPlan extends VerticalLayout implements BeforeEnterObserver {
         }
 
         APIConfiguration apiConfiguration = new APIConfiguration();
-        apiConfiguration.setBaseUrl("http://mensahub-collaborative-filtering-app-1:5000");
+        apiConfiguration.setBaseUrl(Config.getInstance().getProperty("mensaHub.junction.collaborative.filter.api.baseUrl"));
         CollaborativeFilteringAPIAdapter collaborativeFilteringAPIAdapter = new CollaborativeFilteringAPIAdapter(apiConfiguration);
         if (collaborativeFilteringAPIAdapter.isAPIAvailable()) {
             List<PredictionRequest> predictionRequests = new ArrayList<>();
