@@ -24,7 +24,6 @@ import de.olech2412.mensahub.junction.gui.components.vaadin.notifications.Notifi
 import de.olech2412.mensahub.junction.gui.components.vaadin.notifications.types.InfoWithAnchorNotification;
 import de.olech2412.mensahub.junction.gui.components.vaadin.notifications.types.NotificationType;
 import de.olech2412.mensahub.junction.jpa.repository.RatingRepository;
-import de.olech2412.mensahub.junction.jpa.repository.UsersRepository;
 import de.olech2412.mensahub.junction.jpa.services.MailUserService;
 import de.olech2412.mensahub.junction.jpa.services.RatingService;
 import de.olech2412.mensahub.junction.jpa.services.meals.MealsService;
@@ -68,8 +67,6 @@ public class MealPlan extends VerticalLayout implements BeforeEnterObserver {
 
     @Autowired
     RatingRepository ratingRepository;
-    @Autowired
-    private UsersRepository usersRepository;
     @Autowired
     private MailUserService mailUserService;
     @Autowired
@@ -353,9 +350,7 @@ public class MealPlan extends VerticalLayout implements BeforeEnterObserver {
                         Optional<MealBox> mealBoxOptional = mealBoxes.stream().filter(mealBox1 -> mealBox1.getMealName().equals(predictionResult.getData().getMeal())).findFirst();
                         if (mealBoxOptional.isPresent()) {
                             MealBox mealBox = mealBoxOptional.get();
-                            ui.access(() -> {
-                                mealBox.showRecommendation(predictionResult.getData());
-                            });
+                            ui.access(() -> mealBox.showRecommendation(predictionResult.getData()));
                         }
                     }
                 }
@@ -364,10 +359,8 @@ public class MealPlan extends VerticalLayout implements BeforeEnterObserver {
             }
         } else {
             log.error("Collaborative filtering API is not available");
-            ui.access(() -> {
-                NotificationFactory.create(NotificationType.WARN, "Aufgrund technischer Probleme können aktuell " +
-                        "keine Empfehlungen angezeigt werden").open();
-            });
+            ui.access(() -> NotificationFactory.create(NotificationType.WARN, "Aufgrund technischer Probleme können aktuell " +
+                    "keine Empfehlungen angezeigt werden").open());
         }
     }
 }
