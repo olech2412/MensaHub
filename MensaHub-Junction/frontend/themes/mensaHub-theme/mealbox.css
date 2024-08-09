@@ -121,7 +121,39 @@
     background-color: #3f51b5;
 }
 
-/* Weitere Category-Styles */
+@keyframes shimmer-animation {
+    0% {
+        background-position: -200% 0%;
+    }
+    100% {
+        background-position: 200% 0%;
+    }
+}
+
+.prediction {
+    color: #FFFFFF;
+    font-size: 0.9em;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    background: linear-gradient(120deg, #005fff, #005fff, #f305fb, #005fff, #005fff);
+    background-size: 200% 200%;
+    animation: shimmer-animation 15s both linear;
+    padding: 5px 10px;
+    border-radius: 5px;
+    transition: transform 0.3s ease;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    display: inline-block;
+    margin: 0 4px;
+}
+
+/* Media Query für kleinere Bildschirme */
+@media (max-width: 600px) {
+    .prediction {
+        font-size: 0.8em;
+        padding: 3px 6px;
+    }
+}
 
 /* Responsive layout */
 @media (max-width: 1200px) {

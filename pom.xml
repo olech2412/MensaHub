@@ -12,7 +12,6 @@
         <module>MensaHub-DataDispatcher</module>
         <module>MensaHub-Gateway</module>
         <module>MensaHub-Junction</module>
-        <module>MensaHub-Collaborative-Filtering-API-Adapter</module>
     </modules>
 
 </project>

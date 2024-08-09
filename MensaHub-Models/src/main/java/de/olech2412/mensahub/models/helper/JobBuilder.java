@@ -14,18 +14,11 @@ import java.util.List;
 import java.util.UUID;
 
 public class JobBuilder {
-    private UUID uuid;
     private JobType jobType;
     private List<MailUser> mailUsers;
-    private Users creator;
     private Users proponent;
-    private LocalDateTime creationDate;
     private LocalDateTime executeAt;
-    private boolean transferredByInterface;
-    private boolean executed;
-    private boolean enabled;
     private boolean needsPermission;
-    private JobStatus jobStatus;
 
     public JobBuilder() {
     }
@@ -50,29 +43,21 @@ public class JobBuilder {
         return this;
     }
 
-    public JobBuilder transferredByInterface(boolean transferredByInterface) {
-        this.transferredByInterface = transferredByInterface;
-        return this;
-    }
-
-    public JobBuilder enabled(boolean enabled) {
-        this.enabled = enabled;
+    public JobBuilder needsPermission(boolean needsPermission) {
+        this.needsPermission = needsPermission;
         return this;
     }
 
 
     public Result<Job, JobError> build(Users user) {
         Job job = new Job();
-        job.setUuid(this.uuid);
         job.setJobType(this.jobType);
         job.setMailUsers(this.mailUsers);
-        job.setCreator(this.creator);
         job.setProponent(this.proponent);
         job.setExecuteAt(this.executeAt);
-        job.setExecuted(this.executed);
-        job.setEnabled(this.enabled);
         job.setCreator(user);
         job.setJobStatus(JobStatus.PENDING);
+        job.setNeedsPermission(this.needsPermission);
 
         Result<Job, JobError> correctResult = correctJobDTO(job);
 
@@ -84,11 +69,6 @@ public class JobBuilder {
     }
 
     private Result<Job, JobError> correctJobDTO(Job job) {
-        // first repair the stupid input
-        if (job.getMailUsers().size() >= 2) { // if more than 1 MailUser is affected by the job a permission is required
-            job.setNeedsPermission(true);
-            job.setEnabled(false);
-        }
 
         if (job.getProponent() != null) {
             job.setNeedsPermission(true);
@@ -103,6 +83,8 @@ public class JobBuilder {
         if (job.getCreator() == null || !job.getCreator().getProponent()) {
             return Result.error(new JobError("Es muss ein gültiger und ausreichend berechtigter Befürworter angegeben werden", JobErrors.INVALID_CONFIGURATION));
         }
+
+        job.setEnabled(job.getProponent() == null);
 
         return Result.success(job);
     }
