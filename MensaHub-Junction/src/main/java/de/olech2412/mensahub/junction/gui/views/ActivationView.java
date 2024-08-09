@@ -2,12 +2,11 @@ package de.olech2412.mensahub.junction.gui.views;
 
 import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.UI;
+import com.vaadin.flow.component.Unit;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
-import com.vaadin.flow.component.dependency.StyleSheet;
 import com.vaadin.flow.component.html.H3;
 import com.vaadin.flow.component.html.Paragraph;
-import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.notification.NotificationVariant;
@@ -18,27 +17,27 @@ import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
-import de.mekaso.vaadin.addon.compani.animation.Animation;
-import de.mekaso.vaadin.addon.compani.animation.AnimationBuilder;
-import de.mekaso.vaadin.addon.compani.animation.AnimationTypes;
-import de.mekaso.vaadin.addon.compani.effect.EntranceEffect;
-import de.mekaso.vaadin.addon.compani.effect.ExitEffect;
 import de.olech2412.mensahub.junction.email.Mailer;
 import de.olech2412.mensahub.junction.gui.components.own.Divider;
 import de.olech2412.mensahub.junction.gui.components.own.boxes.MealBox;
+import de.olech2412.mensahub.junction.gui.components.vaadin.notifications.NotificationFactory;
+import de.olech2412.mensahub.junction.gui.components.vaadin.notifications.types.NotificationType;
 import de.olech2412.mensahub.junction.jpa.repository.API_UserRepository;
 import de.olech2412.mensahub.junction.jpa.repository.ActivationCodeRepository;
 import de.olech2412.mensahub.junction.jpa.repository.DeactivationCodeRepository;
 import de.olech2412.mensahub.junction.jpa.repository.MailUserRepository;
+import de.olech2412.mensahub.junction.jpa.services.RatingService;
 import de.olech2412.mensahub.junction.jpa.services.meals.MealsService;
 import de.olech2412.mensahub.models.Meal;
+import de.olech2412.mensahub.models.Rating;
 import de.olech2412.mensahub.models.authentification.API_User;
 import de.olech2412.mensahub.models.authentification.ActivationCode;
 import de.olech2412.mensahub.models.authentification.MailUser;
+import de.olech2412.mensahub.models.result.Result;
+import de.olech2412.mensahub.models.result.errors.jpa.JPAError;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 import java.util.Map;
@@ -46,73 +45,178 @@ import java.util.Map;
 @Route("activate")
 @PageTitle("Aktivierung")
 @AnonymousAllowed
-@StyleSheet(Animation.STYLES)
 public class ActivationView extends VerticalLayout implements BeforeEnterObserver {
 
+    private final API_UserRepository apiUserRepository;
+    private final DeactivationCodeRepository deactivationCodeRepository;
+    private final Mailer mailer;
     private final ActivationCodeRepository activationCodeRepository;
     private final MailUserRepository mailUserRepository;
     private final MealsService mealsService;
-
-    @Autowired
-    API_UserRepository apiUserRepository;
-    @Autowired
-    DeactivationCodeRepository deactivationCodeRepository;
-    @Autowired
-    Mailer mailer;
-
+    private final RatingService ratingService;
     Logger logger = LoggerFactory.getLogger(ActivationView.class);
+    private int currentMealIndex = 0;
+    private List<Meal> meals;
+    private MealBox currentMealBox;
+    private MailUser mailUser;
+    private Button prevButton;
+    private Button nextButton;
 
-    public ActivationView(ActivationCodeRepository activationCodeRepository, MailUserRepository mailUserRepository, MealsService mealsService) {
+    private Text indexDisplay; // New Text component for index display
+
+    public ActivationView(ActivationCodeRepository activationCodeRepository, MailUserRepository mailUserRepository,
+                          MealsService mealsService, RatingService ratingService, API_UserRepository apiUserRepository, DeactivationCodeRepository deactivationCodeRepository, Mailer mailer) {
         this.activationCodeRepository = activationCodeRepository;
         this.mailUserRepository = mailUserRepository;
         this.mealsService = mealsService;
+        this.ratingService = ratingService;
+        this.apiUserRepository = apiUserRepository;
+        this.deactivationCodeRepository = deactivationCodeRepository;
+        this.mailer = mailer;
     }
 
     private void addUserMealsAndDivider(MailUser activatedUser) {
-        HorizontalLayout row2 = new HorizontalLayout();
-        add(row2);
-        Button startAnimation = new Button("Entrance Animation");
-        add(startAnimation);
-
-        Button fadeOutAnimation = new Button("Exit Animation");
-        add(fadeOutAnimation);
-
-        Paragraph label = new Paragraph("Willkommen bei MensaHub! Hier sind die Top 20 Gerichte der Mensen, die du abonniert hast:");
-
-        startAnimation.addClickListener(buttonClickEvent -> {
-            AnimationBuilder
-                    .createBuilderFor(label)
-                    .create(AnimationTypes.EntranceAnimation.class)
-                    .withEffect(EntranceEffect.fadeInRight)
-                    .register();
-            row2.add(label);
-        });
-        fadeOutAnimation.addClickListener(buttonClickEvent -> AnimationBuilder
-                .createBuilderFor(label)
-                .create(AnimationTypes.ExitAnimation.class)
-                .withEffect(ExitEffect.fadeOutLeft)
-                .remove());
-
-
         add(new Divider());
+        setAlignItems(Alignment.CENTER);
 
-        List<Meal> meals = mealsService.findTop20DistinctMealsExcludingGoudaForSubscribedMensa(activatedUser.getId());
+        meals = mealsService.findTop20DistinctMealsExcludingGoudaForSubscribedMensa(activatedUser.getId());
 
-        HorizontalLayout row = new HorizontalLayout();
-        row.setJustifyContentMode(JustifyContentMode.CENTER);
-        row.setWidthFull();
-        row.getStyle().set("flex-wrap", "wrap");
-        row.addClassName("meal-content");
-        row.addClassName("meal-row");
-
-
-        for (Meal meal : meals) {
-            MealBox mealBox = new MealBox(meal.getName(), meal.getDescription(), meal.getPrice(), meal.getAllergens(), meal.getCategory());
-            row.add(mealBox);
+        if (meals.isEmpty()) {
+            add(new Text("Keine Gerichte verfügbar."));
+            return;
         }
 
-        add(row);
+        // Initialize index display
+        indexDisplay = new Text("Gericht " + (currentMealIndex + 1) + " von " + meals.size());
+        HorizontalLayout indexLayout = new HorizontalLayout(indexDisplay);
+        indexLayout.setJustifyContentMode(JustifyContentMode.CENTER);
+        indexLayout.setWidthFull();
+        add(indexLayout);
+
+        // Create layout to hold meal and navigation buttons
+        HorizontalLayout mealLayout = new HorizontalLayout();
+        mealLayout.setWidthFull();
+        mealLayout.setJustifyContentMode(JustifyContentMode.CENTER);
+        mealLayout.setWidth(50, Unit.PERCENTAGE);
+
+        // Set the user for further rating logic
+        this.mailUser = activatedUser;
+
+        // Create and set up MealBox
+        currentMealBox = createMealBox(meals.get(currentMealIndex));
+
+        prevButton = new Button(VaadinIcon.ARROW_LEFT.create());
+        prevButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+        prevButton.addClickListener(e -> showPreviousMeal(mealLayout));
+        if (currentMealIndex == 0) {
+            prevButton.setEnabled(false);
+        }
+
+        nextButton = new Button(VaadinIcon.ARROW_RIGHT.create());
+        nextButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+        nextButton.addClickListener(e -> showNextMeal(mealLayout));
+        if (currentMealIndex == meals.size() - 1) {
+            nextButton.setEnabled(false);
+        }
+
+        mealLayout.add(prevButton, currentMealBox, nextButton);
+
+        add(mealLayout);
         logger.info("User activated Account successfully: {}", activatedUser.getEmail());
+    }
+
+    private MealBox createMealBox(Meal meal) {
+        MealBox mealBox = new MealBox(meal.getName(), meal.getDescription(), meal.getPrice(), meal.getAllergens(), meal.getCategory());
+
+        if (mailUser == null) {
+            mealBox.getRatingComponent().setEnabled(false);
+            mealBox.getRatingButton().setEnabled(false);
+        } else {
+            Result<List<Rating>, JPAError> ratings = ratingService.findAllByMailUserAndMealName(mailUser, meal.getName());
+
+            if (ratings.isSuccess()) {
+                List<Rating> ratingList = ratings.getData();
+                for (Rating rating : ratingList) {
+                    if (rating.getMealName().equals(meal.getName()) && rating.getMeal().getServingDate().equals(meal.getServingDate())
+                            && rating.getMeal().getMensa().getId().equals(meal.getMensa().getId())) {
+                        mealBox.getRatingButton().setEnabled(false);
+                        mealBox.getRatingComponent().setEnabled(false);
+                        mealBox.getRatingComponent().setRating(rating.getRating());
+                    }
+                }
+            } else {
+                NotificationFactory.create(NotificationType.ERROR, "Wir haben Schwierigkeiten, deine Ratings " +
+                        "abzurufen. Die Funktion ist daher deaktiviert.").open();
+            }
+
+            mealBox.getRatingButton().addClickListener(buttonClickEvent -> {
+                if (mealBox.getRatingComponent().getRating() != 0) {
+                    Rating rating = new Rating();
+                    rating.setMeal(meal);
+                    rating.setRating(mealBox.getRatingComponent().getRating());
+                    rating.setMealName(meal.getName());
+                    rating.setMailUser(mailUser);
+                    if (ratingService.saveRating(rating).isSuccess()) {
+                        NotificationFactory.create(NotificationType.SUCCESS, "Bewertung gespeichert!").open();
+                    } else {
+                        NotificationFactory.create(NotificationType.ERROR, "Fehler beim Speichern der Bewertung!").open();
+                    }
+                    mealBox.getRatingButton().setEnabled(false);
+                    mealBox.getRatingComponent().setEnabled(false);
+                    // if user rated all meals in mealList, show notification thanking the user but only if all meals were rated, not just if the user arrived at the last one
+                    Result<List<Rating>, JPAError> ratingsForNotification = ratingService.findAllByMailUser(mailUser);
+                    if (ratingsForNotification.isSuccess()) {
+                        List<Rating> ratingList = ratingsForNotification.getData();
+                        if (ratingList.size() >= meals.size()) {
+                            NotificationFactory.create(NotificationType.SUCCESS, "Vielen Dank für deine Bewertungen!").open();
+                        }
+                    }
+                }
+            });
+        }
+
+        mealBox.setWidth("50%");  // Set width of the MealBox to 50%
+        return mealBox;
+    }
+
+    private void showNextMeal(HorizontalLayout mealLayout) {
+        if (currentMealIndex < meals.size() - 1) {
+            currentMealIndex++;
+            updateMealBox(mealLayout);
+            updateIndexDisplay();// Update index display when showing the next meal
+            if (currentMealIndex == meals.size() - 1) {
+                nextButton.setEnabled(false);
+            }
+            if (!prevButton.isEnabled()) {
+                prevButton.setEnabled(true);
+            }
+        }
+    }
+
+    private void showPreviousMeal(HorizontalLayout mealLayout) {
+        if (currentMealIndex > 0) {
+            currentMealIndex--;
+            updateMealBox(mealLayout);
+            updateIndexDisplay(); // Update index display when showing the previous meal
+            if (currentMealIndex == 0) {
+                prevButton.setEnabled(false);
+            }
+            if (!nextButton.isEnabled()) {
+                nextButton.setEnabled(true);
+            }
+        }
+    }
+
+    private void updateMealBox(HorizontalLayout mealLayout) {
+        mealLayout.remove(currentMealBox);
+        currentMealBox = createMealBox(meals.get(currentMealIndex));
+        mealLayout.addComponentAtIndex(1, currentMealBox);  // Add MealBox back to the center position
+    }
+
+    private void updateIndexDisplay() {
+        if (indexDisplay != null) {
+            indexDisplay.setText("Gericht " + (currentMealIndex + 1) + " von " + meals.size());
+        }
     }
 
     @Override
@@ -125,7 +229,7 @@ public class ActivationView extends VerticalLayout implements BeforeEnterObserve
                 add(new Text("Dein Code ist ungültig :( - Wahrscheinlich hast du den Code bereits verwendet oder er existiert nicht."));
             } else {
                 if (apiUserRepository.findAPI_UserByActivationCode(activationCodeRepository.findByCode(code).get(0)).isPresent()) {
-                    handleAPIUserActivation(event, code);
+                    handleAPIUserActivation(code);
                 } else {
                     handleMailUserActivation(code);
                 }
@@ -136,7 +240,7 @@ public class ActivationView extends VerticalLayout implements BeforeEnterObserve
         }
     }
 
-    private void handleAPIUserActivation(BeforeEnterEvent event, String code) {
+    private void handleAPIUserActivation(String code) {
         API_User apiUser = apiUserRepository.findAPI_UserByActivationCode(activationCodeRepository.findByCode(code).get(0)).get();
 
         if (apiUser.getVerified_email()) {
@@ -171,19 +275,12 @@ public class ActivationView extends VerticalLayout implements BeforeEnterObserve
 
     private void addAdminReviewLayout(API_User apiUser, String code) {
         add(new H3("Hallo Admin! Prüfe die folgende Anfrage:"));
-        add(new Span(""));
         add(new Text("Nutzername: " + apiUser.getApiUsername()));
-        add(new Span(""));
         add(new Text("E-Mail: " + apiUser.getEmail()));
-        add(new Span(""));
         add(new Text("Erstellungsdatum: " + apiUser.getCreationDate()));
-        add(new Span(""));
         add(new Text("Beschreibung: " + apiUser.getDescription()));
-        add(new Span(""));
         add(new Text("Rolle: " + apiUser.getRole()));
-        add(new Span(""));
         add(new Text("E-Mail verifiziert: " + apiUser.getVerified_email()));
-        add(new Span(""));
         add(new Text("Durch Admin verifiziert: " + apiUser.getEnabledByAdmin()));
 
         Button accept = new Button("Anfrage bestätigen");
@@ -224,7 +321,7 @@ public class ActivationView extends VerticalLayout implements BeforeEnterObserve
                 logger.error("User tried to activate API-Account but: " + exception.getMessage());
             }
 
-            logger.info("API adminrequest declined for user: {}", apiUser.getEmail());
+            logger.info("API admin request declined for user: {}", apiUser.getEmail());
             Notification notification = new Notification("Ablehnung wurde gespeichert und der User informiert! Alle Daten des Nutzers werden gelöscht", 6000);
             notification.addThemeVariants(NotificationVariant.LUMO_ERROR);
             notification.open();
@@ -237,12 +334,14 @@ public class ActivationView extends VerticalLayout implements BeforeEnterObserve
 
     private void handleMailUserActivation(String code) {
         add(new Text("Freischaltung erfolgreich :). Du bist nun im Email-Verteiler."));
+        Paragraph info = new Paragraph("Bitte tue uns noch einen Gefallen und bewerte die folgenden Gerichte, damit wir dir bestimmte Gerichte aufgrund der Bewertungen der Community empfehlen können. Die Vorschläge kannst du dann im Speiseplan, als auch im Newsletter sehen.");
+        info.setWidth(50, Unit.PERCENTAGE);
+        add(info);
         MailUser activatedUser = mailUserRepository.findByActivationCode_Code(code);
-
-        // activatedUser.setActivationCode(null);
+        activatedUser.setActivationCode(null);
         activatedUser.setEnabled(true);
         mailUserRepository.save(activatedUser);
-        // activationCodeRepository.delete(activationCodeRepository.findByCode(code).get(0));
+        activationCodeRepository.delete(activationCodeRepository.findByCode(code).get(0));
         addUserMealsAndDivider(activatedUser);
     }
 }
