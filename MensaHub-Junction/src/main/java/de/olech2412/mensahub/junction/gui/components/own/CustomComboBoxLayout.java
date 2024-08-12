@@ -39,26 +39,30 @@ public class CustomComboBoxLayout extends VerticalLayout {
         textField.setWidth(100f, Unit.PERCENTAGE);
         textField.setClearButtonVisible(true);
         textField.addValueChangeListener(e -> {
-            Span filterBadge = createFilterBadge(e.getValue());
-            if(e.getValue() != null && !e.getValue().isEmpty() && !values.contains(e.getValue())) {
-                if(pattern == null){
-                    badges.add(filterBadge);
-                    values.add(e.getValue());
-                    textField.clear();
-                } else {
-                    pattern = Pattern.compile(pattern.pattern());
-                    if (pattern.matcher(e.getValue()).matches()) {
-                        badges.add(filterBadge);
-                        values.add(e.getValue());
-                        textField.clear();
-                    }
-                }
-            }
+            addNewItem(e.getValue());
         });
 
         add(textField, badges);
         setPadding(false);
         setSizeUndefined();
+    }
+
+    public void addNewItem(String item){
+        Span filterBadge = createFilterBadge(item);
+        if(item != null && !item.isEmpty() && !values.contains(item)) {
+            if(pattern == null){
+                badges.add(filterBadge);
+                values.add(item);
+                textField.clear();
+            } else {
+                pattern = Pattern.compile(pattern.pattern());
+                if (pattern.matcher(item).matches()) {
+                    badges.add(filterBadge);
+                    values.add(item);
+                    textField.clear();
+                }
+            }
+        }
     }
 
     private Span createFilterBadge(String input) {

@@ -1,10 +1,15 @@
 package de.olech2412.mensahub.junction.gui.components.vaadin.dialogs;
 
 import com.vaadin.flow.component.Unit;
+import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.combobox.MultiSelectComboBox;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.html.Paragraph;
+import com.vaadin.flow.component.icon.Icon;
+import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import de.olech2412.mensahub.junction.gui.components.own.CustomComboBoxLayout;
 import de.olech2412.mensahub.junction.gui.components.vaadin.layouts.generic.FooterButtonLayout;
@@ -41,10 +46,12 @@ public class PreferencesDialog extends Dialog {
 
         categories.setAllowCustomValue(false);
         categories.setWidth(100f, Unit.PERCENTAGE);
+        categories.setHelperText("Wähle Kategorien, für welche du keine Empfehlungen möchtest");
 
         allergens.setWidth(100f, Unit.PERCENTAGE);
         allergens.setAllowCustomValue(false);
         allergens.setClearButtonVisible(true);
+        allergens.setHelperText("Gib Allergene oder Unverträglichkeiten an, für welche du keine Empfehlungen möchtest");
 
         Result<List<String>, JPAError> categoriesResult = mealsService.findAllDistinctCategories();
         if (categoriesResult.isSuccess()){
@@ -60,8 +67,9 @@ public class PreferencesDialog extends Dialog {
             NotificationFactory.create(NotificationType.ERROR, "Die Allergene konnten nicht geladen werden, bitte versuche es erneut.").open();
         }
 
-        personalDislikes.setWidth(100f, Unit.PERCENTAGE);
+        personalDislikes.setWidth(90f, Unit.PERCENTAGE);
         personalDislikes.setPattern(Pattern.compile("^[a-zA-ZäöüÄÖÜß]{2,}(\\\\s[a-zA-ZäöüÄÖÜß]{2,})*$"));
+        personalDislikes.getTextField().setHelperText("Gib z.B. Zutaten wie \"Pilze\" an, für welche du keine Empfehlungen möchtest");
 
         footerButtonLayout.acceptButton.setText("Speichern");
 
@@ -75,7 +83,23 @@ public class PreferencesDialog extends Dialog {
             personalDislikes.clear();
         });
 
-        content.add(categories, allergens, personalDislikes, footerButtonLayout);
+        HorizontalLayout personalDislikesLayout = new HorizontalLayout();
+        personalDislikesLayout.setWidth(100f, Unit.PERCENTAGE);
+        Button enterButton = new Button(new Icon(VaadinIcon.ENTER_ARROW));
+        enterButton.setWidth(10f, Unit.PERCENTAGE);
+        enterButton.addThemeVariants(ButtonVariant.LUMO_ICON, ButtonVariant.LUMO_PRIMARY);
+        enterButton.setAriaLabel("Enter");
+        enterButton.getStyle().setMarginTop("30px");
+        personalDislikesLayout.add(personalDislikes, enterButton);
+        personalDislikesLayout.setVerticalComponentAlignment(FlexComponent.Alignment.BASELINE, personalDislikes.getTextField(), enterButton);
+
+
+        enterButton.addClickListener(buttonClickEvent -> {
+            if (personalDislikes.getTextField().isEmpty()) return;
+            personalDislikes.addNewItem(personalDislikes.getTextField().getValue());
+        });
+
+        content.add(categories, allergens, personalDislikesLayout, footerButtonLayout);
         Paragraph infoText = new Paragraph("Diese Daten kannst du freiwillig angeben. Die Daten werden lediglich dazu genutzt, " +
                 "die Empfehlungen für dich zu verbessern. Dies ist besonders wichtig, wenn du den Newsletter lediglich erhalten möchtest, " +
                 "wenn ein Gericht für dich empfohlen wird. Beachte bitte, dass trotz der Angaben, Empfehlungen berechnet werden können, die " +
