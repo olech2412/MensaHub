@@ -161,10 +161,12 @@ public class MailSettingsView extends Composite implements BeforeEnterObserver {
             preferencesDialog.open();
 
             preferencesDialog.getFooterButtonLayout().getAcceptButton().addClickListener(buttonClickEvent1 -> {
-                Preferences newPreferences = preferencesDialog.buildPreferences();
-                newPreferences.setId(existingPreferences.getId());
+                Preferences newPreferences = newPreferences = preferencesDialog.buildPreferences();
+                if (existingPreferences != null) {
+                    newPreferences.setId(existingPreferences.getId());
+                }
                 Result<Preferences, JPAError> saveResult = preferencesService.save(newPreferences);
-                if(saveResult.isSuccess()){
+                if (saveResult.isSuccess()) {
                     NotificationFactory.create(NotificationType.SUCCESS, "Präferenzen erfolgreich aktualisiert").open();
                     mailUser.setPreferences(saveResult.getData());
                 } else {
