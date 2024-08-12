@@ -25,11 +25,14 @@ import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.*;
 import de.olech2412.mensahub.junction.config.Config;
 import de.olech2412.mensahub.junction.email.Mailer;
+import de.olech2412.mensahub.junction.gui.components.vaadin.dialogs.PreferencesDialog;
 import de.olech2412.mensahub.junction.jpa.repository.ActivationCodeRepository;
 import de.olech2412.mensahub.junction.jpa.repository.DeactivationCodeRepository;
 import de.olech2412.mensahub.junction.jpa.services.MailUserService;
+import de.olech2412.mensahub.junction.jpa.services.meals.MealsService;
 import de.olech2412.mensahub.junction.jpa.services.mensen.MensaService;
 import de.olech2412.mensahub.models.Mensa;
+import de.olech2412.mensahub.models.Preferences;
 import de.olech2412.mensahub.models.authentification.ActivationCode;
 import de.olech2412.mensahub.models.authentification.DeactivationCode;
 import de.olech2412.mensahub.models.authentification.MailUser;
@@ -73,9 +76,13 @@ public class NewsletterView extends HorizontalLayout implements BeforeEnterObser
     private MailUserService mailUserService;
     private Checkbox wantUpdates;
 
+    private final MealsService mealsService;
 
-    public NewsletterView(MensaService mensaService) throws IOException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
+    private Preferences preferences;
+
+    public NewsletterView(MensaService mensaService, MealsService mealsService) throws IOException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
         this.mensaService = mensaService;
+        this.mealsService = mealsService;
 
         VerticalLayout mainLayout = init();
 
@@ -148,6 +155,17 @@ public class NewsletterView extends HorizontalLayout implements BeforeEnterObser
         });
         registerButton.addClickShortcut(Key.ENTER);
 
+
+
+        Button preferencesButton = new Button("Präferenzen angeben");
+        preferencesButton.getStyle().set("margin-top", "15px");
+        preferencesButton.setTooltipText("Hier kannst du Unverträglichkeiten, Ernährungsweisen sowie persönliche Vorlieben angeben");
+        PreferencesDialog preferencesDialog = new PreferencesDialog(mealsService);
+        preferencesButton.addClickListener(buttonClickEvent -> preferencesDialog.open());
+        preferencesDialog.getFooterButtonLayout().getAcceptButton().addClickListener(buttonClickEvent -> {
+            preferences = preferencesDialog.buildPreferences();
+        });
+
         H1 header = new H1(welcomeText);
         StreamResource logoStream = new StreamResource("MensaHub_logo.png", () -> getClass().getResourceAsStream("/static/img/MensaHub_logo.PNG"));
         Image logoImage = new Image(logoStream, "Logo");
@@ -158,7 +176,7 @@ public class NewsletterView extends HorizontalLayout implements BeforeEnterObser
         image.setSpacing(false);
 
         VerticalLayout mainLayout = new VerticalLayout(image, header); // the mainlayout is the layout of the whole page
-        FormLayout formLayout = new FormLayout(firstName, lastName, emailField, multiSelectComboBox);
+        FormLayout formLayout = new FormLayout(firstName, lastName, emailField, multiSelectComboBox, preferencesButton);
         VerticalLayout inputLayout = new VerticalLayout(formLayout, createDevInfoText(), createInfoText(),
                 registerButton); // the inputlayout is the layout of the input fields
 
@@ -253,7 +271,7 @@ public class NewsletterView extends HorizontalLayout implements BeforeEnterObser
                     if (mailUserService.findMailUserByEmail(email).isEmpty()) {
                         if (accept.getValue()) {
                             try {
-                                createRegistratedUser(email, firstname, lastname, mensa, wantUpdates.getValue());
+                                createRegistratedUser(email, firstname, lastname, mensa, wantUpdates.getValue(), preferences);
                                 Notification notification = new Notification("Deine E-Mail-Adresse wurde erfolgreich registriert!. Klicke auf den Link in deiner Bestätigungsmail", 6000);
                                 notification.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
                                 notification.open();
@@ -303,7 +321,7 @@ public class NewsletterView extends HorizontalLayout implements BeforeEnterObser
      *
      * @param email
      */
-    private void createRegistratedUser(String email, String firstname, String lastname, Set<Mensa> mensa, boolean wantUpdates) {
+    private void createRegistratedUser(String email, String firstname, String lastname, Set<Mensa> mensa, boolean wantUpdates, Preferences preferences) {
 
         try {
             ActivationCode activationCode = new ActivationCode(RandomStringUtils.randomAlphanumeric(32));
@@ -333,7 +351,7 @@ public class NewsletterView extends HorizontalLayout implements BeforeEnterObser
             mailUser.setActivationCode(activationCode);
             mailUser.setDeactivationCode(deactivationCode);
             mailUser.setWantsUpdate(wantUpdates);
-
+            mailUser.setPreferences(preferences);
             mailUser.setMensas(mensa);
 
             mailUserService.saveMailUser(mailUser); // save the user in the database, not enabled because he didn't verify the email

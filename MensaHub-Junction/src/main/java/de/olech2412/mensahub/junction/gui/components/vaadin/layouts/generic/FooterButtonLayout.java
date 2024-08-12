@@ -24,6 +24,8 @@ public class FooterButtonLayout extends VerticalLayout {
         HorizontalLayout buttonLayout = new HorizontalLayout(acceptButton, declineButton);
         buttonLayout.setWidthFull();
         buttonLayout.setSpacing(true);
+        buttonLayout.setAlignItems(Alignment.CENTER);
+        buttonLayout.setJustifyContentMode(JustifyContentMode.CENTER);
 
         add(new Divider(), buttonLayout);
 
@@ -32,6 +34,9 @@ public class FooterButtonLayout extends VerticalLayout {
 
         acceptButton.addFocusShortcut(Key.ENTER);
         declineButton.addFocusShortcut(Key.ENTER);
+
+        setAlignItems(Alignment.CENTER);
+        setJustifyContentMode(JustifyContentMode.CENTER);
     }
 
 }

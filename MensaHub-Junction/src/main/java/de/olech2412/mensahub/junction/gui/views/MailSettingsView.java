@@ -23,12 +23,15 @@ import com.vaadin.flow.server.auth.AnonymousAllowed;
 import de.olech2412.mensahub.junction.email.Mailer;
 import de.olech2412.mensahub.junction.gui.components.vaadin.datetimepicker.GermanDatePicker;
 import de.olech2412.mensahub.junction.gui.components.vaadin.dialogs.MailUserSetupDialog;
+import de.olech2412.mensahub.junction.gui.components.vaadin.dialogs.PreferencesDialog;
 import de.olech2412.mensahub.junction.jpa.repository.API_UserRepository;
 import de.olech2412.mensahub.junction.jpa.repository.ActivationCodeRepository;
 import de.olech2412.mensahub.junction.jpa.repository.DeactivationCodeRepository;
 import de.olech2412.mensahub.junction.jpa.repository.mensen.MensaRepository;
 import de.olech2412.mensahub.junction.jpa.services.MailUserService;
+import de.olech2412.mensahub.junction.jpa.services.meals.MealsService;
 import de.olech2412.mensahub.models.Mensa;
+import de.olech2412.mensahub.models.Preferences;
 import de.olech2412.mensahub.models.authentification.MailUser;
 import de.olech2412.mensahub.models.result.Result;
 import de.olech2412.mensahub.models.result.errors.jpa.JPAError;
@@ -57,16 +60,20 @@ public class MailSettingsView extends Composite implements BeforeEnterObserver {
     private final ActivationCodeRepository activationCodeRepository;
     private final VerticalLayout content = new VerticalLayout();
     private final MensaRepository mensaRepository;
+    private final MealsService mealsService;
     @Autowired
     API_UserRepository apiUserRepository;
     Logger logger = LoggerFactory.getLogger(MailSettingsView.class);
     private VerticalLayout layout;
 
-    public MailSettingsView(DeactivationCodeRepository deactivationCodeRepository, MailUserService mailUserService, ActivationCodeRepository activationCodeRepository, MensaRepository mensaRepository) {
+    public MailSettingsView(DeactivationCodeRepository deactivationCodeRepository, MailUserService mailUserService,
+                            ActivationCodeRepository activationCodeRepository, MensaRepository mensaRepository,
+                            MealsService mealsService) {
         this.deactivationCodeRepository = deactivationCodeRepository;
         this.mailUserService = mailUserService;
         this.activationCodeRepository = activationCodeRepository;
         this.mensaRepository = mensaRepository;
+        this.mealsService = mealsService;
     }
 
     @Override
@@ -137,6 +144,21 @@ public class MailSettingsView extends Composite implements BeforeEnterObserver {
         Button mailUserSettings = new Button("Einstellungen");
         mailUserSettings.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
         mailUserSettings.setIcon(VaadinIcon.COG.create());
+
+        Button preferences = new Button("Präferenzen bearbeiten");
+        preferences.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+        preferences.setIcon(VaadinIcon.CROSS_CUTLERY.create());
+
+        preferences.addClickListener(buttonClickEvent -> {
+            PreferencesDialog preferencesDialog = new PreferencesDialog(mealsService);
+            Preferences existingPreferences = mailUser.getPreferences();
+            preferencesDialog.setPreferences(existingPreferences);
+
+            preferencesDialog.getFooterButtonLayout().getAcceptButton().addClickListener(buttonClickEvent1 -> {
+                mailUser.setPreferences(preferencesDialog.buildPreferences());
+                mailUserService.saveMailUser(mailUser);
+            });
+        });
 
         List<Mensa> mensen = mensaRepository.findAll();
 
