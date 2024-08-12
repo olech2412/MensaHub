@@ -164,14 +164,19 @@ public class MailSettingsView extends Composite implements BeforeEnterObserver {
                 Preferences newPreferences = preferencesDialog.buildPreferences();
                 if (existingPreferences != null) {
                     newPreferences.setId(existingPreferences.getId());
-                }
-                Result<Preferences, JPAError> saveResult = preferencesService.save(newPreferences);
-                if (saveResult.isSuccess()) {
+                    Result<Preferences, JPAError> saveResult = preferencesService.save(newPreferences);
+                    if (saveResult.isSuccess()) {
+                        NotificationFactory.create(NotificationType.SUCCESS, "Präferenzen erfolgreich aktualisiert").open();
+                        mailUser.setPreferences(saveResult.getData());
+                    } else {
+                        NotificationFactory.create(NotificationType.ERROR, "Fehler beim speichern der Präferenzen").open();
+                    }
+                } else { // then the user has no preferences at this point
+                    mailUser.setPreferences(newPreferences);
+                    mailUserService.saveMailUser(mailUser);
                     NotificationFactory.create(NotificationType.SUCCESS, "Präferenzen erfolgreich aktualisiert").open();
-                    mailUser.setPreferences(saveResult.getData());
-                } else {
-                    NotificationFactory.create(NotificationType.ERROR, "Fehler beim speichern der Präferenzen").open();
                 }
+
             });
         });
 
