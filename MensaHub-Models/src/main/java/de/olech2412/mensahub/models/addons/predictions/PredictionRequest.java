@@ -8,10 +8,12 @@ import lombok.Setter;
 public class PredictionRequest {
     private int userId;
     private String meal;
+    private int mealId;
 
-    public PredictionRequest(int userId, String meal) {
+    public PredictionRequest(int userId, String meal, int mealId) {
         this.userId = userId;
         this.meal = meal;
+        this.mealId = mealId;
     }
 
     @Override
@@ -19,6 +21,7 @@ public class PredictionRequest {
         return "PredictionRequest{" +
                 "userId=" + userId +
                 ", meal='" + meal + '\'' +
+                ", mealId=" + mealId +
                 '}';
     }
 }
