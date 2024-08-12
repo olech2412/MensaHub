@@ -159,6 +159,7 @@ public class NewsletterView extends HorizontalLayout implements BeforeEnterObser
 
         Button preferencesButton = new Button("Präferenzen angeben");
         preferencesButton.getStyle().set("margin-top", "15px");
+        preferencesButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
         preferencesButton.setTooltipText("Hier kannst du Unverträglichkeiten, Ernährungsweisen sowie persönliche Vorlieben angeben");
         PreferencesDialog preferencesDialog = new PreferencesDialog(mealsService);
         preferencesButton.addClickListener(buttonClickEvent -> preferencesDialog.open());

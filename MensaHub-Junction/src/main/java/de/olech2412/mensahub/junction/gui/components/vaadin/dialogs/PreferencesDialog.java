@@ -107,9 +107,9 @@ public class PreferencesDialog extends Dialog {
         if(preferences == null){
             return;
         }
-        categories.setValue(preferences.getPreferredCategories());
-        allergens.setValue(preferences.getAvoidedAllergens());
-        personalDislikes.setItems(preferences.getDislikedIngredients());
+        if (preferences.getPreferredCategories() != null) categories.setValue(preferences.getPreferredCategories());
+        if(preferences.getAvoidedAllergens() != null) allergens.setValue(preferences.getAvoidedAllergens());
+        if(preferences.getDislikedIngredients() != null) personalDislikes.setItems(preferences.getDislikedIngredients());
     }
 
 }

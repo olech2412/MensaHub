@@ -8,6 +8,7 @@ import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
+import de.olech2412.mensahub.models.Preferences;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -93,7 +94,9 @@ public class CustomComboBoxLayout extends VerticalLayout {
 
     public void setItems(List<String> items){
         for (String item : items){
-            createFilterBadge(item);
+            Span badge = createFilterBadge(item);
+            badges.add(badge);
+            values.add(item);
         }
     }
 

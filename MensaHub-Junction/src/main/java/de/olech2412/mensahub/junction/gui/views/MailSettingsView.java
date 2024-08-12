@@ -24,11 +24,14 @@ import de.olech2412.mensahub.junction.email.Mailer;
 import de.olech2412.mensahub.junction.gui.components.vaadin.datetimepicker.GermanDatePicker;
 import de.olech2412.mensahub.junction.gui.components.vaadin.dialogs.MailUserSetupDialog;
 import de.olech2412.mensahub.junction.gui.components.vaadin.dialogs.PreferencesDialog;
+import de.olech2412.mensahub.junction.gui.components.vaadin.notifications.NotificationFactory;
+import de.olech2412.mensahub.junction.gui.components.vaadin.notifications.types.NotificationType;
 import de.olech2412.mensahub.junction.jpa.repository.API_UserRepository;
 import de.olech2412.mensahub.junction.jpa.repository.ActivationCodeRepository;
 import de.olech2412.mensahub.junction.jpa.repository.DeactivationCodeRepository;
 import de.olech2412.mensahub.junction.jpa.repository.mensen.MensaRepository;
 import de.olech2412.mensahub.junction.jpa.services.MailUserService;
+import de.olech2412.mensahub.junction.jpa.services.PreferencesService;
 import de.olech2412.mensahub.junction.jpa.services.meals.MealsService;
 import de.olech2412.mensahub.models.Mensa;
 import de.olech2412.mensahub.models.Preferences;
@@ -65,6 +68,8 @@ public class MailSettingsView extends Composite implements BeforeEnterObserver {
     API_UserRepository apiUserRepository;
     Logger logger = LoggerFactory.getLogger(MailSettingsView.class);
     private VerticalLayout layout;
+    @Autowired
+    private PreferencesService preferencesService;
 
     public MailSettingsView(DeactivationCodeRepository deactivationCodeRepository, MailUserService mailUserService,
                             ActivationCodeRepository activationCodeRepository, MensaRepository mensaRepository,
@@ -153,10 +158,18 @@ public class MailSettingsView extends Composite implements BeforeEnterObserver {
             PreferencesDialog preferencesDialog = new PreferencesDialog(mealsService);
             Preferences existingPreferences = mailUser.getPreferences();
             preferencesDialog.setPreferences(existingPreferences);
+            preferencesDialog.open();
 
             preferencesDialog.getFooterButtonLayout().getAcceptButton().addClickListener(buttonClickEvent1 -> {
-                mailUser.setPreferences(preferencesDialog.buildPreferences());
-                mailUserService.saveMailUser(mailUser);
+                Preferences newPreferences = preferencesDialog.buildPreferences();
+                newPreferences.setId(existingPreferences.getId());
+                Result<Preferences, JPAError> saveResult = preferencesService.save(newPreferences);
+                if(saveResult.isSuccess()){
+                    NotificationFactory.create(NotificationType.SUCCESS, "Präferenzen erfolgreich aktualisiert").open();
+                    mailUser.setPreferences(saveResult.getData());
+                } else {
+                    NotificationFactory.create(NotificationType.ERROR, "Fehler beim speichern der Präferenzen").open();
+                }
             });
         });
 
@@ -184,7 +197,7 @@ public class MailSettingsView extends Composite implements BeforeEnterObserver {
             mailUserSetupDialog.open();
         });
 
-        FormLayout formLayout = new FormLayout(headlineDelete, explanationDelete, deactivate, deactivateForTime, mailUserSettings);
+        FormLayout formLayout = new FormLayout(headlineDelete, explanationDelete, deactivate, deactivateForTime, mailUserSettings, preferences);
 
         content.add(formLayout);
         layout.add(content);
