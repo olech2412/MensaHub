@@ -161,7 +161,7 @@ public class MailSettingsView extends Composite implements BeforeEnterObserver {
             preferencesDialog.open();
 
             preferencesDialog.getFooterButtonLayout().getAcceptButton().addClickListener(buttonClickEvent1 -> {
-                Preferences newPreferences = newPreferences = preferencesDialog.buildPreferences();
+                Preferences newPreferences = preferencesDialog.buildPreferences();
                 if (existingPreferences != null) {
                     newPreferences.setId(existingPreferences.getId());
                 }
