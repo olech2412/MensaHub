@@ -122,14 +122,14 @@ public class MealPlan extends VerticalLayout implements BeforeEnterObserver {
         mensaComboBox.setWidth(60f, Unit.PERCENTAGE);
         mensaComboBox.setMinWidth(320f, Unit.PIXELS);
         datePicker.setWidth(40f, Unit.PERCENTAGE);
-        datePicker.setMinWidth(320f, Unit.PIXELS);
+        datePicker.setMinWidth(220, Unit.PIXELS);
 
         VerticalLayout headerContent = new VerticalLayout();
         headerContent.setWidth(100f, Unit.PERCENTAGE);
         headerContent.setAlignItems(Alignment.CENTER);
         headerContent.setJustifyContentMode(JustifyContentMode.CENTER);
         headerContent.getStyle().set("text-align", "center");
-        headerContent.add(new H2("Wähle deine Mensa aus, sowie das gewünschte Datum"));
+        headerContent.add(new H2("MensaHub-Speiseplan"));
         headerContent.add(headerComboboxDatePickerButtonsLayout);
 
         pageSelHeader.add(headerContent);
