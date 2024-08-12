@@ -10,11 +10,11 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import lombok.Getter;
 
 @Getter
-public class InfoWithAnchorNotification2 extends MensaHubNotification {
+public class PermanentNotificationMiddleScreenPosition extends MensaHubNotification {
 
     Button closeButton;
 
-    public InfoWithAnchorNotification2(String message) {
+    public PermanentNotificationMiddleScreenPosition(String message) {
         super(message);
 
         Div text = new Div(new Text(message));
