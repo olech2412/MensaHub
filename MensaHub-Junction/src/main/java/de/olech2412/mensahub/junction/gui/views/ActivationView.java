@@ -61,6 +61,7 @@ public class ActivationView extends VerticalLayout implements BeforeEnterObserve
     private MailUser mailUser;
     private Button prevButton;
     private Button nextButton;
+    private String activationCode;
 
     private Text indexDisplay; // New Text component for index display
 
@@ -78,6 +79,7 @@ public class ActivationView extends VerticalLayout implements BeforeEnterObserve
     private void addUserMealsAndDivider(MailUser activatedUser) {
         add(new Divider());
         setAlignItems(Alignment.CENTER);
+        HorizontalLayout mealLayout = new HorizontalLayout();
 
         meals = mealsService.findTop20DistinctMealsExcludingGoudaForSubscribedMensa(activatedUser.getId());
 
@@ -85,25 +87,6 @@ public class ActivationView extends VerticalLayout implements BeforeEnterObserve
             add(new Text("Keine Gerichte verfügbar."));
             return;
         }
-
-        // Initialize index display
-        indexDisplay = new Text("Gericht " + (currentMealIndex + 1) + " von " + meals.size());
-        HorizontalLayout indexLayout = new HorizontalLayout(indexDisplay);
-        indexLayout.setJustifyContentMode(JustifyContentMode.CENTER);
-        indexLayout.setWidthFull();
-        add(indexLayout);
-
-        // Create layout to hold meal and navigation buttons
-        HorizontalLayout mealLayout = new HorizontalLayout();
-        mealLayout.setWidthFull();
-        mealLayout.setJustifyContentMode(JustifyContentMode.CENTER);
-        mealLayout.setWidth(50, Unit.PERCENTAGE);
-
-        // Set the user for further rating logic
-        this.mailUser = activatedUser;
-
-        // Create and set up MealBox
-        currentMealBox = createMealBox(meals.get(currentMealIndex));
 
         prevButton = new Button(VaadinIcon.ARROW_LEFT.create());
         prevButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
@@ -118,8 +101,27 @@ public class ActivationView extends VerticalLayout implements BeforeEnterObserve
         if (currentMealIndex == meals.size() - 1) {
             nextButton.setEnabled(false);
         }
+        // Initialize index display
+        indexDisplay = new Text("Gericht " + (currentMealIndex + 1) + " von " + meals.size());
+        HorizontalLayout indexLayout = new HorizontalLayout(prevButton, indexDisplay, nextButton);
+        indexLayout.setJustifyContentMode(JustifyContentMode.CENTER);
+        indexLayout.setAlignItems(Alignment.CENTER);
+        indexLayout.setWidthFull();
+        add(indexLayout);
 
-        mealLayout.add(prevButton, currentMealBox, nextButton);
+        // Create layout to hold meal and navigation buttons
+        mealLayout.setWidthFull();
+        mealLayout.setJustifyContentMode(JustifyContentMode.CENTER);
+        mealLayout.setWidth(50, Unit.PERCENTAGE);
+
+        // Set the user for further rating logic
+        this.mailUser = activatedUser;
+
+        // Create and set up MealBox
+        currentMealBox = createMealBox(meals.get(currentMealIndex));
+
+
+        mealLayout.add(currentMealBox);
 
         add(mealLayout);
         logger.info("User activated Account successfully: {}", activatedUser.getEmail());
@@ -163,12 +165,17 @@ public class ActivationView extends VerticalLayout implements BeforeEnterObserve
                     }
                     mealBox.getRatingButton().setEnabled(false);
                     mealBox.getRatingComponent().setEnabled(false);
-                    // if user rated all meals in mealList, show notification thanking the user but only if all meals were rated, not just if the user arrived at the last one
+
                     Result<List<Rating>, JPAError> ratingsForNotification = ratingService.findAllByMailUser(mailUser);
+                    System.out.println("activationcode: " + mailUser.getActivationCode().getCode());
                     if (ratingsForNotification.isSuccess()) {
                         List<Rating> ratingList = ratingsForNotification.getData();
                         if (ratingList.size() >= meals.size()) {
                             NotificationFactory.create(NotificationType.SUCCESS, "Vielen Dank für deine Bewertungen!").open();
+                            mailUser.setActivationCode(null);
+                            System.out.println(activationCode);
+                            mailUserRepository.save(mailUser);
+                            activationCodeRepository.delete(activationCodeRepository.findByCode(activationCode).get(0));
                         }
                     }
                 }
@@ -210,7 +217,7 @@ public class ActivationView extends VerticalLayout implements BeforeEnterObserve
     private void updateMealBox(HorizontalLayout mealLayout) {
         mealLayout.remove(currentMealBox);
         currentMealBox = createMealBox(meals.get(currentMealIndex));
-        mealLayout.addComponentAtIndex(1, currentMealBox);  // Add MealBox back to the center position
+        mealLayout.add(currentMealBox);  // Add MealBox back to the center position
     }
 
     private void updateIndexDisplay() {
@@ -223,15 +230,15 @@ public class ActivationView extends VerticalLayout implements BeforeEnterObserve
     public void beforeEnter(BeforeEnterEvent event) {
         try {
             Map<String, List<String>> params = event.getLocation().getQueryParameters().getParameters();
-            String code = params.get("code").get(0);
+            activationCode = params.get("code").get(0);
 
-            if (activationCodeRepository.findByCode(code).isEmpty()) {
+            if (activationCodeRepository.findByCode(activationCode).isEmpty()) {
                 add(new Text("Dein Code ist ungültig :( - Wahrscheinlich hast du den Code bereits verwendet oder er existiert nicht."));
             } else {
-                if (apiUserRepository.findAPI_UserByActivationCode(activationCodeRepository.findByCode(code).get(0)).isPresent()) {
-                    handleAPIUserActivation(code);
+                if (apiUserRepository.findAPI_UserByActivationCode(activationCodeRepository.findByCode(activationCode).get(0)).isPresent()) {
+                    handleAPIUserActivation(activationCode);
                 } else {
-                    handleMailUserActivation(code);
+                    handleMailUserActivation(activationCode);
                 }
             }
         } catch (NullPointerException nullPointerException) {
@@ -240,17 +247,17 @@ public class ActivationView extends VerticalLayout implements BeforeEnterObserve
         }
     }
 
-    private void handleAPIUserActivation(String code) {
-        API_User apiUser = apiUserRepository.findAPI_UserByActivationCode(activationCodeRepository.findByCode(code).get(0)).get();
+    private void handleAPIUserActivation(String activationCode) {
+        API_User apiUser = apiUserRepository.findAPI_UserByActivationCode(activationCodeRepository.findByCode(activationCode).get(0)).get();
 
         if (apiUser.getVerified_email()) {
-            addAdminReviewLayout(apiUser, code);
+            addAdminReviewLayout(apiUser, activationCode);
         } else {
-            activateAPIUser(apiUser, code);
+            activateAPIUser(apiUser, activationCode);
         }
     }
 
-    private void activateAPIUser(API_User apiUser, String code) {
+    private void activateAPIUser(API_User apiUser, String activationCode) {
         add(new Text("Freischaltung erfolgreich :). Du hast deine E-Mail erfolgreich verifiziert und kannst dich somit in der Webanwendung mit deinem Account anmelden."));
         add(new Text("Im nächsten Schritt prüft der Administrator deine Anfrage"));
 
@@ -261,7 +268,7 @@ public class ActivationView extends VerticalLayout implements BeforeEnterObserve
         apiUser.setVerified_email(true);
         apiUserRepository.save(apiUser);
 
-        activationCodeRepository.delete(activationCodeRepository.findByCode(code).get(0));
+        activationCodeRepository.delete(activationCodeRepository.findByCode(activationCode).get(0));
         logger.info("User activated API-Account successfully: {} admin review required", apiUser.getEmail());
 
         try {
@@ -273,7 +280,7 @@ public class ActivationView extends VerticalLayout implements BeforeEnterObserve
         logger.info("API admin-request sent for user: {}", apiUser.getEmail());
     }
 
-    private void addAdminReviewLayout(API_User apiUser, String code) {
+    private void addAdminReviewLayout(API_User apiUser, String activationCode) {
         add(new H3("Hallo Admin! Prüfe die folgende Anfrage:"));
         add(new Text("Nutzername: " + apiUser.getApiUsername()));
         add(new Text("E-Mail: " + apiUser.getEmail()));
@@ -293,7 +300,7 @@ public class ActivationView extends VerticalLayout implements BeforeEnterObserve
             apiUser.setEnabledByAdmin(true);
             apiUser.setActivationCode(null);
             apiUserRepository.save(apiUser);
-            activationCodeRepository.delete(activationCodeRepository.findByCode(code).get(0));
+            activationCodeRepository.delete(activationCodeRepository.findByCode(activationCode).get(0));
 
             try {
                 mailer.sendAPIAdminRequestSuccess(apiUser.getApiUsername(), apiUser.getEmail(), apiUser.getDeactivationCode().getCode());
@@ -312,7 +319,7 @@ public class ActivationView extends VerticalLayout implements BeforeEnterObserve
         decline.addThemeVariants(ButtonVariant.LUMO_ERROR, ButtonVariant.LUMO_PRIMARY);
         decline.addClickListener(buttonClickEvent -> {
             apiUserRepository.delete(apiUser);
-            activationCodeRepository.delete(activationCodeRepository.findByCode(code).get(0));
+            activationCodeRepository.delete(activationCodeRepository.findByCode(activationCode).get(0));
             deactivationCodeRepository.delete(apiUser.getDeactivationCode());
 
             try {
@@ -332,16 +339,13 @@ public class ActivationView extends VerticalLayout implements BeforeEnterObserve
         add(new HorizontalLayout(accept, decline));
     }
 
-    private void handleMailUserActivation(String code) {
+    private void handleMailUserActivation(String activationCode) {
         add(new Text("Freischaltung erfolgreich :). Du bist nun im Email-Verteiler."));
         Paragraph info = new Paragraph("Bitte tue uns noch einen Gefallen und bewerte die folgenden Gerichte, damit wir dir bestimmte Gerichte aufgrund der Bewertungen der Community empfehlen können. Die Vorschläge kannst du dann im Speiseplan, als auch im Newsletter sehen.");
         info.setWidth(50, Unit.PERCENTAGE);
         add(info);
-        MailUser activatedUser = mailUserRepository.findByActivationCode_Code(code);
-        activatedUser.setActivationCode(null);
+        MailUser activatedUser = mailUserRepository.findByActivationCode_Code(activationCode);
         activatedUser.setEnabled(true);
-        mailUserRepository.save(activatedUser);
-        activationCodeRepository.delete(activationCodeRepository.findByCode(code).get(0));
         addUserMealsAndDivider(activatedUser);
     }
 }
