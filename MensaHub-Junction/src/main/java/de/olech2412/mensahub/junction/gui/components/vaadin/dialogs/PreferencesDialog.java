@@ -3,13 +3,13 @@ package de.olech2412.mensahub.junction.gui.components.vaadin.dialogs;
 import com.vaadin.flow.component.Unit;
 import com.vaadin.flow.component.combobox.MultiSelectComboBox;
 import com.vaadin.flow.component.dialog.Dialog;
+import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import de.olech2412.mensahub.junction.gui.components.own.CustomComboBoxLayout;
 import de.olech2412.mensahub.junction.gui.components.vaadin.layouts.generic.FooterButtonLayout;
 import de.olech2412.mensahub.junction.gui.components.vaadin.notifications.NotificationFactory;
 import de.olech2412.mensahub.junction.gui.components.vaadin.notifications.types.NotificationType;
-import de.olech2412.mensahub.junction.jpa.services.MailUserService;
 import de.olech2412.mensahub.junction.jpa.services.meals.MealsService;
 import de.olech2412.mensahub.models.Preferences;
 import de.olech2412.mensahub.models.result.Result;
@@ -76,7 +76,14 @@ public class PreferencesDialog extends Dialog {
         });
 
         content.add(categories, allergens, personalDislikes, footerButtonLayout);
-        add(content);
+        Paragraph infoText = new Paragraph("Diese Daten kannst du freiwillig angeben. Die Daten werden lediglich dazu genutzt, " +
+                "die Empfehlungen für dich zu verbessern. Dies ist besonders wichtig, wenn du den Newsletter lediglich erhalten möchtest, " +
+                "wenn ein Gericht für dich empfohlen wird. Beachte bitte, dass trotz der Angaben, Empfehlungen berechnet werden können, die " +
+                "dir nicht gefallen, oder gegen deine angegebenen Präferenzen verstoßen. Besonders beim Thema Allergene und Unverträglichkeiten " +
+                "solltest du immer bei der Mensa vor Ort nachfragen, falls du dir unsicher bist.");
+        add(infoText, content);
+        setWidth(50f, Unit.PERCENTAGE);
+        setMinWidth(350, Unit.PIXELS);
     }
 
     public Preferences buildPreferences(){

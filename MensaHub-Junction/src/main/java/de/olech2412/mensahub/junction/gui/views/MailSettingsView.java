@@ -179,22 +179,16 @@ public class MailSettingsView extends Composite implements BeforeEnterObserver {
 
         mailUserSettings.addClickListener(buttonClickEvent -> {
             MailUserSetupDialog mailUserSetupDialog = new MailUserSetupDialog(mailUser, mensen);
-            mailUserSetupDialog.getSaveButton().addClickListener(saveEvent -> {
+            mailUserSetupDialog.getFooterButtonLayout().getAcceptButton().addClickListener(saveEvent -> {
                 if (mailUserSetupDialog.getMensaComboBox().isEmpty() || mailUserSetupDialog.getMensaComboBox().isInvalid()) {
-                    Notification errorNotification = new Notification("Bitte wähle gültige Daten aus", 3000);
-                    errorNotification.addThemeVariants(NotificationVariant.LUMO_ERROR);
-                    errorNotification.setPosition(Notification.Position.BOTTOM_START);
-                    errorNotification.open();
+                    NotificationFactory.create(NotificationType.ERROR, "Bitte wähle gültige Daten aus").open();
                     return;
                 }
                 mailUser.setWantsUpdate(mailUserSetupDialog.getWantsUpdateCheckbox().getValue());
                 mailUser.setMensas(mailUserSetupDialog.getMensaComboBox().getValue());
 
                 mailUserService.saveMailUser(mailUser);
-                Notification successNotification = new Notification("Änderungen wurden erfolgreich gespeichert", 3000);
-                successNotification.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
-                successNotification.setPosition(Notification.Position.BOTTOM_START);
-                successNotification.open();
+                NotificationFactory.create(NotificationType.SUCCESS, "Änderungen wurden erfolgreich gespeichert").open();
             });
             mailUserSetupDialog.open();
         });
@@ -216,10 +210,7 @@ public class MailSettingsView extends Composite implements BeforeEnterObserver {
                 mailUser.setEnabled(true);
                 mailUser.setDeactviatedUntil(null);
                 mailUserService.saveMailUser(mailUser);
-                Notification notification = new Notification("Du hast deinen Account erfolgreich wieder freigeschaltet.", 3000);
-                notification.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
-                notification.setPosition(Notification.Position.BOTTOM_START);
-                notification.open();
+                NotificationFactory.create(NotificationType.SUCCESS, "Du hast deinen Account erfolgreich wieder freigeschaltet").open();
             });
         }
 
@@ -277,10 +268,7 @@ public class MailSettingsView extends Composite implements BeforeEnterObserver {
                 mailUser.setDeactviatedUntil(datePicker.getValue());
                 mailUserService.saveMailUser(mailUser);
 
-                Notification notification = new Notification("Du wurdest erfolgreich temporär deaktiviert. Alle wichtige Informationen senden wir dir per Mail zu.", 3000);
-                notification.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
-                notification.setPosition(Notification.Position.BOTTOM_START);
-                notification.open();
+                NotificationFactory.create(NotificationType.SUCCESS, "Du wurdest erfolgreich temporär deaktiviert. Alle wichtige Informationen senden wir dir per Mail zu").open();
                 Mailer mailer = null;
                 try {
                     mailer = new Mailer();
@@ -292,19 +280,12 @@ public class MailSettingsView extends Composite implements BeforeEnterObserver {
                     mailer.sendTemporaryDeactivationEmail(mailUser.getFirstname(), mailUser.getEmail(), mailUser.getDeactivationCode().getCode(), mailUser.getDeactviatedUntil());
                 } catch (Exception exception) {
                     logger.error("Error while sending deactivation email: " + exception.getMessage());
-                    Notification notification_error_mail = new Notification("Es ist ein Fehler beim Versenden der Email aufgetreten. Bitte kontaktiere den Administrator", 3000);
-                    notification_error_mail.addThemeVariants(NotificationVariant.LUMO_ERROR);
-                    notification_error_mail.setPosition(Notification.Position.BOTTOM_START);
-                    notification_error_mail.open();
+                    NotificationFactory.create(NotificationType.ERROR, "Es ist ein Fehler beim Versenden der Email aufgetreten. Bitte kontaktiere den Administrator").open();
                 }
             } else {
                 datePicker.setInvalid(true);
                 datePicker.setErrorMessage("Bitte wähle ein Datum aus");
-                Notification notification = new Notification("Bitte wähle ein Datum aus", 3000);
-                notification.addThemeVariants(NotificationVariant.LUMO_ERROR);
-                notification.setPosition(Notification.Position.BOTTOM_START);
-                notification.open();
-
+                NotificationFactory.create(NotificationType.ERROR, "Bitte wähle ein Datum aus").open();
             }
         });
 
@@ -335,10 +316,7 @@ public class MailSettingsView extends Composite implements BeforeEnterObserver {
             logger.error("Error while sending deactivation email: " + exception.getMessage());
         }
         logger.info("User deactivated Account successfully");
-        Notification notification = new Notification("Du hast deinen Account und alle zugehörigen Daten erfolgreich gelöscht!", 3000);
-        notification.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
-        notification.setPosition(Notification.Position.BOTTOM_START);
-        notification.open();
+        NotificationFactory.create(NotificationType.SUCCESS, "Du hast deinen Account und alle zugehörigen Daten erfolgreich gelöscht!").open();
     }
 
     @Override
