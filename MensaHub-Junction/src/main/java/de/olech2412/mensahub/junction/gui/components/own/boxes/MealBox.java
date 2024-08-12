@@ -28,9 +28,12 @@ public class MealBox extends VerticalLayout {
 
     String mealName;
 
-    public MealBox(String mealName, String description, String price, String allergens, String category) {
+    int mealId;
+
+    public MealBox(String mealName, String description, String price, String allergens, String category, int mealId) {
         addClassName("meal-box");
         this.mealName = mealName;
+        this.mealId = mealId;
 
         H4 h4 = new H4(mealName);
         h4.addClassName("meal-box-title");
@@ -72,7 +75,7 @@ public class MealBox extends VerticalLayout {
         long predictionScore = Math.round(predictionResult.getPredictedRating());
         recommendationBadge.setText("Empfehlung: " + predictionScore + "/5" + " | " + predictionResult.getTrustScore());
         recommendationBadge.addClassName("prediction");
-        Tooltip tooltip = Tooltip.forComponent(recommendationBadge) // important, dont remove!
+        Tooltip tooltip = Tooltip.forComponent(recommendationBadge)
                 .withText("Diese Angaben wurden für dich persönlich auf Grundlage deiner und den Bewertungen anderer Nutzer für dich berechnet. " +
                         "Die Angabe der Genauigkeit (" + predictionResult.getTrustScore() + ")" + " gibt an, wie wahrscheinlich die Prognose ist.")
                 .withPosition(Tooltip.TooltipPosition.TOP_START);

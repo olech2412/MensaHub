@@ -138,7 +138,7 @@
     letter-spacing: 0.5px;
     background: linear-gradient(120deg, #005fff, #005fff, #f305fb, #005fff, #005fff);
     background-size: 200% 200%;
-    animation: shimmer-animation 15s both linear;
+    animation: shimmer-animation 20s linear infinite;
     padding: 5px 10px;
     border-radius: 5px;
     transition: transform 0.3s ease;

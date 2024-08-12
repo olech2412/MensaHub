@@ -1,7 +1,5 @@
 package de.olech2412.mensahub.junction.gui.views;
 
-import com.vaadin.flow.component.AbstractField;
-import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.Unit;
 import com.vaadin.flow.component.combobox.ComboBox;
@@ -9,7 +7,10 @@ import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-import com.vaadin.flow.router.*;
+import com.vaadin.flow.router.BeforeEnterEvent;
+import com.vaadin.flow.router.BeforeEnterObserver;
+import com.vaadin.flow.router.PageTitle;
+import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
 import de.olech2412.mensahub.APIConfiguration;
 import de.olech2412.mensahub.CollaborativeFilteringAPIAdapter;
@@ -45,8 +46,10 @@ import java.io.IOException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 @Route("mealPlan")
 @PageTitle("Speiseplan")
@@ -131,8 +134,9 @@ public class MealPlan extends VerticalLayout implements BeforeEnterObserver {
 
     /**
      * Is accessed by the datepicker and mensaCombox and should build the view with the given parameters
+     *
      * @param servingDate the serving date of the meals
-     * @param mensa the mensa where the food is served
+     * @param mensa       the mensa where the food is served
      */
     public void buildMealPlan(LocalDate servingDate, Mensa mensa) {
         row.removeAll();
@@ -165,7 +169,7 @@ public class MealPlan extends VerticalLayout implements BeforeEnterObserver {
     private void updateRows(List<Meal> meals) throws IOException {
         List<MealBox> mealBoxes = new ArrayList<>();
         for (Meal meal : meals) {
-            MealBox mealBox = new MealBox(meal.getName(), meal.getDescription(), meal.getPrice(), meal.getAllergens(), meal.getCategory());
+            MealBox mealBox = new MealBox(meal.getName(), meal.getDescription(), meal.getPrice(), meal.getAllergens(), meal.getCategory(), meal.getId().intValue());
             if (!isUserIdentified()) {
                 mealBox.getRatingComponent().setEnabled(false);
                 mealBox.getRatingButton().setEnabled(false);
@@ -204,15 +208,12 @@ public class MealPlan extends VerticalLayout implements BeforeEnterObserver {
             mealBoxes.add(mealBox);
         }
 
-        UI ui = UI.getCurrent();
-        new Thread(() -> { // execute the request to collaborative filtering api async because we don't want to fuck up the user
-            try {
-                addRecommendationScore(mealBoxes, ui);
-            } catch (IOException | NoSuchPaddingException | IllegalBlockSizeException | NoSuchAlgorithmException |
-                     BadPaddingException | InvalidKeyException e) {
-                log.error("Error while adding recommendation scores", e);
-            }
-        }).start();
+        try {
+            addRecommendationScore(mealBoxes);
+        } catch (IOException | NoSuchPaddingException | IllegalBlockSizeException | NoSuchAlgorithmException |
+                 BadPaddingException | InvalidKeyException e) {
+            log.error("Error while adding recommendation scores", e);
+        }
     }
 
     @Override
@@ -283,8 +284,8 @@ public class MealPlan extends VerticalLayout implements BeforeEnterObserver {
             }
         }
 
-        if (beforeEnterEvent.getTrigger().name().equals("PAGE_LOAD")){ // returns "PAGE_LOAD" if its refreshed and "HISTORY" if its refreshed by the valuechangelisteners
-            if(!mensaComboBox.isEmpty() && !datePicker.isEmpty()){
+        if (beforeEnterEvent.getTrigger().name().equals("PAGE_LOAD")) { // returns "PAGE_LOAD" if its refreshed and "HISTORY" if its refreshed by the valuechangelisteners
+            if (!mensaComboBox.isEmpty() && !datePicker.isEmpty()) {
                 buildMealPlan(datePicker.getValue(), mensaComboBox.getValue());
             }
         }
@@ -295,12 +296,12 @@ public class MealPlan extends VerticalLayout implements BeforeEnterObserver {
         return mailUser != null;
     }
 
-    private void addRecommendationScore(List<MealBox> mealBoxes, UI ui) throws IOException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
+    private void addRecommendationScore(List<MealBox> mealBoxes) throws IOException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
         if (mailUser == null) {
             return;
         }
 
-        if(mealBoxes == null || mealBoxes.isEmpty()) {
+        if (mealBoxes == null || mealBoxes.isEmpty()) {
             return;
         }
 
@@ -310,19 +311,18 @@ public class MealPlan extends VerticalLayout implements BeforeEnterObserver {
         if (collaborativeFilteringAPIAdapter.isAPIAvailable()) {
             List<PredictionRequest> predictionRequests = new ArrayList<>();
             for (MealBox mealBox : mealBoxes) {
-                PredictionRequest predictionRequest = new PredictionRequest(mailUser.getId().intValue(), mealBox.getMealName());
+                PredictionRequest predictionRequest = new PredictionRequest(mailUser.getId().intValue(), mealBox.getMealName(), mealBox.getMealId());
                 predictionRequests.add(predictionRequest);
             }
             Result<List<Result<PredictionResult, APIError>>, APIError> predictionResults = collaborativeFilteringAPIAdapter.predict(predictionRequests);
             if (predictionResults.isSuccess()) {
                 for (Result<PredictionResult, APIError> predictionResult : predictionResults.getData()) {
-                    if (predictionResult.isSuccess()){ // if not, the user or meal is not in db just ignore it
-                        Optional<MealBox> mealBoxOptional = mealBoxes.stream().filter(mealBox1 -> mealBox1.getMealName().equals(predictionResult.getData().getMeal())).findFirst();
+                    if (predictionResult.isSuccess()) { // if not, the user or meal is not in db just ignore it
+                        Optional<MealBox> mealBoxOptional = mealBoxes.stream().filter(mealBox1 -> mealBox1.getMealName().equals(predictionResult.getData().getMealName())).findFirst();
                         if (mealBoxOptional.isPresent()) {
                             MealBox mealBox = mealBoxOptional.get();
-                            ui.access(() -> {
-                                mealBox.showRecommendation(predictionResult.getData());
-                            });
+                            mealBox.showRecommendation(predictionResult.getData());
+
                         }
                     }
                 }
@@ -331,10 +331,9 @@ public class MealPlan extends VerticalLayout implements BeforeEnterObserver {
             }
         } else {
             log.error("Collaborative filtering API is not available");
-            ui.access(() -> {
-                NotificationFactory.create(NotificationType.WARN, "Aufgrund technischer Probleme können aktuell " +
-                        "keine Empfehlungen angezeigt werden").open();
-            });
+            NotificationFactory.create(NotificationType.WARN, "Aufgrund technischer Probleme können aktuell " +
+                    "keine Empfehlungen angezeigt werden").open();
+
         }
     }
 }
