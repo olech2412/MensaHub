@@ -2,8 +2,10 @@ package de.olech2412.mensahub.junction.gui.views;
 
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.Unit;
+import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.html.H2;
+import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -22,7 +24,6 @@ import de.olech2412.mensahub.junction.gui.components.vaadin.notifications.Notifi
 import de.olech2412.mensahub.junction.gui.components.vaadin.notifications.types.InfoWithAnchorNotification;
 import de.olech2412.mensahub.junction.gui.components.vaadin.notifications.types.NotificationType;
 import de.olech2412.mensahub.junction.jpa.repository.RatingRepository;
-import de.olech2412.mensahub.junction.jpa.repository.UsersRepository;
 import de.olech2412.mensahub.junction.jpa.services.MailUserService;
 import de.olech2412.mensahub.junction.jpa.services.RatingService;
 import de.olech2412.mensahub.junction.jpa.services.meals.MealsService;
@@ -67,8 +68,6 @@ public class MealPlan extends VerticalLayout implements BeforeEnterObserver {
     @Autowired
     RatingRepository ratingRepository;
     @Autowired
-    private UsersRepository usersRepository;
-    @Autowired
     private MailUserService mailUserService;
     @Autowired
     private RatingService ratingService;
@@ -86,11 +85,38 @@ public class MealPlan extends VerticalLayout implements BeforeEnterObserver {
         mensaComboBox.setItems(mensaService.getAllMensas());
         mensaComboBox.setItemLabelGenerator(Mensa::getName);
 
-        VerticalLayout headerComboboxLayout = new VerticalLayout();
-        headerComboboxLayout.setWidth(100f, Unit.PERCENTAGE);
-        headerComboboxLayout.setAlignItems(Alignment.CENTER);
-        headerComboboxLayout.setJustifyContentMode(JustifyContentMode.CENTER);
-        headerComboboxLayout.add(mensaComboBox, datePicker);
+        VerticalLayout headerComboboxDatePickerButtonsLayout = new VerticalLayout();
+        headerComboboxDatePickerButtonsLayout.setWidth(100f, Unit.PERCENTAGE);
+        headerComboboxDatePickerButtonsLayout.setAlignItems(Alignment.CENTER);
+        headerComboboxDatePickerButtonsLayout.setJustifyContentMode(JustifyContentMode.CENTER);
+
+        HorizontalLayout buttonsDatePickerLayout = new HorizontalLayout();
+        buttonsDatePickerLayout.setAlignItems(Alignment.CENTER);
+        buttonsDatePickerLayout.setJustifyContentMode(JustifyContentMode.CENTER);
+
+        Button buttonOneDayBack = new Button(VaadinIcon.CHEVRON_CIRCLE_LEFT_O.create());
+        // set color grey
+        buttonOneDayBack.getIcon().getStyle().set("color", "grey");
+        buttonOneDayBack.addClickListener(buttonClickEvent -> {
+            if (buttonClickEvent == null || mensaComboBox.isEmpty()) {
+                return;
+            }
+            buildMealPlan(datePicker.getValue().minusDays(1), mensaComboBox.getValue());
+        });
+
+        Button buttonOneDayForward = new Button(VaadinIcon.CHEVRON_CIRCLE_RIGHT_O.create());
+        buttonOneDayForward.getIcon().getStyle().set("color", "grey");
+        buttonOneDayForward.addClickListener(buttonClickEvent -> {
+            if (buttonClickEvent == null || mensaComboBox.isEmpty()) {
+                return;
+            }
+            buildMealPlan(datePicker.getValue().plusDays(1), mensaComboBox.getValue());
+        });
+
+        buttonsDatePickerLayout.add(buttonOneDayBack, datePicker, buttonOneDayForward);
+
+
+        headerComboboxDatePickerButtonsLayout.add(mensaComboBox, buttonsDatePickerLayout);
 
         // adjust the width of the combobox and datePicker
         mensaComboBox.setWidth(60f, Unit.PERCENTAGE);
@@ -104,7 +130,7 @@ public class MealPlan extends VerticalLayout implements BeforeEnterObserver {
         headerContent.setJustifyContentMode(JustifyContentMode.CENTER);
         headerContent.getStyle().set("text-align", "center");
         headerContent.add(new H2("Wähle deine Mensa aus, sowie das gewünschte Datum"));
-        headerContent.add(headerComboboxLayout);
+        headerContent.add(headerComboboxDatePickerButtonsLayout);
 
         pageSelHeader.add(headerContent);
 
@@ -322,7 +348,6 @@ public class MealPlan extends VerticalLayout implements BeforeEnterObserver {
                         if (mealBoxOptional.isPresent()) {
                             MealBox mealBox = mealBoxOptional.get();
                             mealBox.showRecommendation(predictionResult.getData());
-
                         }
                     }
                 }
@@ -333,7 +358,6 @@ public class MealPlan extends VerticalLayout implements BeforeEnterObserver {
             log.error("Collaborative filtering API is not available");
             NotificationFactory.create(NotificationType.WARN, "Aufgrund technischer Probleme können aktuell " +
                     "keine Empfehlungen angezeigt werden").open();
-
         }
     }
 }
