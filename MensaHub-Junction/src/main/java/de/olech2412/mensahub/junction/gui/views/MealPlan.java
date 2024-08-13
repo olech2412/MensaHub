@@ -3,6 +3,7 @@ package de.olech2412.mensahub.junction.gui.views;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.Unit;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.icon.VaadinIcon;
@@ -95,8 +96,7 @@ public class MealPlan extends VerticalLayout implements BeforeEnterObserver {
         buttonsDatePickerLayout.setJustifyContentMode(JustifyContentMode.CENTER);
 
         Button buttonOneDayBack = new Button(VaadinIcon.CHEVRON_CIRCLE_LEFT_O.create());
-        // set color grey
-        buttonOneDayBack.getIcon().getStyle().set("color", "grey");
+        buttonOneDayBack.addThemeVariants(ButtonVariant.LUMO_CONTRAST);
         buttonOneDayBack.addClickListener(buttonClickEvent -> {
             if (buttonClickEvent == null || mensaComboBox.isEmpty()) {
                 return;
@@ -105,7 +105,7 @@ public class MealPlan extends VerticalLayout implements BeforeEnterObserver {
         });
 
         Button buttonOneDayForward = new Button(VaadinIcon.CHEVRON_CIRCLE_RIGHT_O.create());
-        buttonOneDayForward.getIcon().getStyle().set("color", "grey");
+        buttonOneDayForward.addThemeVariants(ButtonVariant.LUMO_CONTRAST);
         buttonOneDayForward.addClickListener(buttonClickEvent -> {
             if (buttonClickEvent == null || mensaComboBox.isEmpty()) {
                 return;
