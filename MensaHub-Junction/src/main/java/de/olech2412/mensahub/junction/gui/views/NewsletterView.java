@@ -25,8 +25,8 @@ import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.*;
 import de.olech2412.mensahub.junction.config.Config;
 import de.olech2412.mensahub.junction.email.Mailer;
-import de.olech2412.mensahub.junction.gui.components.vaadin.notifications.types.PermanentNotificationMiddleScreenPosition;
 import de.olech2412.mensahub.junction.gui.components.vaadin.dialogs.PreferencesDialog;
+import de.olech2412.mensahub.junction.gui.components.vaadin.notifications.types.PermanentNotificationMiddleScreenPosition;
 import de.olech2412.mensahub.junction.jpa.repository.ActivationCodeRepository;
 import de.olech2412.mensahub.junction.jpa.repository.DeactivationCodeRepository;
 import de.olech2412.mensahub.junction.jpa.services.MailUserService;
@@ -63,6 +63,7 @@ public class NewsletterView extends HorizontalLayout implements BeforeEnterObser
 
     private final String welcomeText = "Willkommen bei MensaHub";
     private final MensaService mensaService;
+    private final MealsService mealsService;
     Logger logger = LoggerFactory.getLogger(NewsletterView.class);
     private EmailField emailField;
     private TextField firstName;
@@ -77,9 +78,6 @@ public class NewsletterView extends HorizontalLayout implements BeforeEnterObser
     private MailUserService mailUserService;
     private Checkbox wantUpdates;
     private Checkbox wantsCollaborativeFiltering;
-
-    private final MealsService mealsService;
-
     private Preferences preferences;
 
     public NewsletterView(MensaService mensaService, MealsService mealsService) throws IOException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
@@ -156,7 +154,6 @@ public class NewsletterView extends HorizontalLayout implements BeforeEnterObser
             }
         });
         registerButton.addClickShortcut(Key.ENTER);
-
 
 
         Button preferencesButton = new Button("Präferenzen angeben");
@@ -236,7 +233,7 @@ public class NewsletterView extends HorizontalLayout implements BeforeEnterObser
         wantsCollaborativeFiltering.addValueChangeListener(e -> {
             if (e.getValue()) {
                 PermanentNotificationMiddleScreenPosition permanentNotificationMiddleScreenPosition = new PermanentNotificationMiddleScreenPosition(
-                        "Wenn du diese Option aktivierst, senden wir dir nur eine E-Mail, wenn wir neue Empfehlungen für dich haben. " +
+                        "Wenn du diese Option aktivierst, senden wir dir nur eine E-Mail, wenn ein Gericht für dich empfehlenswert ist. " +
                                 "Diese Empfehlungen basieren auf deinem bisherigen Essverhalten und deinen Vorlieben. " +
                                 "Wenn du diese Einstellung nicht aktivierst, senden wir dir den typischen täglichen Newsletter als E-Mail.");
                 permanentNotificationMiddleScreenPosition.open();
@@ -288,7 +285,7 @@ public class NewsletterView extends HorizontalLayout implements BeforeEnterObser
                     if (mailUserService.findMailUserByEmail(email).isEmpty()) {
                         if (accept.getValue()) {
                             try {
-                                createRegistratedUser(email, firstname, lastname, mensa, wantUpdates.getValue(),wantsCollaborativeFiltering.getValue(), preferences);
+                                createRegistratedUser(email, firstname, lastname, mensa, wantUpdates.getValue(), wantsCollaborativeFiltering.getValue(), preferences);
                                 Notification notification = new Notification("Deine E-Mail-Adresse wurde erfolgreich registriert!. Klicke auf den Link in deiner Bestätigungsmail", 6000);
                                 notification.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
                                 notification.open();
@@ -338,7 +335,7 @@ public class NewsletterView extends HorizontalLayout implements BeforeEnterObser
      *
      * @param email
      */
-    private void createRegistratedUser(String email, String firstname, String lastname, Set<Mensa> mensa, boolean wantUpdates,boolean wantsCollaborativeFiltering, Preferences preferences) {
+    private void createRegistratedUser(String email, String firstname, String lastname, Set<Mensa> mensa, boolean wantUpdates, boolean wantsCollaborativeFiltering, Preferences preferences) {
 
         try {
             ActivationCode activationCode = new ActivationCode(RandomStringUtils.randomAlphanumeric(32));
