@@ -6,6 +6,7 @@ import com.vaadin.flow.component.Unit;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.html.H3;
+import com.vaadin.flow.component.html.H4;
 import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.notification.Notification;
@@ -128,7 +129,7 @@ public class ActivationView extends VerticalLayout implements BeforeEnterObserve
     }
 
     private MealBox createMealBox(Meal meal) {
-        MealBox mealBox = new MealBox(meal.getName(), meal.getDescription(), meal.getPrice(), meal.getAllergens(), meal.getCategory());
+        MealBox mealBox = new MealBox(meal.getName(), meal.getDescription(), meal.getPrice(), meal.getAllergens(), meal.getCategory(), meal.getId().intValue());
 
         if (mailUser == null) {
             mealBox.getRatingComponent().setEnabled(false);
@@ -338,11 +339,12 @@ public class ActivationView extends VerticalLayout implements BeforeEnterObserve
     }
 
     private void handleMailUserActivation(String activationCode) {
-        add(new Text("Freischaltung erfolgreich :). Du bist nun im Email-Verteiler."));
+        MailUser activatedUser = mailUserRepository.findByActivationCode_Code(activationCode);
+        add(new H4("Hallo: " + activatedUser.getFirstname() + "!"));
+        add(new Paragraph("Deine E-Mail-Adresse wurde erfolgreich verifiziert. Du kannst nun den Newsletter empfangen und Gerichte bewerten."));
         Paragraph info = new Paragraph("Bitte tue uns noch einen Gefallen und bewerte die folgenden Gerichte, damit wir dir bestimmte Gerichte aufgrund der Bewertungen der Community empfehlen können. Die Vorschläge kannst du dann im Speiseplan, als auch im Newsletter sehen.");
         info.setWidth(50, Unit.PERCENTAGE);
         add(info);
-        MailUser activatedUser = mailUserRepository.findByActivationCode_Code(activationCode);
         activatedUser.setEnabled(true);
         addUserMealsAndDivider(activatedUser);
     }

@@ -73,7 +73,6 @@ public class MealPlan extends VerticalLayout implements BeforeEnterObserver {
     @Autowired
     private RatingService ratingService;
 
-    private List<Meal> meals;
     private MailUser mailUser;
 
     public MealPlan(MealsService mealsService, MensaService mensaService) {
@@ -166,7 +165,7 @@ public class MealPlan extends VerticalLayout implements BeforeEnterObserver {
      */
     public void buildMealPlan(LocalDate servingDate, Mensa mensa) {
         row.removeAll();
-        meals = mealsService.findAllMealsByServingDateAndMensa(servingDate, mensa);
+        List<Meal> meals = mealsService.findAllMealsByServingDateAndMensa(servingDate, mensa);
 
         row.addClassName("meal-content");
         row.add(new InfoBox(mensaComboBox.getValue().getName(),
@@ -201,7 +200,6 @@ public class MealPlan extends VerticalLayout implements BeforeEnterObserver {
                 mealBox.getRatingButton().setEnabled(false);
             } else {
                 Result<List<Rating>, JPAError> ratings = ratingService.findAllByMailUserAndMealName(mailUser, meal.getName());
-
                 if (ratings.isSuccess()) {
                     List<Rating> ratingList = ratings.getData();
                     for (Rating rating : ratingList) {
