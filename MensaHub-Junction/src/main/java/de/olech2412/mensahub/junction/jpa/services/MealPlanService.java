@@ -59,32 +59,32 @@ public class MealPlanService {
                         Optional<MealBox> mealBoxOptional = mealBoxes.stream().filter(mealBox1 -> mealBox1.getMealName().equals(predictionResult.getData().getMealName())).findFirst();
                         if (mealBoxOptional.isPresent()) {
                             MealBox mealBox = mealBoxOptional.get();
-                            ui.access(() -> mealBox.showRecommendation(predictionResult.getData()));
+                            ui.accessSynchronously(() -> mealBox.showRecommendation(predictionResult.getData()));
                         }
                     }
                 }
-                ui.access(ui::push); // Push UI updates to the client
+                ui.accessSynchronously(ui::push); // Push UI updates to the client
             } else {
                 log.error("Error while prediction results: {}. Error: {}", predictionResults, predictionResults.getError());
-                if (predictionResults.getError().apiErrors().equals(APIErrors.NETWORK_ERROR)) {
-                    ui.access(() -> {
+                if (predictionResults.getError().message().contains("already in progress")) { // when a prediction is already in progress
+                    ui.accessSynchronously(() -> {
                         NotificationFactory.create(NotificationType.WARN, "Aufgrund eines starken Nutzeraufkommens können derzeit keine Empfehlungen berechnet werden. Versuche es später erneut").open();
                         ui.push(); // Push UI updates to the client
                     });
                 } else {
-                    ui.access(() -> {
-                        NotificationFactory.create(NotificationType.WARN, "Bei der Berechnung deiner Empfehlungen ist ein unbekannter Fehler aufgetreten. Kein Sorge, wir prüfen das schnellstmöglich!").open();
+                    ui.accessSynchronously(() -> {
+                        NotificationFactory.create(NotificationType.ERROR, "Bei der Berechnung deiner Empfehlungen ist ein unbekannter Fehler aufgetreten. Kein Sorge, wir prüfen das schnellstmöglich!").open();
                         ui.push(); // Push UI updates to the client
                     });
                 }
-                ui.access(() -> {
-                    NotificationFactory.create(NotificationType.WARN, "Aufgrund technischer Probleme können aktuell keine Empfehlungen angezeigt werden").open();
+                ui.accessSynchronously(() -> {
+                    NotificationFactory.create(NotificationType.ERROR, "Aufgrund technischer Probleme können aktuell keine Empfehlungen angezeigt werden").open();
                     ui.push(); // Push UI updates to the client
                 });
             }
         } else {
             log.error("Collaborative filtering API is not available");
-            ui.access(() -> {
+            ui.accessSynchronously(() -> {
                 NotificationFactory.create(NotificationType.WARN, "Aufgrund technischer Probleme können aktuell keine Empfehlungen angezeigt werden").open();
                 ui.push(); // Push UI updates to the client
             });
