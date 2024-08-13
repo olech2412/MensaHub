@@ -98,7 +98,9 @@ public class MealPlan extends VerticalLayout implements BeforeEnterObserver {
             if (buttonClickEvent == null || mensaComboBox.isEmpty()) {
                 return;
             }
+            buttonOneDayForward.setEnabled(false);
             buttonOneDayBack.setEnabled(false);
+            datePicker.setEnabled(false);
             buildMealPlan(datePicker.getValue().minusDays(1), mensaComboBox.getValue());
         });
 
@@ -108,6 +110,8 @@ public class MealPlan extends VerticalLayout implements BeforeEnterObserver {
                 return;
             }
             buttonOneDayForward.setEnabled(false);
+            buttonOneDayBack.setEnabled(false);
+            datePicker.setEnabled(false);
             buildMealPlan(datePicker.getValue().plusDays(1), mensaComboBox.getValue());
         });
 
