@@ -6,7 +6,9 @@ public enum APIErrors implements ErrorCodes {
 
     UNKNOWN("API_400"),
     NO_DATA_IN_DATABASE("API_401"),
-    INVALID_DATA_IN_DATABASE("API_402");
+    INVALID_DATA_IN_DATABASE("API_402"),
+    NETWORK_ERROR("API_403"),
+    IO_ERROR("API_404");
 
     private final String code;
 

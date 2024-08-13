@@ -8,11 +8,12 @@ from sklearn.neighbors import NearestNeighbors
 from sqlalchemy import create_engine
 import os
 import re
+import threading
 
 app = Flask(__name__)
 
 # Logger konfigurieren
-logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 
 # Konfiguration der Datenbankverbindung aus Umgebungsvariablen
@@ -23,6 +24,9 @@ DB_NAME = os.getenv('DB_NAME', 'mensaHub')
 
 DATABASE_URI = f'mysql+pymysql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}/{DB_NAME}'
 engine = create_engine(DATABASE_URI)
+
+# Lock für die Rate-Limitierung
+job_lock = threading.Lock()
 
 # Funktion zum Laden der Daten aus der Datenbank
 def load_data():
@@ -52,24 +56,20 @@ def load_user_preferences(user_id):
     preferences_id = preferences_id_result['preferences_id'].iloc[0]
     logger.debug(f"Gefundene Präferenzen-ID für Benutzer {user_id}: {preferences_id}")
 
-    # Laden der nicht gemochten Kategorien (disliked_categories)
     categories_query = f"SELECT disliked_categories FROM disliked_categories WHERE disliked_categories_id = {preferences_id}"
     categories_result = pd.read_sql(categories_query, con=engine)
     disliked_categories = categories_result['disliked_categories'].tolist() if not categories_result.empty else []
 
-    # Laden der vermiedenen Allergene (optional)
     allergens_query = f"SELECT avoided_allergens FROM avoided_allergens WHERE avoided_allergens_id = {preferences_id}"
     allergens_result = pd.read_sql(allergens_query, con=engine)
-    avoided_allergens = allergens_result['avoided_allergens'].tolist() if not allergens_result.empty else []
+    avoided_allergens = allergens_result['avoided_allergens'].tolist() if not categories_result.empty else []
 
-    # Laden der nicht gemochten Zutaten (optional)
     ingredients_query = f"SELECT disliked_ingedrients FROM disliked_ingredients WHERE disliked_ingredients_id = {preferences_id}"
     ingredients_result = pd.read_sql(ingredients_query, con=engine)
     disliked_ingredients = ingredients_result['disliked_ingedrients'].tolist() if not ingredients_result.empty else []
 
     logger.debug(f"Geladene Präferenzen für Benutzer {user_id}: {disliked_categories}, {avoided_allergens}, {disliked_ingredients}")
 
-    # Zusammenstellen der Präferenzen
     user_preferences = {
         'disliked_categories': disliked_categories,
         'avoided_allergens': avoided_allergens,
@@ -96,19 +96,16 @@ def check_preferences(user_id, meal_id, meals_df, user_preferences):
     
     logger.debug(f"Mahlzeit-Informationen: Kategorie: {meal_category}, Allergene: {meal_allergens}, Name: {meal_name}, Beschreibung: {meal_description}")
     
-    # Kategoriepräferenz prüfen (optional und exakte Übereinstimmung)
     if user_preferences.get('disliked_categories') and meal_category in user_preferences['disliked_categories']:
         logger.info(f"Mahlzeit {meal_id} gehört zu einer nicht gemochten Kategorie des Benutzers {user_id}")
         return False  # Kategorie nicht bevorzugt
     
-    # Allergiepräferenzen prüfen (optional und Teilübereinstimmung)
     if user_preferences.get('avoided_allergens'):
         for allergen in user_preferences['avoided_allergens']:
             if allergen in meal_allergens:
                 logger.info(f"Mahlzeit {meal_id} enthält ein vermiedenes Allergen für Benutzer {user_id}: {allergen}")
                 return False  # Allergen gefunden
     
-    # Zutatenpräferenzen in Name und Beschreibung prüfen (optional und flexible Übereinstimmung mit Regex)
     if user_preferences.get('disliked_ingredients'):
         for ingredient in user_preferences['disliked_ingredients']:
             pattern = rf'\b{re.escape(ingredient)}\w*\b'
@@ -130,7 +127,6 @@ def predict_rating_optimized(user_id, meal_id, meal_name, user_meal_matrix, matr
         num_samples_fit = matrix_svd.shape[0]
         k = min(k, num_samples_fit)
         
-        # Prüfung auf vorhandene Bewertung des Nutzers für das Gericht
         user_rating = user_meal_matrix.loc[user_id, meal_name]
         logger.debug(f"Benutzerbewertung für {meal_name}: {user_rating}")
         
@@ -176,56 +172,64 @@ def predict_rating_optimized(user_id, meal_id, meal_name, user_meal_matrix, matr
 def predict():
     logger.debug("Eingehende Vorhersageanforderung")
     
-    data = request.json
-    logger.debug(f"Empfangene Daten: {data}")
+    if not job_lock.acquire(blocking=False):
+        logger.warning("Eine Vorhersageberechnung läuft bereits, neue Anfrage wird abgelehnt.")
+        return jsonify({'error': 'A prediction is already in progress. Please try again later.'}), 429
     
-    ratings_df, meals_df = load_data()
-    
-    user_meal_matrix = ratings_df.pivot_table(index='user_id', columns='meal', values='rating')
-    user_meal_mean = user_meal_matrix.mean(axis=1)
-    user_meal_demeaned = user_meal_matrix.sub(user_meal_mean, axis=0)
-    
-    n_components = min(20, user_meal_demeaned.shape[1])
-    svd = TruncatedSVD(n_components=n_components, random_state=42)
-    matrix_svd = svd.fit_transform(user_meal_demeaned.fillna(0))
-    
-    user_similarity = cosine_similarity(matrix_svd)
-    user_similarity_df = pd.DataFrame(user_similarity, index=user_meal_matrix.index, columns=user_meal_matrix.index)
-    
-    results = []
-    for item in data:
-        user_id = item['userId']
-        if 'mealId' not in item:
-            error_msg = "mealId nicht in den übergebenen Daten enthalten"
-            logger.error(f"Fehlende mealId für Benutzer {user_id}: {error_msg}")
-            results.append({'userId': user_id, 'error': error_msg})
-            continue
+    try:
+        data = request.json
+        logger.debug(f"Empfangene Daten: {data}")
         
-        meal_id = item['mealId']
-        meal_name = item['meal']
+        ratings_df, meals_df = load_data()
         
-        logger.debug(f"Verarbeite Vorhersage für Benutzer {user_id}, Mahlzeit {meal_id} ({meal_name})")
+        user_meal_matrix = ratings_df.pivot_table(index='user_id', columns='meal', values='rating')
+        user_meal_mean = user_meal_matrix.mean(axis=1)
+        user_meal_demeaned = user_meal_matrix.sub(user_meal_mean, axis=0)
         
-        user_preferences = load_user_preferences(user_id)
+        n_components = min(20, user_meal_demeaned.shape[1])
+        svd = TruncatedSVD(n_components=n_components, random_state=42)
+        matrix_svd = svd.fit_transform(user_meal_demeaned.fillna(0))
         
-        try:
-            predicted_rating, trust_score = predict_rating_optimized(user_id, meal_id, meal_name, user_meal_matrix, matrix_svd, user_similarity_df, user_meal_mean, meals_df, user_preferences)
-            results.append({
-                'userId': user_id,
-                'mealId': meal_id,
-                'mealName': meal_name,
-                'predicted_rating': predicted_rating,
-                'trust_score': trust_score
-            })
-            logger.debug(f"Vorhersage abgeschlossen für Benutzer {user_id}, Mahlzeit {meal_id}: {predicted_rating} (Vertrauenswürdigkeit: {trust_score})")
-        except ValueError as e:
-            logger.error(f"Fehler bei der Verarbeitung der Mahlzeit {meal_name} für Benutzer {user_id}: {e}")
-            results.append({'userId': user_id, 'mealId': meal_id, 'mealName': meal_name, 'error': str(e)})
-        except Exception as e:
-            logger.exception(f"Unerwarteter Fehler bei der Vorhersage für Benutzer {user_id}, Mahlzeit {meal_id}: {e}")
-            results.append({'userId': user_id, 'mealId': meal_id, 'mealName': meal_name, 'error': f"An error occurred: {str(e)}"})
+        user_similarity = cosine_similarity(matrix_svd)
+        user_similarity_df = pd.DataFrame(user_similarity, index=user_meal_matrix.index, columns=user_meal_matrix.index)
+        
+        results = []
+        for item in data:
+            user_id = item['userId']
+            if 'mealId' not in item:
+                error_msg = "mealId nicht in den übergebenen Daten enthalten"
+                logger.error(f"Fehlende mealId für Benutzer {user_id}: {error_msg}")
+                results.append({'userId': user_id, 'error': error_msg})
+                continue
+            
+            meal_id = item['mealId']
+            meal_name = item['meal']
+            
+            logger.debug(f"Verarbeite Vorhersage für Benutzer {user_id}, Mahlzeit {meal_id} ({meal_name})")
+            
+            user_preferences = load_user_preferences(user_id)
+            
+            try:
+                predicted_rating, trust_score = predict_rating_optimized(user_id, meal_id, meal_name, user_meal_matrix, matrix_svd, user_similarity_df, user_meal_mean, meals_df, user_preferences)
+                results.append({
+                    'userId': user_id,
+                    'mealId': meal_id,
+                    'mealName': meal_name,
+                    'predicted_rating': predicted_rating,
+                    'trust_score': trust_score
+                })
+                logger.debug(f"Vorhersage abgeschlossen für Benutzer {user_id}, Mahlzeit {meal_id}: {predicted_rating} (Vertrauenswürdigkeit: {trust_score})")
+            except ValueError as e:
+                logger.error(f"Fehler bei der Verarbeitung der Mahlzeit {meal_name} für Benutzer {user_id}: {e}")
+                results.append({'userId': user_id, 'mealId': meal_id, 'mealName': meal_name, 'error': str(e)})
+            except Exception as e:
+                logger.exception(f"Unerwarteter Fehler bei der Vorhersage für Benutzer {user_id}, Mahlzeit {meal_id}: {e}")
+                results.append({'userId': user_id, 'mealId': meal_id, 'mealName': meal_name, 'error': f"An error occurred: {str(e)}"})
+        
+        return jsonify(results)
     
-    return jsonify(results)
+    finally:
+        job_lock.release()
 
 @app.route('/health', methods=['GET'])
 def health():

@@ -12,6 +12,7 @@ import de.olech2412.mensahub.models.addons.predictions.PredictionResult;
 import de.olech2412.mensahub.models.authentification.MailUser;
 import de.olech2412.mensahub.models.result.Result;
 import de.olech2412.mensahub.models.result.errors.api.APIError;
+import de.olech2412.mensahub.models.result.errors.api.APIErrors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -65,6 +66,21 @@ public class MealPlanService {
                 ui.access(ui::push); // Push UI updates to the client
             } else {
                 log.error("Error while prediction results: {}. Error: {}", predictionResults, predictionResults.getError());
+                if (predictionResults.getError().apiErrors().equals(APIErrors.NETWORK_ERROR)) {
+                    ui.access(() -> {
+                        NotificationFactory.create(NotificationType.WARN, "Aufgrund eines starken Nutzeraufkommens können derzeit keine Empfehlungen berechnet werden. Versuche es später erneut").open();
+                        ui.push(); // Push UI updates to the client
+                    });
+                } else {
+                    ui.access(() -> {
+                        NotificationFactory.create(NotificationType.WARN, "Bei der Berechnung deiner Empfehlungen ist ein unbekannter Fehler aufgetreten. Kein Sorge, wir prüfen das schnellstmöglich!").open();
+                        ui.push(); // Push UI updates to the client
+                    });
+                }
+                ui.access(() -> {
+                    NotificationFactory.create(NotificationType.WARN, "Aufgrund technischer Probleme können aktuell keine Empfehlungen angezeigt werden").open();
+                    ui.push(); // Push UI updates to the client
+                });
             }
         } else {
             log.error("Collaborative filtering API is not available");
