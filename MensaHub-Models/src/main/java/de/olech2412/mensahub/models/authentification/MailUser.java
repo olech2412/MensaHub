@@ -2,6 +2,7 @@ package de.olech2412.mensahub.models.authentification;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import de.olech2412.mensahub.models.Mensa;
+import de.olech2412.mensahub.models.Preferences;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -42,6 +43,8 @@ public class MailUser {
     private LocalDate deactivatedUntil; // the date until the user is deactivated
     private boolean wantsUpdate; // if the user wants to get update mails if meals changed
     private boolean wantsCollaborationInfoMail; // if the user wants to get mails about collaborations only
+    @OneToOne(cascade = CascadeType.ALL)
+    private Preferences preferences;
 
     /**
      * Default constructor for the mail-user.

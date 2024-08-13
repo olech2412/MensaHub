@@ -12,6 +12,7 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.server.VaadinSession;
 import com.vaadin.flow.server.WebBrowser;
+import de.olech2412.mensahub.junction.gui.components.vaadin.layouts.generic.FooterButtonLayout;
 import de.olech2412.mensahub.models.Mensa;
 import de.olech2412.mensahub.models.authentification.MailUser;
 import lombok.Getter;
@@ -27,7 +28,7 @@ public class MailUserSetupDialog extends Dialog {
     Checkbox wantsUpdateCheckbox;
 
     @Getter
-    Button saveButton;
+    FooterButtonLayout footerButtonLayout = new FooterButtonLayout();
 
     public MailUserSetupDialog(MailUser mailUser, List<Mensa> mensen) {
         super(String.format("E-Mail Einstellungen für Benutzer %s", mailUser.getEmail()));
@@ -42,22 +43,16 @@ public class MailUserSetupDialog extends Dialog {
         wantsUpdateCheckbox = new Checkbox("Möchtest du benachrichtigt werden, wenn Änderungen am Speiseplan festgestellt werden?");
         wantsUpdateCheckbox.setValue(mailUser.isWantsUpdate());
 
-        saveButton = new Button("Speichern");
-        saveButton.setIcon(VaadinIcon.CHECK.create());
-        saveButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY, ButtonVariant.LUMO_SUCCESS);
-
         Button cancelButton = new Button("Abbrechen");
         cancelButton.setIcon(VaadinIcon.CLOSE.create());
         cancelButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY, ButtonVariant.LUMO_ERROR);
 
         cancelButton.addClickListener(buttonClickEvent -> close());
 
-        HorizontalLayout chooserLayout = new HorizontalLayout(saveButton, cancelButton);
-        chooserLayout.setAlignItems(FlexComponent.Alignment.CENTER);
-        chooserLayout.setJustifyContentMode(FlexComponent.JustifyContentMode.CENTER);
+        footerButtonLayout.getDeclineButton().addClickListener(buttonClickEvent -> close());
 
         add(new VerticalLayout(mensaComboBox, wantsUpdateCheckbox));
-        add(chooserLayout);
+        add(footerButtonLayout);
     }
 
     public boolean isMobileDevice() {
