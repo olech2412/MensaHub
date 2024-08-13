@@ -13,7 +13,8 @@ public class PredictionResult {
     @SerializedName("trust_score")
     private String trustScore;
     private int userId;
-    private String meal;
+    private int mealId;
+    private String mealName;
 
     @Override
     public String toString() {
@@ -21,7 +22,8 @@ public class PredictionResult {
                 "predictedRating=" + predictedRating +
                 ", trustScore='" + trustScore + '\'' +
                 ", userId=" + userId +
-                ", meal='" + meal + '\'' +
+                ", mealId=" + mealId +
+                ", mealName='" + mealName + '\'' +
                 '}';
     }
 }

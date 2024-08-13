@@ -195,7 +195,7 @@ public class MealPlan extends VerticalLayout implements BeforeEnterObserver {
     private void updateRows(List<Meal> meals) throws IOException {
         List<MealBox> mealBoxes = new ArrayList<>();
         for (Meal meal : meals) {
-            MealBox mealBox = new MealBox(meal.getName(), meal.getDescription(), meal.getPrice(), meal.getAllergens(), meal.getCategory());
+            MealBox mealBox = new MealBox(meal.getName(), meal.getDescription(), meal.getPrice(), meal.getAllergens(), meal.getCategory(), meal.getId().intValue());
             if (!isUserIdentified()) {
                 mealBox.getRatingComponent().setEnabled(false);
                 mealBox.getRatingButton().setEnabled(false);
@@ -234,15 +234,12 @@ public class MealPlan extends VerticalLayout implements BeforeEnterObserver {
             mealBoxes.add(mealBox);
         }
 
-        UI ui = UI.getCurrent();
-        new Thread(() -> { // execute the request to collaborative filtering api async because we don't want to fuck up the user
-            try {
-                addRecommendationScore(mealBoxes, ui);
-            } catch (IOException | NoSuchPaddingException | IllegalBlockSizeException | NoSuchAlgorithmException |
-                     BadPaddingException | InvalidKeyException e) {
-                log.error("Error while adding recommendation scores", e);
-            }
-        }).start();
+        try {
+            addRecommendationScore(mealBoxes);
+        } catch (IOException | NoSuchPaddingException | IllegalBlockSizeException | NoSuchAlgorithmException |
+                 BadPaddingException | InvalidKeyException e) {
+            log.error("Error while adding recommendation scores", e);
+        }
     }
 
     @Override
@@ -325,7 +322,7 @@ public class MealPlan extends VerticalLayout implements BeforeEnterObserver {
         return mailUser != null;
     }
 
-    private void addRecommendationScore(List<MealBox> mealBoxes, UI ui) throws IOException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
+    private void addRecommendationScore(List<MealBox> mealBoxes) throws IOException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
         if (mailUser == null) {
             return;
         }
@@ -340,17 +337,17 @@ public class MealPlan extends VerticalLayout implements BeforeEnterObserver {
         if (collaborativeFilteringAPIAdapter.isAPIAvailable()) {
             List<PredictionRequest> predictionRequests = new ArrayList<>();
             for (MealBox mealBox : mealBoxes) {
-                PredictionRequest predictionRequest = new PredictionRequest(mailUser.getId().intValue(), mealBox.getMealName());
+                PredictionRequest predictionRequest = new PredictionRequest(mailUser.getId().intValue(), mealBox.getMealName(), mealBox.getMealId());
                 predictionRequests.add(predictionRequest);
             }
             Result<List<Result<PredictionResult, APIError>>, APIError> predictionResults = collaborativeFilteringAPIAdapter.predict(predictionRequests);
             if (predictionResults.isSuccess()) {
                 for (Result<PredictionResult, APIError> predictionResult : predictionResults.getData()) {
                     if (predictionResult.isSuccess()) { // if not, the user or meal is not in db just ignore it
-                        Optional<MealBox> mealBoxOptional = mealBoxes.stream().filter(mealBox1 -> mealBox1.getMealName().equals(predictionResult.getData().getMeal())).findFirst();
+                        Optional<MealBox> mealBoxOptional = mealBoxes.stream().filter(mealBox1 -> mealBox1.getMealName().equals(predictionResult.getData().getMealName())).findFirst();
                         if (mealBoxOptional.isPresent()) {
                             MealBox mealBox = mealBoxOptional.get();
-                            ui.access(() -> mealBox.showRecommendation(predictionResult.getData()));
+                            mealBox.showRecommendation(predictionResult.getData());
                         }
                     }
                 }
@@ -359,8 +356,8 @@ public class MealPlan extends VerticalLayout implements BeforeEnterObserver {
             }
         } else {
             log.error("Collaborative filtering API is not available");
-            ui.access(() -> NotificationFactory.create(NotificationType.WARN, "Aufgrund technischer Probleme können aktuell " +
-                    "keine Empfehlungen angezeigt werden").open());
+            NotificationFactory.create(NotificationType.WARN, "Aufgrund technischer Probleme können aktuell " +
+                    "keine Empfehlungen angezeigt werden").open();
         }
     }
 }
