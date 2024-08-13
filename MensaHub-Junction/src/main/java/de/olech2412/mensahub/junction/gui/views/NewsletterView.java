@@ -234,7 +234,7 @@ public class NewsletterView extends HorizontalLayout implements BeforeEnterObser
             if (e.getValue()) {
                 PermanentNotificationMiddleScreenPosition permanentNotificationMiddleScreenPosition = new PermanentNotificationMiddleScreenPosition(
                         "Wenn du diese Option aktivierst, senden wir dir nur eine E-Mail, wenn ein Gericht für dich empfehlenswert ist. " +
-                                "Diese Empfehlungen basieren auf deinem bisherigen Essverhalten und deinen Vorlieben. " +
+                                "Diese Empfehlungen basieren auf deinen bisherigen Bewertungen, deinen Vorlieben sowie Bewertungen anderer Nutzer. " +
                                 "Wenn du diese Einstellung nicht aktivierst, senden wir dir den typischen täglichen Newsletter als E-Mail.");
                 permanentNotificationMiddleScreenPosition.open();
             }
