@@ -77,10 +77,6 @@ public class MealPlanService {
                         ui.push(); // Push UI updates to the client
                     });
                 }
-                ui.accessSynchronously(() -> {
-                    NotificationFactory.create(NotificationType.ERROR, "Aufgrund technischer Probleme können aktuell keine Empfehlungen angezeigt werden").open();
-                    ui.push(); // Push UI updates to the client
-                });
             }
         } else {
             log.error("Collaborative filtering API is not available");
