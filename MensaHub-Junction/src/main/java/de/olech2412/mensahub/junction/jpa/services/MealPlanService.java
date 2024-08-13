@@ -48,7 +48,10 @@ public class MealPlanService {
                 predictionRequests.add(predictionRequest);
             }
 
+            long startTime = System.currentTimeMillis();
             Result<List<Result<PredictionResult, APIError>>, APIError> predictionResults = collaborativeFilteringAPIAdapter.predict(predictionRequests);
+            long endTime = System.currentTimeMillis();
+            log.info("API Request to collaborative filter api with {} elements finished in {}ms", mealBoxes.size(), endTime - startTime);
             if (predictionResults.isSuccess()) {
                 for (Result<PredictionResult, APIError> predictionResult : predictionResults.getData()) {
                     if (predictionResult.isSuccess()) {
@@ -59,12 +62,16 @@ public class MealPlanService {
                         }
                     }
                 }
+                ui.access(ui::push); // Push UI updates to the client
             } else {
                 log.error("Error while prediction results: {}. Error: {}", predictionResults, predictionResults.getError());
             }
         } else {
             log.error("Collaborative filtering API is not available");
-            ui.access(() -> NotificationFactory.create(NotificationType.WARN, "Aufgrund technischer Probleme können aktuell keine Empfehlungen angezeigt werden").open());
+            ui.access(() -> {
+                NotificationFactory.create(NotificationType.WARN, "Aufgrund technischer Probleme können aktuell keine Empfehlungen angezeigt werden").open();
+                ui.push(); // Push UI updates to the client
+            });
         }
 
         return CompletableFuture.completedFuture(null);

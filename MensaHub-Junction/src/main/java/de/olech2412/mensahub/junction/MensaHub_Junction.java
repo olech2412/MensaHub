@@ -2,6 +2,7 @@ package de.olech2412.mensahub.junction;
 
 import com.vaadin.flow.component.dependency.NpmPackage;
 import com.vaadin.flow.component.page.AppShellConfigurator;
+import com.vaadin.flow.component.page.Push;
 import com.vaadin.flow.server.PWA;
 import com.vaadin.flow.theme.Theme;
 import de.olech2412.mensahub.junction.config.Config;
@@ -9,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
+import org.springframework.scheduling.annotation.EnableAsync;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
@@ -29,6 +31,8 @@ import java.security.NoSuchAlgorithmException;
 @PWA(name = "MensaHub", shortName = "MensaHub")
 @EntityScan(basePackages = {"de.olech2412.mensahub.models"})
 @Slf4j
+@EnableAsync
+@Push
 public class MensaHub_Junction implements AppShellConfigurator {
 
     public static void main(String[] args) throws IOException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {

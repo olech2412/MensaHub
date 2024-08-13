@@ -243,6 +243,7 @@ public class MealPlan extends VerticalLayout implements BeforeEnterObserver {
             mealBoxes.add(mealBox);
         }
 
+
         // Asynchrone API-Anfragen starten
         CompletableFuture<Void> future = mealPlanService.addRecommendationScoreAsync(mealBoxes, mailUser, UI.getCurrent());
 
