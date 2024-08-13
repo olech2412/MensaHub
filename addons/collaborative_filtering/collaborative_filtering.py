@@ -92,8 +92,9 @@ def check_preferences(user_id, meal_id, meals_df, user_preferences):
     meal_category = meal_info['category']
     meal_allergens = meal_info['allergens']
     meal_description = meal_info['description']
+    meal_name = meal_info['name']
     
-    logger.debug(f"Mahlzeit-Informationen: Kategorie: {meal_category}, Allergene: {meal_allergens}, Beschreibung: {meal_description}")
+    logger.debug(f"Mahlzeit-Informationen: Kategorie: {meal_category}, Allergene: {meal_allergens}, Name: {meal_name}, Beschreibung: {meal_description}")
     
     # Kategoriepräferenz prüfen (optional und exakte Übereinstimmung)
     if user_preferences.get('disliked_categories') and meal_category in user_preferences['disliked_categories']:
@@ -107,11 +108,11 @@ def check_preferences(user_id, meal_id, meals_df, user_preferences):
                 logger.info(f"Mahlzeit {meal_id} enthält ein vermiedenes Allergen für Benutzer {user_id}: {allergen}")
                 return False  # Allergen gefunden
     
-    # Zutatenpräferenzen in der Beschreibung prüfen (optional und flexible Übereinstimmung mit Regex)
+    # Zutatenpräferenzen in Name und Beschreibung prüfen (optional und flexible Übereinstimmung mit Regex)
     if user_preferences.get('disliked_ingredients'):
         for ingredient in user_preferences['disliked_ingredients']:
             pattern = rf'\b{re.escape(ingredient)}\w*\b'
-            if re.search(pattern, meal_description, re.IGNORECASE):
+            if re.search(pattern, meal_description, re.IGNORECASE) or re.search(pattern, meal_name, re.IGNORECASE):
                 logger.info(f"Mahlzeit {meal_id} enthält eine nicht gemochte Zutat für Benutzer {user_id}: {ingredient}")
                 return False  # Ungeliebte Zutat gefunden
     
