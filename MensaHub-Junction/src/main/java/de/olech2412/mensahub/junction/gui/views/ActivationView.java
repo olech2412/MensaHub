@@ -167,13 +167,11 @@ public class ActivationView extends VerticalLayout implements BeforeEnterObserve
                     mealBox.getRatingComponent().setEnabled(false);
 
                     Result<List<Rating>, JPAError> ratingsForNotification = ratingService.findAllByMailUser(mailUser);
-                    System.out.println("activationcode: " + mailUser.getActivationCode().getCode());
                     if (ratingsForNotification.isSuccess()) {
                         List<Rating> ratingList = ratingsForNotification.getData();
                         if (ratingList.size() >= meals.size()) {
                             NotificationFactory.create(NotificationType.SUCCESS, "Vielen Dank für deine Bewertungen!").open();
                             mailUser.setActivationCode(null);
-                            System.out.println(activationCode);
                             mailUserRepository.save(mailUser);
                             activationCodeRepository.delete(activationCodeRepository.findByCode(activationCode).get(0));
                         }
