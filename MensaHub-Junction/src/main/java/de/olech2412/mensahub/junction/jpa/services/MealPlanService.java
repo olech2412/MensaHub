@@ -1,10 +1,12 @@
 package de.olech2412.mensahub.junction.jpa.services;
 
 import com.vaadin.flow.component.UI;
+import com.vaadin.flow.component.button.Button;
 import de.olech2412.mensahub.APIConfiguration;
 import de.olech2412.mensahub.CollaborativeFilteringAPIAdapter;
 import de.olech2412.mensahub.junction.config.Config;
 import de.olech2412.mensahub.junction.gui.components.own.boxes.MealBox;
+import de.olech2412.mensahub.junction.gui.components.vaadin.datetimepicker.GermanDatePicker;
 import de.olech2412.mensahub.junction.gui.components.vaadin.notifications.NotificationFactory;
 import de.olech2412.mensahub.junction.gui.components.vaadin.notifications.types.NotificationType;
 import de.olech2412.mensahub.models.addons.predictions.PredictionRequest;
@@ -12,7 +14,6 @@ import de.olech2412.mensahub.models.addons.predictions.PredictionResult;
 import de.olech2412.mensahub.models.authentification.MailUser;
 import de.olech2412.mensahub.models.result.Result;
 import de.olech2412.mensahub.models.result.errors.api.APIError;
-import de.olech2412.mensahub.models.result.errors.api.APIErrors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -33,7 +34,7 @@ import java.util.concurrent.CompletableFuture;
 public class MealPlanService {
 
     @Async
-    public CompletableFuture<Void> addRecommendationScoreAsync(List<MealBox> mealBoxes, MailUser mailUser, UI ui) throws NoSuchPaddingException, IllegalBlockSizeException, IOException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
+    public CompletableFuture<Void> addRecommendationScoreAsync(List<MealBox> mealBoxes, MailUser mailUser, UI ui, Button oneDayBackward, Button oneDayForward, GermanDatePicker datePicker) throws NoSuchPaddingException, IllegalBlockSizeException, IOException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
         if (mailUser == null || mealBoxes == null || mealBoxes.isEmpty()) {
             return CompletableFuture.completedFuture(null);
         }
@@ -63,25 +64,30 @@ public class MealPlanService {
                         }
                     }
                 }
+                ui.accessSynchronously(() -> {
+                    oneDayBackward.setEnabled(true);
+                    oneDayForward.setEnabled(true);
+                    datePicker.setEnabled(true);
+                });
+
                 ui.accessSynchronously(ui::push); // Push UI updates to the client
             } else {
                 log.error("Error while prediction results: {}. Error: {}", predictionResults, predictionResults.getError());
-                if (predictionResults.getError().message().contains("already in progress")) { // when a prediction is already in progress
-                    ui.accessSynchronously(() -> {
-                        NotificationFactory.create(NotificationType.WARN, "Aufgrund eines starken Nutzeraufkommens können derzeit keine Empfehlungen berechnet werden. Versuche es später erneut").open();
-                        ui.push(); // Push UI updates to the client
-                    });
-                } else {
-                    ui.accessSynchronously(() -> {
-                        NotificationFactory.create(NotificationType.ERROR, "Bei der Berechnung deiner Empfehlungen ist ein unbekannter Fehler aufgetreten. Kein Sorge, wir prüfen das schnellstmöglich!").open();
-                        ui.push(); // Push UI updates to the client
-                    });
-                }
+                ui.accessSynchronously(() -> {
+                    NotificationFactory.create(NotificationType.ERROR, "Bei der Berechnung deiner Empfehlungen ist ein unbekannter Fehler aufgetreten. Kein Sorge, wir prüfen das schnellstmöglich!").open();
+                    oneDayBackward.setEnabled(true);
+                    oneDayForward.setEnabled(true);
+                    datePicker.setEnabled(true);
+                    ui.push(); // Push UI updates to the client
+                });
             }
         } else {
             log.error("Collaborative filtering API is not available");
             ui.accessSynchronously(() -> {
                 NotificationFactory.create(NotificationType.WARN, "Aufgrund technischer Probleme können aktuell keine Empfehlungen angezeigt werden").open();
+                oneDayBackward.setEnabled(true);
+                oneDayForward.setEnabled(true);
+                datePicker.setEnabled(true);
                 ui.push(); // Push UI updates to the client
             });
         }

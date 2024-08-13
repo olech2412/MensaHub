@@ -1,11 +1,9 @@
 package de.olech2412.mensahub.junction.gui.components.own.boxes;
 
 import com.vaadin.flow.component.Text;
-import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.Unit;
 import com.vaadin.flow.component.accordion.Accordion;
 import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H4;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.VaadinIcon;
@@ -76,7 +74,7 @@ public class MealBox extends VerticalLayout {
         add(categoryLayout, h4, new Text(description), priceText, accordion, ratingLayout);
     }
 
-    public void showRecommendation(PredictionResult predictionResult){
+    public void showRecommendation(PredictionResult predictionResult) {
         long predictionScore = Math.round(predictionResult.getPredictedRating());
         recommendationBadge.setText(predictionScore + "/5" + " | " + predictionResult.getTrustScore());
         recommendationBadge.addClassName("prediction");
@@ -92,7 +90,7 @@ public class MealBox extends VerticalLayout {
         });
     }
 
-    public  boolean isMobileDevice() {
+    public boolean isMobileDevice() {
         WebBrowser webBrowser = VaadinSession.getCurrent().getBrowser();
         return webBrowser.isAndroid() || webBrowser.isIPhone() || webBrowser.isWindowsPhone();
     }

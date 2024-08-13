@@ -8,7 +8,6 @@ import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
-import de.olech2412.mensahub.models.Preferences;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -21,13 +20,10 @@ import java.util.regex.Pattern;
 public class CustomComboBoxLayout extends VerticalLayout {
 
     TextField textField;
-
-    private List<String> values = new ArrayList<>();
-
+    FormLayout badges = new FormLayout();
+    private final List<String> values = new ArrayList<>();
     @Setter
     private Pattern pattern;
-
-    FormLayout badges = new FormLayout();
 
     public CustomComboBoxLayout(String textFieldLabel) {
         badges.getStyle().set("flex-wrap", "wrap");
@@ -47,10 +43,10 @@ public class CustomComboBoxLayout extends VerticalLayout {
         setSizeUndefined();
     }
 
-    public void addNewItem(String item){
+    public void addNewItem(String item) {
         Span filterBadge = createFilterBadge(item);
-        if(item != null && !item.isEmpty() && !values.contains(item)) {
-            if(pattern == null){
+        if (item != null && !item.isEmpty() && !values.contains(item)) {
+            if (pattern == null) {
                 badges.add(filterBadge);
                 values.add(item);
                 textField.clear();
@@ -96,15 +92,15 @@ public class CustomComboBoxLayout extends VerticalLayout {
         return values;
     }
 
-    public void setItems(List<String> items){
-        for (String item : items){
+    public void setItems(List<String> items) {
+        for (String item : items) {
             Span badge = createFilterBadge(item);
             badges.add(badge);
             values.add(item);
         }
     }
 
-    public void clear(){
+    public void clear() {
         textField.clear();
         values.clear();
         badges.removeAll();

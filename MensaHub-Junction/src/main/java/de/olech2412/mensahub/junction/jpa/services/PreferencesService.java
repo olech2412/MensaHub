@@ -22,11 +22,11 @@ public class PreferencesService {
     @Autowired
     ErrorEntityRepository errorEntityRepository;
 
-    public Result<Preferences, JPAError> delete(Preferences preferences){
+    public Result<Preferences, JPAError> delete(Preferences preferences) {
         try {
             preferencesRepository.delete(preferences);
             return Result.success(preferences);
-        } catch (Exception e){
+        } catch (Exception e) {
             log.error(e.getMessage(), e);
             Result<Preferences, JPAError> result = Result.error(new JPAError("Fehler beim löschen der Preferences: " + e.getMessage(), JPAErrors.ERROR_DELETE));
             errorEntityRepository.save(new ErrorEntity(result.getError().message(), result.getError().error().getCode(), Application.JUNCTION));
@@ -34,11 +34,11 @@ public class PreferencesService {
         }
     }
 
-    public Result<Preferences, JPAError> save(Preferences preferences){
+    public Result<Preferences, JPAError> save(Preferences preferences) {
         try {
             preferencesRepository.save(preferences);
             return Result.success(preferences);
-        } catch (Exception e){
+        } catch (Exception e) {
             log.error(e.getMessage(), e);
             Result<Preferences, JPAError> result = Result.error(new JPAError("Fehler beim speichern der Preferences: " + e.getMessage(), JPAErrors.ERROR_SAVING));
             errorEntityRepository.save(new ErrorEntity(result.getError().message(), result.getError().error().getCode(), Application.JUNCTION));

@@ -5,7 +5,6 @@ import de.olech2412.mensahub.junction.jpa.repository.ErrorEntityRepository;
 import de.olech2412.mensahub.junction.jpa.repository.meals.MealRepository;
 import de.olech2412.mensahub.models.Meal;
 import de.olech2412.mensahub.models.Mensa;
-import de.olech2412.mensahub.models.jobs.Job;
 import de.olech2412.mensahub.models.result.Result;
 import de.olech2412.mensahub.models.result.errors.Application;
 import de.olech2412.mensahub.models.result.errors.ErrorEntity;
@@ -94,11 +93,11 @@ public class MealsService extends Meal {
         log.warn("Meal deleted: {} from {}", meal.getName(), mensa.getName());
     }
 
-    public Result<List<String>, JPAError> findAllDistinctCategories(){
+    public Result<List<String>, JPAError> findAllDistinctCategories() {
         try {
             List<String> categories = mealRepository.findAllDistinctCategories();
             return Result.success(categories);
-        } catch (Exception e){
+        } catch (Exception e) {
             log.error(e.getMessage(), e);
             Result<List<String>, JPAError> result = Result.error(new JPAError("Fehler beim lesen der unterschiedlichen Kategorien: " + e.getMessage(), JPAErrors.ERROR_READ));
             errorEntityRepository.save(new ErrorEntity(result.getError().message(), result.getError().error().getCode(), Application.JUNCTION));
@@ -106,12 +105,12 @@ public class MealsService extends Meal {
         }
     }
 
-    public Result<List<String>, JPAError> findAllUniqueAllergens(){
+    public Result<List<String>, JPAError> findAllUniqueAllergens() {
         try {
             List<String> allergens = mealRepository.findAllUniqueAllergens();
             allergens.remove(Config.getInstance().getProperty("mensaHub.dataDispatcher.notAvailable.sign")); // remove the N/A sign
             return Result.success(allergens);
-        } catch (Exception e){
+        } catch (Exception e) {
             log.error(e.getMessage(), e);
             Result<List<String>, JPAError> result = Result.error(new JPAError("Fehler beim lesen der unterschiedlichen Allergene: " + e.getMessage(), JPAErrors.ERROR_READ));
             errorEntityRepository.save(new ErrorEntity(result.getError().message(), result.getError().error().getCode(), Application.JUNCTION));

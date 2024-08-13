@@ -20,6 +20,7 @@ public interface MealRepository extends ListCrudRepository<Meal, Long> {
 
     /**
      * This is required to remove the splits
+     *
      * @return a list with all allergens
      */
     @Query(value = "WITH SplitAllergens AS ( " +

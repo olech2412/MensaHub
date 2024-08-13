@@ -95,11 +95,11 @@ public class MailUserService {
 
     public void deleteMailUser(MailUser mailUser) {
         List<Job> jobs = jobRepository.findAllByMailUsers(List.of(mailUser));
-        for (Job job : jobs){
+        for (Job job : jobs) {
             List<MailUser> mailUsers = job.getMailUsers();
             mailUsers.removeIf(mailUser1 -> mailUser1.getEmail().equals(mailUser.getEmail()));
             log.info("Removed mailuser {} from job {} because of account deletion", mailUser.getEmail(), job.getUuid());
-            if(mailUsers.isEmpty()){
+            if (mailUsers.isEmpty()) {
                 job.setMailUsers(null);
             } else {
                 job.setMailUsers(mailUsers);
@@ -108,7 +108,7 @@ public class MailUserService {
         }
 
         List<Rating> ratings = ratingRepository.findAllByMailUser(mailUser);
-        for (Rating rating : ratings){
+        for (Rating rating : ratings) {
             rating.setMailUser(null);
             ratingRepository.save(rating);
         }

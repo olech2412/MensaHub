@@ -62,6 +62,7 @@ public class NewsletterView extends HorizontalLayout implements BeforeEnterObser
 
     private final String welcomeText = "Willkommen bei MensaHub";
     private final MensaService mensaService;
+    private final MealsService mealsService;
     Logger logger = LoggerFactory.getLogger(NewsletterView.class);
     private EmailField emailField;
     private TextField firstName;
@@ -75,9 +76,6 @@ public class NewsletterView extends HorizontalLayout implements BeforeEnterObser
     @Autowired
     private MailUserService mailUserService;
     private Checkbox wantUpdates;
-
-    private final MealsService mealsService;
-
     private Preferences preferences;
 
     public NewsletterView(MensaService mensaService, MealsService mealsService) throws IOException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
@@ -154,7 +152,6 @@ public class NewsletterView extends HorizontalLayout implements BeforeEnterObser
             }
         });
         registerButton.addClickShortcut(Key.ENTER);
-
 
 
         Button preferencesButton = new Button("Präferenzen angeben");

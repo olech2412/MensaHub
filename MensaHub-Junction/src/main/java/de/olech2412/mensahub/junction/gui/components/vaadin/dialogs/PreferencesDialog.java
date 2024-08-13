@@ -54,14 +54,14 @@ public class PreferencesDialog extends Dialog {
         allergens.setHelperText("Gib Allergene oder Unverträglichkeiten an, für welche du keine Empfehlungen möchtest");
 
         Result<List<String>, JPAError> categoriesResult = mealsService.findAllDistinctCategories();
-        if (categoriesResult.isSuccess()){
+        if (categoriesResult.isSuccess()) {
             categories.setItems(categoriesResult.getData());
         } else {
             NotificationFactory.create(NotificationType.ERROR, "Die Kategorien konnten nicht geladen werden, bitte versuche es erneut.").open();
         }
 
         Result<List<String>, JPAError> allergenResult = mealsService.findAllUniqueAllergens();
-        if (allergenResult.isSuccess()){
+        if (allergenResult.isSuccess()) {
             allergens.setItems(allergenResult.getData());
         } else {
             NotificationFactory.create(NotificationType.ERROR, "Die Allergene konnten nicht geladen werden, bitte versuche es erneut.").open();
@@ -110,22 +110,22 @@ public class PreferencesDialog extends Dialog {
         setMinWidth(350, Unit.PIXELS);
     }
 
-    public Preferences buildPreferences(){
+    public Preferences buildPreferences() {
         Preferences preferences = new Preferences();
 
-        if (categories.isEmpty()){
+        if (categories.isEmpty()) {
             preferences.setDisliked_categories(null);
         } else {
             preferences.setDisliked_categories(categories.getValue().stream().toList());
         }
 
-        if (allergens.isEmpty()){
+        if (allergens.isEmpty()) {
             preferences.setAvoidedAllergens(null);
         } else {
             preferences.setAvoidedAllergens(allergens.getValue().stream().toList());
         }
 
-        if(personalDislikes.getValues().isEmpty()){
+        if (personalDislikes.getValues().isEmpty()) {
             preferences.setDislikedIngredients(null);
         } else {
             preferences.setDislikedIngredients(personalDislikes.getValues());
@@ -134,13 +134,14 @@ public class PreferencesDialog extends Dialog {
         return preferences;
     }
 
-    public void setPreferences(Preferences preferences){
-        if(preferences == null){
+    public void setPreferences(Preferences preferences) {
+        if (preferences == null) {
             return;
         }
         if (preferences.getDisliked_categories() != null) categories.setValue(preferences.getDisliked_categories());
-        if(preferences.getAvoidedAllergens() != null) allergens.setValue(preferences.getAvoidedAllergens());
-        if(preferences.getDislikedIngredients() != null) personalDislikes.setItems(preferences.getDislikedIngredients());
+        if (preferences.getAvoidedAllergens() != null) allergens.setValue(preferences.getAvoidedAllergens());
+        if (preferences.getDislikedIngredients() != null)
+            personalDislikes.setItems(preferences.getDislikedIngredients());
     }
 
 }
