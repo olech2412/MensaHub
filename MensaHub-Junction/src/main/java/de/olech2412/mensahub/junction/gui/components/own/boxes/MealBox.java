@@ -80,7 +80,7 @@ public class MealBox extends VerticalLayout {
         long predictionScore = Math.round(predictionResult.getPredictedRating());
         recommendationBadge.setText(predictionScore + "/5" + " | " + predictionResult.getTrustScore());
         recommendationBadge.addClassName("prediction");
-        recommendationBadge.setWidth(100f, Unit.PERCENTAGE);
+        recommendationBadge.setWidth(90f, Unit.PERCENTAGE);
         recommendationBadge.getStyle().setTextAlign(Style.TextAlign.CENTER);
         Tooltip tooltip = Tooltip.forComponent(recommendationBadge)
                 .withText("Diese Angaben wurden für dich persönlich auf Grundlage deiner und den Bewertungen anderer Nutzer für dich berechnet. " +
