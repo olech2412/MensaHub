@@ -17,9 +17,9 @@ public class Preferences {
     private Long id;
 
     @ElementCollection(targetClass = String.class, fetch = FetchType.EAGER)
-    @CollectionTable(name = "preffered_categories", joinColumns = @JoinColumn(name = "preffered_categories_id"))
-    @Column(name = "preffered_categories", nullable = false)
-    private List<String> preferredCategories = new ArrayList<>();
+    @CollectionTable(name = "disliked_categories", joinColumns = @JoinColumn(name = "disliked_categories_id"))
+    @Column(name = "disliked_categories", nullable = false)
+    private List<String> disliked_categories = new ArrayList<>();
 
     @ElementCollection(targetClass = String.class, fetch = FetchType.EAGER)
     @CollectionTable(name = "avoided_allergens", joinColumns = @JoinColumn(name = "avoided_allergens_id"))

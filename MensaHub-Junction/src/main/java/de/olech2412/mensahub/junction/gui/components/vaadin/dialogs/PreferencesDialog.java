@@ -114,9 +114,9 @@ public class PreferencesDialog extends Dialog {
         Preferences preferences = new Preferences();
 
         if (categories.isEmpty()){
-            preferences.setPreferredCategories(null);
+            preferences.setDisliked_categories(null);
         } else {
-            preferences.setPreferredCategories(categories.getValue().stream().toList());
+            preferences.setDisliked_categories(categories.getValue().stream().toList());
         }
 
         if (allergens.isEmpty()){
@@ -138,7 +138,7 @@ public class PreferencesDialog extends Dialog {
         if(preferences == null){
             return;
         }
-        if (preferences.getPreferredCategories() != null) categories.setValue(preferences.getPreferredCategories());
+        if (preferences.getDisliked_categories() != null) categories.setValue(preferences.getDisliked_categories());
         if(preferences.getAvoidedAllergens() != null) allergens.setValue(preferences.getAvoidedAllergens());
         if(preferences.getDislikedIngredients() != null) personalDislikes.setItems(preferences.getDislikedIngredients());
     }
