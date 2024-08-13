@@ -25,6 +25,7 @@ import de.olech2412.mensahub.junction.gui.components.vaadin.notifications.types.
 import de.olech2412.mensahub.junction.gui.components.vaadin.notifications.types.NotificationType;
 import de.olech2412.mensahub.junction.jpa.repository.RatingRepository;
 import de.olech2412.mensahub.junction.jpa.services.MailUserService;
+import de.olech2412.mensahub.junction.jpa.services.MealPlanService;
 import de.olech2412.mensahub.junction.jpa.services.RatingService;
 import de.olech2412.mensahub.junction.jpa.services.meals.MealsService;
 import de.olech2412.mensahub.junction.jpa.services.mensen.MensaService;
@@ -51,6 +52,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 
 @Route("mealPlan")
 @PageTitle("Speiseplan")
@@ -67,17 +69,23 @@ public class MealPlan extends VerticalLayout implements BeforeEnterObserver {
 
     @Autowired
     RatingRepository ratingRepository;
+
     @Autowired
     private MailUserService mailUserService;
+
     @Autowired
     private RatingService ratingService;
 
     private List<Meal> meals;
+
     private MailUser mailUser;
 
-    public MealPlan(MealsService mealsService, MensaService mensaService) {
+    private MealPlanService mealPlanService;
+
+    public MealPlan(MealsService mealsService, MensaService mensaService, MealPlanService mealPlanService) {
         this.mealsService = mealsService;
         this.mensaService = mensaService;
+        this.mealPlanService = mealPlanService;
 
         datePicker.setValue(LocalDate.now());
 
@@ -177,7 +185,8 @@ public class MealPlan extends VerticalLayout implements BeforeEnterObserver {
 
         try {
             updateRows(meals);
-        } catch (IOException e) {
+        } catch (IOException | NoSuchPaddingException | IllegalBlockSizeException | NoSuchAlgorithmException |
+                 BadPaddingException | InvalidKeyException e) {
             throw new RuntimeException(e);
         }
 
@@ -192,7 +201,7 @@ public class MealPlan extends VerticalLayout implements BeforeEnterObserver {
         add(row);
     }
 
-    private void updateRows(List<Meal> meals) throws IOException {
+    private void updateRows(List<Meal> meals) throws IOException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
         List<MealBox> mealBoxes = new ArrayList<>();
         for (Meal meal : meals) {
             MealBox mealBox = new MealBox(meal.getName(), meal.getDescription(), meal.getPrice(), meal.getAllergens(), meal.getCategory(), meal.getId().intValue());
@@ -234,12 +243,14 @@ public class MealPlan extends VerticalLayout implements BeforeEnterObserver {
             mealBoxes.add(mealBox);
         }
 
-        try {
-            addRecommendationScore(mealBoxes);
-        } catch (IOException | NoSuchPaddingException | IllegalBlockSizeException | NoSuchAlgorithmException |
-                 BadPaddingException | InvalidKeyException e) {
-            log.error("Error while adding recommendation scores", e);
-        }
+        // Asynchrone API-Anfragen starten
+        CompletableFuture<Void> future = mealPlanService.addRecommendationScoreAsync(mealBoxes, mailUser, UI.getCurrent());
+
+        future.thenAccept(voidResult -> {
+        }).exceptionally(ex -> {
+            log.error("Error during async recommendation score fetching", ex);
+            return null;
+        });
     }
 
     @Override
@@ -320,44 +331,5 @@ public class MealPlan extends VerticalLayout implements BeforeEnterObserver {
 
     private boolean isUserIdentified() {
         return mailUser != null;
-    }
-
-    private void addRecommendationScore(List<MealBox> mealBoxes) throws IOException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
-        if (mailUser == null) {
-            return;
-        }
-
-        if (mealBoxes == null || mealBoxes.isEmpty()) {
-            return;
-        }
-
-        APIConfiguration apiConfiguration = new APIConfiguration();
-        apiConfiguration.setBaseUrl(Config.getInstance().getProperty("mensaHub.junction.collaborative.filter.api.baseUrl"));
-        CollaborativeFilteringAPIAdapter collaborativeFilteringAPIAdapter = new CollaborativeFilteringAPIAdapter(apiConfiguration);
-        if (collaborativeFilteringAPIAdapter.isAPIAvailable()) {
-            List<PredictionRequest> predictionRequests = new ArrayList<>();
-            for (MealBox mealBox : mealBoxes) {
-                PredictionRequest predictionRequest = new PredictionRequest(mailUser.getId().intValue(), mealBox.getMealName(), mealBox.getMealId());
-                predictionRequests.add(predictionRequest);
-            }
-            Result<List<Result<PredictionResult, APIError>>, APIError> predictionResults = collaborativeFilteringAPIAdapter.predict(predictionRequests);
-            if (predictionResults.isSuccess()) {
-                for (Result<PredictionResult, APIError> predictionResult : predictionResults.getData()) {
-                    if (predictionResult.isSuccess()) { // if not, the user or meal is not in db just ignore it
-                        Optional<MealBox> mealBoxOptional = mealBoxes.stream().filter(mealBox1 -> mealBox1.getMealName().equals(predictionResult.getData().getMealName())).findFirst();
-                        if (mealBoxOptional.isPresent()) {
-                            MealBox mealBox = mealBoxOptional.get();
-                            mealBox.showRecommendation(predictionResult.getData());
-                        }
-                    }
-                }
-            } else {
-                log.error("Error while prediction results: {}. Error: {}", predictionResults, predictionResults.getError());
-            }
-        } else {
-            log.error("Collaborative filtering API is not available");
-            NotificationFactory.create(NotificationType.WARN, "Aufgrund technischer Probleme können aktuell " +
-                    "keine Empfehlungen angezeigt werden").open();
-        }
     }
 }
