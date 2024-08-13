@@ -56,6 +56,7 @@ public class MealBox extends VerticalLayout {
         Span categoryBadge = new Span(category);
         categoryBadge.addClassNames("category", category.replace(" ", "-"));
         categoryBadge.setWidth(100f, Unit.PERCENTAGE);
+        categoryBadge.getStyle().setTextAlign(Style.TextAlign.CENTER);
 
         HorizontalLayout categoryLayout = new HorizontalLayout(categoryBadge, recommendationBadge);
         categoryLayout.addClassName("category-layout");
