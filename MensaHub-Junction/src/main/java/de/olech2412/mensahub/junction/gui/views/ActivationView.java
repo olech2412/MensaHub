@@ -57,7 +57,7 @@ public class ActivationView extends VerticalLayout implements BeforeEnterObserve
     private final RatingService ratingService;
     Logger logger = LoggerFactory.getLogger(ActivationView.class);
     private int currentMealIndex = 0;
-    private List<Meal> meals;
+    private List<Meal> mealList;
     private MealBox currentMealBox;
     private MailUser mailUser;
     private Button prevButton;
@@ -82,9 +82,16 @@ public class ActivationView extends VerticalLayout implements BeforeEnterObserve
         setAlignItems(Alignment.CENTER);
         HorizontalLayout mealLayout = new HorizontalLayout();
 
-        meals = mealsService.findTop20DistinctMealsExcludingGoudaForSubscribedMensa(activatedUser.getId());
+        Result<List<Meal>, JPAError> mealListResult = mealsService.findTop20DistinctMealsExcludingGoudaForSubscribedMensa(activatedUser.getId());
 
-        if (meals.isEmpty()) {
+        if (!mealListResult.isSuccess()) {
+            NotificationFactory.create(NotificationType.ERROR, "Wir haben Schwierigkeiten Essensdaten aus der Datenbank zu laden.").open();
+            return;
+        }
+
+        mealList = mealListResult.getData();
+
+        if (mealList.isEmpty()) {
             add(new Text("Keine Gerichte verfügbar."));
             return;
         }
@@ -99,11 +106,11 @@ public class ActivationView extends VerticalLayout implements BeforeEnterObserve
         nextButton = new Button(VaadinIcon.ARROW_RIGHT.create());
         nextButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
         nextButton.addClickListener(e -> showNextMeal(mealLayout));
-        if (currentMealIndex == meals.size() - 1) {
+        if (currentMealIndex == mealList.size() - 1) {
             nextButton.setEnabled(false);
         }
         // Initialize index display
-        indexDisplay = new Text("Gericht " + (currentMealIndex + 1) + " von " + meals.size());
+        indexDisplay = new Text("Gericht " + (currentMealIndex + 1) + " von " + mealList.size());
         HorizontalLayout indexLayout = new HorizontalLayout(prevButton, indexDisplay, nextButton);
         indexLayout.setJustifyContentMode(JustifyContentMode.CENTER);
         indexLayout.setAlignItems(Alignment.CENTER);
@@ -119,7 +126,7 @@ public class ActivationView extends VerticalLayout implements BeforeEnterObserve
         this.mailUser = activatedUser;
 
         // Create and set up MealBox
-        currentMealBox = createMealBox(meals.get(currentMealIndex));
+        currentMealBox = createMealBox(mealList.get(currentMealIndex));
 
 
         mealLayout.add(currentMealBox);
@@ -136,7 +143,6 @@ public class ActivationView extends VerticalLayout implements BeforeEnterObserve
             mealBox.getRatingButton().setEnabled(false);
         } else {
             Result<List<Rating>, JPAError> ratings = ratingService.findAllByMailUserAndMealName(mailUser, meal.getName());
-
             if (ratings.isSuccess()) {
                 List<Rating> ratingList = ratings.getData();
                 for (Rating rating : ratingList) {
@@ -170,7 +176,7 @@ public class ActivationView extends VerticalLayout implements BeforeEnterObserve
                     Result<List<Rating>, JPAError> ratingsForNotification = ratingService.findAllByMailUser(mailUser);
                     if (ratingsForNotification.isSuccess()) {
                         List<Rating> ratingList = ratingsForNotification.getData();
-                        if (ratingList.size() >= meals.size()) {
+                        if (ratingList.size() >= mealList.size()) {
                             NotificationFactory.create(NotificationType.SUCCESS, "Vielen Dank für deine Bewertungen!").open();
                             mailUser.setActivationCode(null);
                             mailUserRepository.save(mailUser);
@@ -186,11 +192,11 @@ public class ActivationView extends VerticalLayout implements BeforeEnterObserve
     }
 
     private void showNextMeal(HorizontalLayout mealLayout) {
-        if (currentMealIndex < meals.size() - 1) {
+        if (currentMealIndex < mealList.size() - 1) {
             currentMealIndex++;
             updateMealBox(mealLayout);
             updateIndexDisplay();// Update index display when showing the next meal
-            if (currentMealIndex == meals.size() - 1) {
+            if (currentMealIndex == mealList.size() - 1) {
                 nextButton.setEnabled(false);
             }
             if (!prevButton.isEnabled()) {
@@ -215,13 +221,13 @@ public class ActivationView extends VerticalLayout implements BeforeEnterObserve
 
     private void updateMealBox(HorizontalLayout mealLayout) {
         mealLayout.remove(currentMealBox);
-        currentMealBox = createMealBox(meals.get(currentMealIndex));
+        currentMealBox = createMealBox(mealList.get(currentMealIndex));
         mealLayout.add(currentMealBox);  // Add MealBox back to the center position
     }
 
     private void updateIndexDisplay() {
         if (indexDisplay != null) {
-            indexDisplay.setText("Gericht " + (currentMealIndex + 1) + " von " + meals.size());
+            indexDisplay.setText("Gericht " + (currentMealIndex + 1) + " von " + mealList.size());
         }
     }
 
