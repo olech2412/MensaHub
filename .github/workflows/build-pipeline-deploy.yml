@@ -28,13 +28,17 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-maven-
 
-      - name: List Maven cache directory before build
-        run: ls -la ~/.m2/repository
+      - name: Print Maven settings and cache info
+        run: |
+          echo "Maven local repository is set to:"
+          mvn help:evaluate -Dexpression=settings.localRepository -q -DforceStdout
+          echo "Listing content of local repository:"
+          ls -la ~/.m2/repository
 
       - name: Build MensaHub-Models
         run: |
           cd MensaHub-Models
-          mvn clean install
+          mvn clean install -nsu
 
       - name: List Maven cache directory after build
         run: ls -la ~/.m2/repository
@@ -61,10 +65,17 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-maven-
 
+      - name: Print Maven settings and cache info
+        run: |
+          echo "Maven local repository is set to:"
+          mvn help:evaluate -Dexpression=settings.localRepository -q -DforceStdout
+          echo "Listing content of local repository:"
+          ls -la ~/.m2/repository
+
       - name: Build MensaHub-Collaborative-Filtering-Adapter
         run: |
           cd MensaHub-Collaborative-Filtering-API-Adapter
-          mvn clean install
+          mvn clean install -nsu
 
   build-and-publish-mensahub-gateway:
     runs-on: ubuntu-latest
@@ -88,8 +99,15 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-maven-
 
+      - name: Print Maven settings and cache info
+        run: |
+          echo "Maven local repository is set to:"
+          mvn help:evaluate -Dexpression=settings.localRepository -q -DforceStdout
+          echo "Listing content of local repository:"
+          ls -la ~/.m2/repository
+
       - name: Build MensaHub-Gateway
-        run: 'mvn -s $GITHUB_WORKSPACE/.github/config/maven-settings.xml -Dpackage.publicKey=$PACKAGE_READ clean install -pl MensaHub-Gateway'
+        run: 'mvn -s $GITHUB_WORKSPACE/.github/config/maven-settings.xml -Dpackage.publicKey=$PACKAGE_READ clean install -pl MensaHub-Gateway -nsu'
         env:
           PACKAGE_READ: ${{ secrets.PACKAGE_READ }}
 
@@ -133,8 +151,15 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-maven-
 
+      - name: Print Maven settings and cache info
+        run: |
+          echo "Maven local repository is set to:"
+          mvn help:evaluate -Dexpression=settings.localRepository -q -DforceStdout
+          echo "Listing content of local repository:"
+          ls -la ~/.m2/repository
+
       - name: Build MensaHub-Junction
-        run: 'mvn -s $GITHUB_WORKSPACE/.github/config/maven-settings.xml -Dpackage.publicKey=$PACKAGE_READ clean package -P production -pl MensaHub-Junction'
+        run: 'mvn -s $GITHUB_WORKSPACE/.github/config/maven-settings.xml -Dpackage.publicKey=$PACKAGE_READ clean package -P production -pl MensaHub-Junction -nsu'
         env:
           PACKAGE_READ: ${{ secrets.PACKAGE_READ }}
 
@@ -178,8 +203,15 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-maven-
 
+      - name: Print Maven settings and cache info
+        run: |
+          echo "Maven local repository is set to:"
+          mvn help:evaluate -Dexpression=settings.localRepository -q -DforceStdout
+          echo "Listing content of local repository:"
+          ls -la ~/.m2/repository
+
       - name: Build MensaHub-DataDispatcher
-        run: 'mvn -s $GITHUB_WORKSPACE/.github/config/maven-settings.xml -Dpackage.publicKey=$PACKAGE_READ clean install -pl MensaHub-DataDispatcher'
+        run: 'mvn -s $GITHUB_WORKSPACE/.github/config/maven-settings.xml -Dpackage.publicKey=$PACKAGE_READ clean install -pl MensaHub-DataDispatcher -nsu'
         env:
           PACKAGE_READ: ${{ secrets.PACKAGE_READ }}
 
