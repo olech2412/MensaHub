@@ -195,7 +195,7 @@ public class ActivationView extends VerticalLayout implements BeforeEnterObserve
         if (currentMealIndex < mealList.size() - 1) {
             currentMealIndex++;
             updateMealBox(mealLayout);
-            updateIndexDisplay();// Update index display when showing the next meal
+            updateIndexDisplay();// Update the index display when showing the next meal
             if (currentMealIndex == mealList.size() - 1) {
                 nextButton.setEnabled(false);
             }
