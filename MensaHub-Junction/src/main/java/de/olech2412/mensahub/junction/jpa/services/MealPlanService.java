@@ -60,20 +60,20 @@ public class MealPlanService {
                         Optional<MealBox> mealBoxOptional = mealBoxes.stream().filter(mealBox1 -> mealBox1.getMealName().equals(predictionResult.getData().getMealName())).findFirst();
                         if (mealBoxOptional.isPresent()) {
                             MealBox mealBox = mealBoxOptional.get();
-                            ui.accessSynchronously(() -> mealBox.showRecommendation(predictionResult.getData()));
+                            ui.access(() -> mealBox.showRecommendation(predictionResult.getData()));
                         }
                     }
                 }
-                ui.accessSynchronously(() -> {
+
+                ui.access(() -> {
                     oneDayBackward.setEnabled(true);
                     oneDayForward.setEnabled(true);
                     datePicker.setEnabled(true);
+                    ui.push();
                 });
-
-                ui.accessSynchronously(ui::push); // Push UI updates to the client
             } else {
                 log.error("Error while prediction results: {}. Error: {}", predictionResults, predictionResults.getError());
-                ui.accessSynchronously(() -> {
+                ui.access(() -> {
                     NotificationFactory.create(NotificationType.ERROR, "Bei der Berechnung deiner Empfehlungen ist ein unbekannter Fehler aufgetreten. Kein Sorge, wir prüfen das schnellstmöglich!").open();
                     oneDayBackward.setEnabled(true);
                     oneDayForward.setEnabled(true);
@@ -83,7 +83,7 @@ public class MealPlanService {
             }
         } else {
             log.error("Collaborative filtering API is not available");
-            ui.accessSynchronously(() -> {
+            ui.access(() -> {
                 NotificationFactory.create(NotificationType.WARN, "Aufgrund technischer Probleme können aktuell keine Empfehlungen angezeigt werden").open();
                 oneDayBackward.setEnabled(true);
                 oneDayForward.setEnabled(true);

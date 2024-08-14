@@ -64,8 +64,8 @@ public class MealPlan extends VerticalLayout implements BeforeEnterObserver {
     HorizontalLayout row = new HorizontalLayout();
     @Autowired
     RatingRepository ratingRepository;
-    Button buttonOneDayBack = new Button(VaadinIcon.CHEVRON_CIRCLE_LEFT_O.create());
-    Button buttonOneDayForward = new Button(VaadinIcon.CHEVRON_CIRCLE_RIGHT_O.create());
+    private Button buttonOneDayBack = new Button(VaadinIcon.CHEVRON_CIRCLE_LEFT_O.create());
+    private Button buttonOneDayForward = new Button(VaadinIcon.CHEVRON_CIRCLE_RIGHT_O.create());
     @Autowired
     private MailUserService mailUserService;
     @Autowired
@@ -94,7 +94,6 @@ public class MealPlan extends VerticalLayout implements BeforeEnterObserver {
         buttonsDatePickerLayout.setJustifyContentMode(JustifyContentMode.CENTER);
 
         // set color grey
-        Button buttonOneDayBack = new Button(VaadinIcon.CHEVRON_CIRCLE_LEFT_O.create());
         buttonOneDayBack.addThemeVariants(ButtonVariant.LUMO_CONTRAST);
         buttonOneDayBack.addClickListener(buttonClickEvent -> {
             if (buttonClickEvent == null || mensaComboBox.isEmpty()) {
@@ -108,7 +107,6 @@ public class MealPlan extends VerticalLayout implements BeforeEnterObserver {
             buildMealPlan(datePicker.getValue().minusDays(1), mensaComboBox.getValue());
         });
 
-        Button buttonOneDayForward = new Button(VaadinIcon.CHEVRON_CIRCLE_RIGHT_O.create());
         buttonOneDayForward.addThemeVariants(ButtonVariant.LUMO_CONTRAST);
         buttonOneDayForward.addClickListener(buttonClickEvent -> {
             if (buttonClickEvent == null || mensaComboBox.isEmpty()) {
@@ -123,7 +121,6 @@ public class MealPlan extends VerticalLayout implements BeforeEnterObserver {
         });
 
         buttonsDatePickerLayout.add(buttonOneDayBack, datePicker, buttonOneDayForward);
-
 
         headerComboboxDatePickerButtonsLayout.add(mensaComboBox, buttonsDatePickerLayout);
 
@@ -158,7 +155,9 @@ public class MealPlan extends VerticalLayout implements BeforeEnterObserver {
             if (changeEvent.getValue() == null || mensaComboBox.isEmpty()) {
                 return;
             }
-            datePicker.setEnabled(false);
+            if (mailUser != null){
+                datePicker.setEnabled(false);
+            }
             buildMealPlan(changeEvent.getValue(), mensaComboBox.getValue());
         });
 
@@ -247,15 +246,15 @@ public class MealPlan extends VerticalLayout implements BeforeEnterObserver {
             mealBoxes.add(mealBox);
         }
 
+        UI currentUi = UI.getCurrent();
+        // Asynchrone API-Anfragen starten
+        CompletableFuture<Void> future = mealPlanService.addRecommendationScoreAsync(mealBoxes, mailUser, currentUi, buttonOneDayBack, buttonOneDayForward, datePicker);
+
         if (meals.isEmpty()) {
             buttonOneDayBack.setEnabled(true);
             buttonOneDayForward.setEnabled(true);
             datePicker.setEnabled(true);
         }
-
-        UI currentUi = UI.getCurrent();
-        // Asynchrone API-Anfragen starten
-        CompletableFuture<Void> future = mealPlanService.addRecommendationScoreAsync(mealBoxes, mailUser, currentUi, buttonOneDayBack, buttonOneDayForward, datePicker);
 
         future.thenAccept(voidResult -> {
         }).exceptionally(ex -> {
