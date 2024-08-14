@@ -5,3 +5,4 @@ scikit-learn
 gunicorn
 SQLAlchemy
 PyMySQL
+prometheus_flask_exporter

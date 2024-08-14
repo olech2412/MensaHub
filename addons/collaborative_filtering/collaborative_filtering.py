@@ -9,6 +9,8 @@ from sqlalchemy import create_engine
 import os
 import re
 import time
+import threading
+from prometheus_flask_exporter import PrometheusMetrics, Counter
 
 app = Flask(__name__)
 
@@ -16,11 +18,16 @@ app = Flask(__name__)
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 
+# Prometheus Metrics initialisieren
+metrics = PrometheusMetrics(app)
+metrics.info("app_info", "Application info", version="1.0.0")
+
 # Konfiguration der Datenbankverbindung aus Umgebungsvariablen
 DB_USER = os.getenv('DB_USER', 'root')
 DB_PASSWORD = os.getenv('DB_PASSWORD', 'password')
 DB_HOST = os.getenv('DB_HOST', '127.0.0.1')
 DB_NAME = os.getenv('DB_NAME', 'mensaHub')
+CACHE_DURATION = int(os.getenv('CACHE_DURATION', '1200'))  # Cache-Dauer in Sekunden (default 20 Minuten)
 
 DATABASE_URI = f'mysql+pymysql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}/{DB_NAME}'
 engine = create_engine(DATABASE_URI)
@@ -29,35 +36,55 @@ engine = create_engine(DATABASE_URI)
 cache = {
     "ratings_df": None,
     "meals_df": None,
-    "timestamp": 0
 }
 
-CACHE_DURATION = 600  # Cache-Dauer in Sekunden (10 Minuten)
+# Custom Metrics für Prometheus
+cache_hit = Counter('cache_hit_total', 'Anzahl der Cache-Treffer')
+cache_miss = Counter('cache_miss_total', 'Anzahl der Cache-Fehlschläge')
 
 # Funktion zum Laden der Daten aus der Datenbank mit Caching
 def load_data():
-    current_time = time.time()
+    logger.info("Lade Daten aus der Datenbank.")
     
-    if cache["ratings_df"] is None or cache["meals_df"] is None or (current_time - cache["timestamp"]) > CACHE_DURATION:
-        logger.info("Cache ist veraltet oder leer. Lade Daten aus der Datenbank.")
-        
-        ratings_query = "SELECT mail_user_id AS user_id, meal_name AS meal, rating, meal_id FROM ratings"
-        meals_query = "SELECT id, allergens, category, description, name FROM meals"
-        
-        ratings_df = pd.read_sql(ratings_query, con=engine)
-        meals_df = pd.read_sql(meals_query, con=engine)
-        
-        cache["ratings_df"] = ratings_df
-        cache["meals_df"] = meals_df
-        cache["timestamp"] = current_time
+    ratings_query = "SELECT mail_user_id AS user_id, meal_name AS meal, rating, meal_id FROM ratings"
+    meals_query = "SELECT id, allergens, category, description, name FROM meals"
+    
+    ratings_df = pd.read_sql(ratings_query, con=engine)
+    meals_df = pd.read_sql(meals_query, con=engine)
+    
+    cache["ratings_df"] = ratings_df
+    cache["meals_df"] = meals_df
+    
+    logger.info("Daten wurden erfolgreich aktualisiert.")
+
+# Funktion zur regelmäßigen Aktualisierung des Caches
+def update_cache_periodically():
+    while True:
+        try:
+            load_data()
+        except Exception as e:
+            logger.error(f"Fehler beim Aktualisieren des Caches: {e}")
+        time.sleep(CACHE_DURATION)
+
+# Starte den Cache-Aktualisierungsthread
+cache_thread = threading.Thread(target=update_cache_periodically, daemon=True)
+cache_thread.start()
+
+# Initiales Laden der Daten beim Starten der API
+load_data()
+
+# API-Endpunkt Funktionen (wie z.B. predict) verwenden die gecachten Daten:
+def load_cached_data():
+    if cache["ratings_df"] is None or cache["meals_df"] is None:
+        cache_miss.inc()
+        logger.error("Cache ist leer! Lade die Daten neu.")
+        load_data()
     else:
-        logger.info("Verwende zwischengespeicherte Daten.")
-        ratings_df = cache["ratings_df"]
-        meals_df = cache["meals_df"]
-    
-    return ratings_df, meals_df
+        cache_hit.inc()
+    return cache["ratings_df"], cache["meals_df"]
 
 # Funktion zum Laden der Präferenzen eines Benutzers aus der Datenbank
+@metrics.summary('load_user_preferences_latency_seconds', 'Zeit, um Benutzerpräferenzen zu laden')
 def load_user_preferences(user_id):
     logger.debug(f"Lade Präferenzen für Benutzer-ID: {user_id}")
     
@@ -94,6 +121,7 @@ def load_user_preferences(user_id):
     return user_preferences
 
 # Funktion zur Überprüfung von Vorlieben und Abneigungen
+@metrics.summary('check_preferences_latency_seconds', 'Zeit, um Präferenzen zu überprüfen')
 def check_preferences(user_id, meal_id, meals_df, user_preferences):
     logger.debug(f"Prüfe Präferenzen für Benutzer {user_id} und Mahlzeit {meal_id}")
     
@@ -132,6 +160,7 @@ def check_preferences(user_id, meal_id, meals_df, user_preferences):
     return True  # Gericht entspricht den Präferenzen
 
 # Funktion zur Vorhersage
+@metrics.summary('predict_rating_optimized_latency_seconds', 'Zeit, um eine Bewertung vorherzusagen')
 def predict_rating_optimized(user_id, meal_id, meal_name, user_meal_matrix, matrix_svd, user_similarity_df, user_meal_mean, meals_df, user_preferences, k=10, personal_weight=0.7):
     logger.debug(f"Starte Vorhersage für Benutzer {user_id} und Mahlzeit {meal_name} ({meal_id})")
     
@@ -184,13 +213,14 @@ def predict_rating_optimized(user_id, meal_id, meal_name, user_meal_matrix, matr
         raise ValueError(error_msg)
 
 @app.route('/predict', methods=['POST'])
+@metrics.histogram('predict_requests_duration_seconds', 'Dauer der Vorhersageanfragen', labels={'status': lambda r: r.status_code})
 def predict():
     logger.debug("Eingehende Vorhersageanforderung")
     
     data = request.json
     logger.debug(f"Empfangene Daten: {data}")
     
-    ratings_df, meals_df = load_data()
+    ratings_df, meals_df = load_cached_data()
     
     user_meal_matrix = ratings_df.pivot_table(index='user_id', columns='meal', values='rating')
     user_meal_mean = user_meal_matrix.mean(axis=1)
@@ -243,4 +273,4 @@ def health():
     return "OK", 200
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000)
+    app.run(host='0.0.0.0', port=8084)
