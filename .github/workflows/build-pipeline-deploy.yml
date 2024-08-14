@@ -128,7 +128,7 @@ jobs:
             ${{ runner.os }}-maven-
 
       - name: Build MensaHub-Junction
-        run: 'mvn -s $GITHUB_WORKSPACE/.github/config/maven-settings.xml -Dpackage.publicKey=$PACKAGE_READ clean install -P production -pl MensaHub-Junction'
+        run: 'mvn -s $GITHUB_WORKSPACE/.github/config/maven-settings.xml -Dpackage.publicKey=$PACKAGE_READ clean package -P production -pl MensaHub-Junction'
         env:
           PACKAGE_READ: ${{ secrets.PACKAGE_READ }}
 
