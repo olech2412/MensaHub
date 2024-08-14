@@ -28,10 +28,16 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-maven-
 
+      - name: List Maven cache directory before build
+        run: ls -la ~/.m2/repository
+
       - name: Build MensaHub-Models
         run: |
           cd MensaHub-Models
           mvn clean install
+
+      - name: List Maven cache directory after build
+        run: ls -la ~/.m2/repository
 
   build-and-deploy-collaborative-filtering-api-adapter:
     runs-on: ubuntu-latest
