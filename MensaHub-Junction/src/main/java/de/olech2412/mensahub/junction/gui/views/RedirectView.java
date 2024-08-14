@@ -35,7 +35,6 @@ public class RedirectView extends HorizontalLayout implements BeforeEnterObserve
      */
     @Override
     public void beforeEnter(BeforeEnterEvent beforeEnterEvent) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         List<? extends GrantedAuthority> authorities = securityService.getAuthenticatedUser().getAuthorities().stream().toList();
         if (authorities.contains(new SimpleGrantedAuthority(Role.Names.ROLE_API_USER))) {
             beforeEnterEvent.forwardTo("/dev");

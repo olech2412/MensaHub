@@ -203,7 +203,7 @@ public class MailSettingsView extends Composite implements BeforeEnterObserver {
         content.add(formLayout);
         layout.add(content);
 
-        if (!mailUser.isEnabled() && mailUser.getDeactviatedUntil() != null) {
+        if (!mailUser.isEnabled() && mailUser.getDeactivatedUntil() != null) {
             formLayout.remove(deactivateForTime);
             Button reactivate = new Button("Account reaktivieren");
             reactivate.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
@@ -213,7 +213,7 @@ public class MailSettingsView extends Composite implements BeforeEnterObserver {
 
             reactivate.addClickListener(buttonClickEvent -> {
                 mailUser.setEnabled(true);
-                mailUser.setDeactviatedUntil(null);
+                mailUser.setDeactivatedUntil(null);
                 mailUserService.saveMailUser(mailUser);
                 NotificationFactory.create(NotificationType.SUCCESS, "Du hast deinen Account erfolgreich wieder freigeschaltet").open();
             });
@@ -245,8 +245,8 @@ public class MailSettingsView extends Composite implements BeforeEnterObserver {
         datePicker.setWidth(30f, Unit.PERCENTAGE);
         datePicker.setMinWidth(320f, Unit.PIXELS);
         datePicker.setLabel("Wähle den Zeitpunkt der Reaktivierung");
-        if (mailUser.getDeactviatedUntil() != null) {
-            datePicker.setValue(mailUser.getDeactviatedUntil());
+        if (mailUser.getDeactivatedUntil() != null) {
+            datePicker.setValue(mailUser.getDeactivatedUntil());
         }
         datePicker.setMin(LocalDate.now().plusDays(1));
         datePicker.setPlaceholder("Ich möchte wieder aktiviert werden am...");
@@ -270,7 +270,7 @@ public class MailSettingsView extends Composite implements BeforeEnterObserver {
 
             if (datePicker.getValue() != null) {
                 mailUser.setEnabled(false);
-                mailUser.setDeactviatedUntil(datePicker.getValue());
+                mailUser.setDeactivatedUntil(datePicker.getValue());
                 mailUserService.saveMailUser(mailUser);
 
                 NotificationFactory.create(NotificationType.SUCCESS, "Du wurdest erfolgreich temporär deaktiviert. Alle wichtige Informationen senden wir dir per Mail zu").open();
@@ -282,7 +282,7 @@ public class MailSettingsView extends Composite implements BeforeEnterObserver {
                     throw new RuntimeException(e);
                 }
                 try {
-                    mailer.sendTemporaryDeactivationEmail(mailUser.getFirstname(), mailUser.getEmail(), mailUser.getDeactivationCode().getCode(), mailUser.getDeactviatedUntil());
+                    mailer.sendTemporaryDeactivationEmail(mailUser.getFirstname(), mailUser.getEmail(), mailUser.getDeactivationCode().getCode(), mailUser.getDeactivatedUntil());
                 } catch (Exception exception) {
                     logger.error("Error while sending deactivation email: " + exception.getMessage());
                     NotificationFactory.create(NotificationType.ERROR, "Es ist ein Fehler beim Versenden der Email aufgetreten. Bitte kontaktiere den Administrator").open();

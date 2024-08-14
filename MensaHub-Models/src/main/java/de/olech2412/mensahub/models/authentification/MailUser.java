@@ -40,8 +40,9 @@ public class MailUser {
     private String firstname; // the firstname from the user
     private String lastname; // the lastname from the user
     private boolean enabled; // if the user is enabled
-    private LocalDate deactviatedUntil; // the date until the user is deactivated
-    private boolean wantsUpdate;
+    private LocalDate deactivatedUntil; // the date until the user is deactivated
+    private boolean wantsUpdate; // if the user wants to get update mails if meals changed
+    private boolean wantsCollaborationInfoMail; // if the user wants to get mails about collaborations only
     @OneToOne(cascade = CascadeType.ALL)
     private Preferences preferences;
 

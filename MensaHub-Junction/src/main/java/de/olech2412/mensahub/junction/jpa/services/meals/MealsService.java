@@ -5,6 +5,7 @@ import de.olech2412.mensahub.junction.jpa.repository.ErrorEntityRepository;
 import de.olech2412.mensahub.junction.jpa.repository.meals.MealRepository;
 import de.olech2412.mensahub.models.Meal;
 import de.olech2412.mensahub.models.Mensa;
+import de.olech2412.mensahub.models.jobs.Job;
 import de.olech2412.mensahub.models.result.Result;
 import de.olech2412.mensahub.models.result.errors.Application;
 import de.olech2412.mensahub.models.result.errors.ErrorEntity;
@@ -91,6 +92,18 @@ public class MealsService extends Meal {
 
         mealRepository.delete(mealToDelete);
         log.warn("Meal deleted: {} from {}", meal.getName(), mensa.getName());
+    }
+
+    public Result<List<Meal>, JPAError> findTop20DistinctMealsExcludingGoudaForSubscribedMensa(Long userId) {
+        try {
+            List<Meal> meals = mealRepository.findTop20DistinctMealsExcludingGoudaByUser(userId);
+            return Result.success(meals);
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            Result<List<Meal>, JPAError> result = Result.error(new JPAError("Fehler beim lesen der Top 20 Gerichte exklusive Gouda: " + e.getMessage(), JPAErrors.ERROR_READ));
+            errorEntityRepository.save(new ErrorEntity(result.getError().message(), result.getError().error().getCode(), Application.JUNCTION));
+            return result;
+        }
     }
 
     public Result<List<String>, JPAError> findAllDistinctCategories() {

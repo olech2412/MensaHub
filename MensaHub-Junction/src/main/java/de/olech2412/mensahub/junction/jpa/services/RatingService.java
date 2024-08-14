@@ -49,4 +49,17 @@ public class RatingService {
         }
     }
 
+    // Method for getting meals specific user rated, needed for initial rating after activation
+    public Result<List<Rating>, JPAError> findAllByMailUser(MailUser mailUser) {
+        try {
+            List<Rating> ratings = ratingRepository.findAllByMailUser(mailUser);
+            return Result.success(ratings);
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            Result<List<Rating>, JPAError> result = Result.error(new JPAError("Fehler beim abrufen der Ratings mit MailUser: " + e.getMessage(), JPAErrors.ERROR_READ));
+            errorEntityRepository.save(new ErrorEntity(result.getError().message(), result.getError().error().getCode(), Application.JUNCTION));
+            return result;
+        }
+    }
+
 }

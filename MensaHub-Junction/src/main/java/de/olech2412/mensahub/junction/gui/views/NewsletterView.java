@@ -26,6 +26,7 @@ import com.vaadin.flow.server.*;
 import de.olech2412.mensahub.junction.config.Config;
 import de.olech2412.mensahub.junction.email.Mailer;
 import de.olech2412.mensahub.junction.gui.components.vaadin.dialogs.PreferencesDialog;
+import de.olech2412.mensahub.junction.gui.components.vaadin.notifications.types.PermanentNotificationMiddleScreenPosition;
 import de.olech2412.mensahub.junction.jpa.repository.ActivationCodeRepository;
 import de.olech2412.mensahub.junction.jpa.repository.DeactivationCodeRepository;
 import de.olech2412.mensahub.junction.jpa.services.MailUserService;
@@ -76,6 +77,7 @@ public class NewsletterView extends HorizontalLayout implements BeforeEnterObser
     @Autowired
     private MailUserService mailUserService;
     private Checkbox wantUpdates;
+    private Checkbox wantsCollaborativeFiltering;
     private Preferences preferences;
 
     public NewsletterView(MensaService mensaService, MealsService mealsService) throws IOException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
@@ -227,7 +229,21 @@ public class NewsletterView extends HorizontalLayout implements BeforeEnterObser
         wantUpdates.setRequiredIndicatorVisible(true);
         wantUpdates.setValue(true);
 
-        VerticalLayout infoLayout = new VerticalLayout(new H3("Informationen zu deiner Registrierung: "), infoText, wantUpdates, accept);
+        wantsCollaborativeFiltering = new Checkbox("Möchtest du nur benachrichtigt werden, wenn neue Empfehlungen für dich verfügbar sind?");
+        wantsCollaborativeFiltering.addValueChangeListener(e -> {
+            if (e.getValue()) {
+                PermanentNotificationMiddleScreenPosition permanentNotificationMiddleScreenPosition = new PermanentNotificationMiddleScreenPosition(
+                        "Wenn du diese Option aktivierst, senden wir dir nur eine E-Mail, wenn ein Gericht für dich empfehlenswert ist. " +
+                                "Diese Empfehlungen basieren auf deinen bisherigen Bewertungen, deinen Vorlieben sowie Bewertungen anderer Nutzer. " +
+                                "Wenn du diese Einstellung nicht aktivierst, senden wir dir den typischen täglichen Newsletter als E-Mail.");
+                permanentNotificationMiddleScreenPosition.open();
+            }
+        });
+        wantsCollaborativeFiltering.setRequiredIndicatorVisible(true);
+        wantsCollaborativeFiltering.setValue(false);
+
+
+        VerticalLayout infoLayout = new VerticalLayout(new H3("Informationen zu deiner Registrierung: "), infoText, wantUpdates, wantsCollaborativeFiltering, accept);
         infoLayout.setAlignItems(Alignment.CENTER);
 
         return infoLayout;
@@ -269,7 +285,7 @@ public class NewsletterView extends HorizontalLayout implements BeforeEnterObser
                     if (mailUserService.findMailUserByEmail(email).isEmpty()) {
                         if (accept.getValue()) {
                             try {
-                                createRegistratedUser(email, firstname, lastname, mensa, wantUpdates.getValue(), preferences);
+                                createRegistratedUser(email, firstname, lastname, mensa, wantUpdates.getValue(), wantsCollaborativeFiltering.getValue(), preferences);
                                 Notification notification = new Notification("Deine E-Mail-Adresse wurde erfolgreich registriert!. Klicke auf den Link in deiner Bestätigungsmail", 6000);
                                 notification.addThemeVariants(NotificationVariant.LUMO_SUCCESS);
                                 notification.open();
@@ -319,7 +335,7 @@ public class NewsletterView extends HorizontalLayout implements BeforeEnterObser
      *
      * @param email
      */
-    private void createRegistratedUser(String email, String firstname, String lastname, Set<Mensa> mensa, boolean wantUpdates, Preferences preferences) {
+    private void createRegistratedUser(String email, String firstname, String lastname, Set<Mensa> mensa, boolean wantUpdates, boolean wantsCollaborativeFiltering, Preferences preferences) {
 
         try {
             ActivationCode activationCode = new ActivationCode(RandomStringUtils.randomAlphanumeric(32));
@@ -379,7 +395,7 @@ public class NewsletterView extends HorizontalLayout implements BeforeEnterObser
     }
 
     /**
-     * Check if client is mobile or desktop
+     * Check if a client is mobile or desktop
      */
     public boolean isMobileDevice() {
         WebBrowser webBrowser = VaadinSession.getCurrent().getBrowser();
