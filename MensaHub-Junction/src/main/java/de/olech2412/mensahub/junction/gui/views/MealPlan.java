@@ -70,7 +70,6 @@ public class MealPlan extends VerticalLayout implements BeforeEnterObserver {
     private MailUserService mailUserService;
     @Autowired
     private RatingService ratingService;
-    private List<Meal> meals;
 
     private MailUser mailUser;
 
@@ -95,14 +94,13 @@ public class MealPlan extends VerticalLayout implements BeforeEnterObserver {
         buttonsDatePickerLayout.setJustifyContentMode(JustifyContentMode.CENTER);
 
         // set color grey
-        buttonOneDayBack.getIcon().getStyle().set("color", "grey");
         Button buttonOneDayBack = new Button(VaadinIcon.CHEVRON_CIRCLE_LEFT_O.create());
         buttonOneDayBack.addThemeVariants(ButtonVariant.LUMO_CONTRAST);
         buttonOneDayBack.addClickListener(buttonClickEvent -> {
             if (buttonClickEvent == null || mensaComboBox.isEmpty()) {
                 return;
             }
-            if(mailUser != null) {
+            if (mailUser != null) {
                 buttonOneDayForward.setEnabled(false);
                 buttonOneDayBack.setEnabled(false);
                 datePicker.setEnabled(false);
@@ -112,12 +110,11 @@ public class MealPlan extends VerticalLayout implements BeforeEnterObserver {
 
         Button buttonOneDayForward = new Button(VaadinIcon.CHEVRON_CIRCLE_RIGHT_O.create());
         buttonOneDayForward.addThemeVariants(ButtonVariant.LUMO_CONTRAST);
-        buttonOneDayForward.getIcon().getStyle().set("color", "grey");
         buttonOneDayForward.addClickListener(buttonClickEvent -> {
             if (buttonClickEvent == null || mensaComboBox.isEmpty()) {
                 return;
             }
-            if(mailUser != null) {
+            if (mailUser != null) {
                 buttonOneDayForward.setEnabled(false);
                 buttonOneDayBack.setEnabled(false);
                 datePicker.setEnabled(false);
