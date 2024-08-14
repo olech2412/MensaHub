@@ -5,6 +5,7 @@ import de.olech2412.mensahub.junction.jpa.repository.ErrorEntityRepository;
 import de.olech2412.mensahub.junction.jpa.repository.meals.MealRepository;
 import de.olech2412.mensahub.models.Meal;
 import de.olech2412.mensahub.models.Mensa;
+import de.olech2412.mensahub.models.jobs.Job;
 import de.olech2412.mensahub.models.result.Result;
 import de.olech2412.mensahub.models.result.errors.Application;
 import de.olech2412.mensahub.models.result.errors.ErrorEntity;
@@ -91,18 +92,6 @@ public class MealsService extends Meal {
 
         mealRepository.delete(mealToDelete);
         log.warn("Meal deleted: {} from {}", meal.getName(), mensa.getName());
-    }
-
-    public List<Meal> findTop20DistinctMeals() {
-        return mealRepository.findTop20DistinctMeals();
-    }
-
-    public List<Meal> findTop20DistinctMealsForSubscribedMensa(Long userId) {
-        return mealRepository.findTop20DistinctMealsByUser(userId);
-    }
-
-    public List<String> findTop20DistinctMealNamesForSubscribedMensa(Long userId) {
-        return mealRepository.findTop20DistinctMealNamesByUser(userId);
     }
 
     public Result<List<Meal>, JPAError> findTop20DistinctMealsExcludingGoudaForSubscribedMensa(Long userId) {

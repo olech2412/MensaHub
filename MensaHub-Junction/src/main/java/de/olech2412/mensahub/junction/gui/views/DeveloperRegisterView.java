@@ -141,7 +141,7 @@ public class DeveloperRegisterView extends Composite implements BeforeEnterObser
 
                     Users user = usersRepository.findByUsername(apiUsername.getValue());
 
-                    if(user != null){
+                    if (user != null) {
                         NotificationFactory.create(NotificationType.ERROR, "Nutzerkennung bereits belegt").open();
                         return;
                     }

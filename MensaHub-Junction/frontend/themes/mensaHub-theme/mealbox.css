@@ -147,6 +147,16 @@
     margin: 0 4px;
 }
 
+/* Media Query für kleinere Bildschirme */
+@media (max-width: 600px) {
+    .prediction {
+        font-size: 0.7em;
+    }
+    .meal-box .category {
+        font-size: 0.7em;
+    }
+}
+
 /* Responsive layout */
 @media (max-width: 1200px) {
     .meal-box {

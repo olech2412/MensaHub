@@ -1,10 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<settings xmlns="http://maven.apache.org/SETTINGS/1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 https://maven.apache.org/xsd/settings-1.0.0.xsd">
-  <localRepository/>
-  <interactiveMode/>
-  <offline/>
-  <pluginGroups/>
+<settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 https://maven.apache.org/xsd/settings-1.0.0.xsd">
+  
+  <!-- Standard Maven Repository (lokal) -->
+  <localRepository>${user.home}/.m2/repository</localRepository>
+  
+  <!-- Non-interactive mode -->
+  <interactiveMode>false</interactiveMode>
+
+  <!-- No offline mode, allowing remote dependencies to be fetched if necessary -->
+  <offline>false</offline>
+  
+  <!-- Server configurations -->
   <servers>
     <server>
       <id>github</id>
@@ -12,7 +20,14 @@
       <password>${package.publicKey}</password>
     </server>
   </servers>
-  <mirrors/>
-  <proxies/>
-  <profiles/>
+
+  <!-- Mirror settings for Maven repositories -->
+  <mirrors>
+    <!-- Configure a central mirror, if necessary -->
+  </mirrors>
+  
+  <!-- Proxies configuration, if required -->
+  <proxies>
+    <!-- Proxy configuration, if behind a corporate proxy -->
+  </proxies>
 </settings>

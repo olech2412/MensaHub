@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
+import java.net.SocketException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -48,7 +49,8 @@ public class CollaborativeFilteringAPIAdapter {
                     PredictionResult predictionResult = gson.fromJson(obj, PredictionResult.class);
                     predictions.add(Result.success(predictionResult));
                 } else {
-                    APIError apiError = new APIError(obj.get("error").getAsString(), APIErrors.UNKNOWN);
+                    String errorMessage = obj.has("error") ? obj.get("error").getAsString() : "Unknown error occurred";
+                    APIError apiError = new APIError(errorMessage, APIErrors.UNKNOWN);
                     predictions.add(Result.error(apiError));
                 }
             }
@@ -81,16 +83,42 @@ public class CollaborativeFilteringAPIAdapter {
             os.write(input, 0, input.length);
         }
 
-        int status = con.getResponseCode();
-        InputStream responseStream = (status == 200) ? con.getInputStream() : con.getErrorStream();
-        String responseString = IOUtils.toString(responseStream, StandardCharsets.UTF_8);
+        try {
+            int status = con.getResponseCode();
+            InputStream responseStream = (status == 200) ? con.getInputStream() : con.getErrorStream();
+            String responseString = IOUtils.toString(responseStream, StandardCharsets.UTF_8);
 
-        if (status != 200) {
-            return Result.error(new APIError(responseString, APIErrors.UNKNOWN));
+            if (status != 200) {
+                String errorMessage = parseErrorMessage(responseString);
+                log.error("API returned an error: HTTP {}: {}", status, errorMessage);
+                return Result.error(new APIError(errorMessage, APIErrors.UNKNOWN));
+            }
+
+            JsonArray responseObject = JsonParser.parseString(responseString).getAsJsonArray();
+            return Result.success(responseObject);
+        } catch (SocketException socketException) {
+            log.error("Socket exception occurred during API call", socketException);
+            return Result.error(new APIError("Network error occurred. Please try again later.", APIErrors.NETWORK_ERROR));
+        } catch (IOException ioException) {
+            log.error("IO exception occurred during API call", ioException);
+            return Result.error(new APIError("IO error occurred while processing the request.", APIErrors.IO_ERROR));
+        } finally {
+            con.disconnect();
         }
+    }
 
-        JsonArray responseObject = JsonParser.parseString(responseString).getAsJsonArray();
-        return Result.success(responseObject);
+    private String parseErrorMessage(String responseString) {
+        try {
+            JsonObject jsonObject = JsonParser.parseString(responseString).getAsJsonObject();
+            if (jsonObject.has("error")) {
+                return jsonObject.get("error").getAsString();
+            } else {
+                return "An unknown error occurred while processing the API request.";
+            }
+        } catch (JsonSyntaxException e) {
+            log.warn("Failed to parse error message from API response", e);
+            return "An error occurred, but the error message could not be parsed.";
+        }
     }
 
     public boolean isAPIAvailable() {

@@ -365,7 +365,6 @@ public class NewsletterView extends HorizontalLayout implements BeforeEnterObser
             mailUser.setActivationCode(activationCode);
             mailUser.setDeactivationCode(deactivationCode);
             mailUser.setWantsUpdate(wantUpdates);
-            mailUser.setWantsCollaborationInfoMail(wantsCollaborativeFiltering);
             mailUser.setPreferences(preferences);
             mailUser.setMensas(mensa);
 
@@ -396,7 +395,7 @@ public class NewsletterView extends HorizontalLayout implements BeforeEnterObser
     }
 
     /**
-     * Check if client is mobile or desktop
+     * Check if a client is mobile or desktop
      */
     public boolean isMobileDevice() {
         WebBrowser webBrowser = VaadinSession.getCurrent().getBrowser();
