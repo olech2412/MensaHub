@@ -235,6 +235,8 @@ public class MealPlan extends VerticalLayout implements BeforeEnterObserver {
                         ratingRepository.save(rating);
                         mealBox.getRatingButton().setEnabled(false);
                         mealBox.getRatingComponent().setEnabled(false);
+                        NotificationFactory.create(NotificationType.SUCCESS, "Deine Bewertung wurde gespeichert. " +
+                                "Es kann einige Zeit dauern, bis deine Bewertung in die Empfehlungen einbezogen wird. Schau später nochmal vorbei...");
                     }
                 });
             }
