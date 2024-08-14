@@ -8,6 +8,7 @@ from sklearn.neighbors import NearestNeighbors
 from sqlalchemy import create_engine
 import os
 import re
+import time
 
 app = Flask(__name__)
 
@@ -24,17 +25,35 @@ DB_NAME = os.getenv('DB_NAME', 'mensaHub')
 DATABASE_URI = f'mysql+pymysql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}/{DB_NAME}'
 engine = create_engine(DATABASE_URI)
 
-# Funktion zum Laden der Daten aus der Datenbank
+# Cache für Daten und Zeitstempel für das letzte Laden
+cache = {
+    "ratings_df": None,
+    "meals_df": None,
+    "timestamp": 0
+}
+
+CACHE_DURATION = 600  # Cache-Dauer in Sekunden (10 Minuten)
+
+# Funktion zum Laden der Daten aus der Datenbank mit Caching
 def load_data():
-    logger.debug("Lade Bewertungen und Mahlzeiten aus der Datenbank")
-    ratings_query = "SELECT mail_user_id AS user_id, meal_name AS meal, rating, meal_id FROM ratings"
-    meals_query = "SELECT id, allergens, category, description, name FROM meals"
+    current_time = time.time()
     
-    ratings_df = pd.read_sql(ratings_query, con=engine)
-    meals_df = pd.read_sql(meals_query, con=engine)
-    
-    logger.debug(f"Bewertungen geladen: {ratings_df.shape[0]} Einträge")
-    logger.debug(f"Mahlzeiten geladen: {meals_df.shape[0]} Einträge")
+    if cache["ratings_df"] is None or cache["meals_df"] is None or (current_time - cache["timestamp"]) > CACHE_DURATION:
+        logger.info("Cache ist veraltet oder leer. Lade Daten aus der Datenbank.")
+        
+        ratings_query = "SELECT mail_user_id AS user_id, meal_name AS meal, rating, meal_id FROM ratings"
+        meals_query = "SELECT id, allergens, category, description, name FROM meals"
+        
+        ratings_df = pd.read_sql(ratings_query, con=engine)
+        meals_df = pd.read_sql(meals_query, con=engine)
+        
+        cache["ratings_df"] = ratings_df
+        cache["meals_df"] = meals_df
+        cache["timestamp"] = current_time
+    else:
+        logger.info("Verwende zwischengespeicherte Daten.")
+        ratings_df = cache["ratings_df"]
+        meals_df = cache["meals_df"]
     
     return ratings_df, meals_df
 
@@ -52,24 +71,20 @@ def load_user_preferences(user_id):
     preferences_id = preferences_id_result['preferences_id'].iloc[0]
     logger.debug(f"Gefundene Präferenzen-ID für Benutzer {user_id}: {preferences_id}")
 
-    # Laden der nicht gemochten Kategorien (disliked_categories)
     categories_query = f"SELECT disliked_categories FROM disliked_categories WHERE disliked_categories_id = {preferences_id}"
     categories_result = pd.read_sql(categories_query, con=engine)
     disliked_categories = categories_result['disliked_categories'].tolist() if not categories_result.empty else []
 
-    # Laden der vermiedenen Allergene (optional)
     allergens_query = f"SELECT avoided_allergens FROM avoided_allergens WHERE avoided_allergens_id = {preferences_id}"
     allergens_result = pd.read_sql(allergens_query, con=engine)
     avoided_allergens = allergens_result['avoided_allergens'].tolist() if not allergens_result.empty else []
 
-    # Laden der nicht gemochten Zutaten (optional)
     ingredients_query = f"SELECT disliked_ingedrients FROM disliked_ingredients WHERE disliked_ingredients_id = {preferences_id}"
     ingredients_result = pd.read_sql(ingredients_query, con=engine)
     disliked_ingredients = ingredients_result['disliked_ingedrients'].tolist() if not ingredients_result.empty else []
 
     logger.debug(f"Geladene Präferenzen für Benutzer {user_id}: {disliked_categories}, {avoided_allergens}, {disliked_ingredients}")
 
-    # Zusammenstellen der Präferenzen
     user_preferences = {
         'disliked_categories': disliked_categories,
         'avoided_allergens': avoided_allergens,
@@ -96,19 +111,16 @@ def check_preferences(user_id, meal_id, meals_df, user_preferences):
     
     logger.debug(f"Mahlzeit-Informationen: Kategorie: {meal_category}, Allergene: {meal_allergens}, Name: {meal_name}, Beschreibung: {meal_description}")
     
-    # Kategoriepräferenz prüfen (optional und exakte Übereinstimmung)
     if user_preferences.get('disliked_categories') and meal_category in user_preferences['disliked_categories']:
         logger.info(f"Mahlzeit {meal_id} gehört zu einer nicht gemochten Kategorie des Benutzers {user_id}")
         return False  # Kategorie nicht bevorzugt
     
-    # Allergiepräferenzen prüfen (optional und Teilübereinstimmung)
     if user_preferences.get('avoided_allergens'):
         for allergen in user_preferences['avoided_allergens']:
             if allergen in meal_allergens:
                 logger.info(f"Mahlzeit {meal_id} enthält ein vermiedenes Allergen für Benutzer {user_id}: {allergen}")
                 return False  # Allergen gefunden
     
-    # Zutatenpräferenzen in Name und Beschreibung prüfen (optional und flexible Übereinstimmung mit Regex)
     if user_preferences.get('disliked_ingredients'):
         for ingredient in user_preferences['disliked_ingredients']:
             pattern = rf'\b{re.escape(ingredient)}\w*\b'
@@ -130,7 +142,6 @@ def predict_rating_optimized(user_id, meal_id, meal_name, user_meal_matrix, matr
         num_samples_fit = matrix_svd.shape[0]
         k = min(k, num_samples_fit)
         
-        # Prüfung auf vorhandene Bewertung des Nutzers für das Gericht
         user_rating = user_meal_matrix.loc[user_id, meal_name]
         logger.debug(f"Benutzerbewertung für {meal_name}: {user_rating}")
         

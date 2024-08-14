@@ -119,12 +119,6 @@ public class MealPlan extends VerticalLayout implements BeforeEnterObserver {
             buildMealPlan(datePicker.getValue().plusDays(1), mensaComboBox.getValue());
         });
 
-        if(mailUser != null) {
-            buttonOneDayForward.setEnabled(false);
-            buttonOneDayBack.setEnabled(false);
-            datePicker.setEnabled(false);
-        }
-
         buttonsDatePickerLayout.add(buttonOneDayBack, datePicker, buttonOneDayForward);
 
 
@@ -254,8 +248,9 @@ public class MealPlan extends VerticalLayout implements BeforeEnterObserver {
             datePicker.setEnabled(true);
         }
 
+        UI currentUi = UI.getCurrent();
         // Asynchrone API-Anfragen starten
-        CompletableFuture<Void> future = mealPlanService.addRecommendationScoreAsync(mealBoxes, mailUser, UI.getCurrent(), buttonOneDayBack, buttonOneDayForward, datePicker);
+        CompletableFuture<Void> future = mealPlanService.addRecommendationScoreAsync(mealBoxes, mailUser, currentUi, buttonOneDayBack, buttonOneDayForward, datePicker);
 
         future.thenAccept(voidResult -> {
         }).exceptionally(ex -> {
