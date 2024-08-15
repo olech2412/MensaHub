@@ -57,6 +57,7 @@ public class AppleDeviceUserCodeDialog extends Dialog {
 
         footerButtonLayout.getDeclineButton().addClickListener(buttonClickEvent -> {
             UI.getCurrent().getPage().executeJs("window.localStorage.setItem('applePWAInfoNotificationShown', 'true');");
+            close();
         });
 
         setCloseOnEsc(false);

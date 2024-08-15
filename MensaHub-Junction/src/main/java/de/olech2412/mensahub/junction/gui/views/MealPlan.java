@@ -361,7 +361,7 @@ public class MealPlan extends VerticalLayout implements BeforeEnterObserver {
         UI.getCurrent().getPage().executeJs(
                 "return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;" // check if pwa
         ).then(Boolean.class, isPWA -> {
-            if (Boolean.TRUE.equals(isPWA) && finalUserCodeCookie == null && !applePWAInfoNotificationShown.get() && AppleDeviceUserCodeDialog.isAppleDevice()) { // check if pwa, info not shown and device is apple bloated
+            if (Boolean.TRUE.equals(isPWA) && !appleDeviceUserCodeDialog.isOpened() && finalUserCodeCookie == null && !applePWAInfoNotificationShown.get() && AppleDeviceUserCodeDialog.isAppleDevice()) { // check if pwa, info not shown and device is apple bloated
                 appleDeviceUserCodeDialog.open();
             }
         });
