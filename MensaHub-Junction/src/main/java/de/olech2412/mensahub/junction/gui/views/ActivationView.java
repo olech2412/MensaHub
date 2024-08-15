@@ -120,7 +120,8 @@ public class ActivationView extends VerticalLayout implements BeforeEnterObserve
         // Create layout to hold meal and navigation buttons
         mealLayout.setWidthFull();
         mealLayout.setJustifyContentMode(JustifyContentMode.CENTER);
-        // mealLayout.addClassName("activationview-mealbox");
+        // if device width below 750 pixel set specific class
+        mealLayout.addClassName("activationview-mealbox");
 
         // Set the user for further rating logic
         this.mailUser = activatedUser;
