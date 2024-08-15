@@ -167,7 +167,7 @@ public class NewsletterView extends HorizontalLayout implements BeforeEnterObser
         });
 
         H1 header = new H1(welcomeText);
-        StreamResource logoStream = new StreamResource("MensaHub_logo.png", () -> getClass().getResourceAsStream("/static/img/MensaHub_logo.PNG"));
+        StreamResource logoStream = new StreamResource("mensaHub_logo.png", () -> getClass().getResourceAsStream("/static/img/MensaHub_logo.webp"));
         Image logoImage = new Image(logoStream, "Logo");
         HorizontalLayout image = new HorizontalLayout(logoImage);
         image.setWidth(100f, Unit.PERCENTAGE);

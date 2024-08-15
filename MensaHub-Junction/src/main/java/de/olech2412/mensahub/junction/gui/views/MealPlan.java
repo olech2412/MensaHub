@@ -14,10 +14,12 @@ import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
+import com.vaadin.flow.server.VaadinService;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
 import de.olech2412.mensahub.junction.gui.components.own.boxes.InfoBox;
 import de.olech2412.mensahub.junction.gui.components.own.boxes.MealBox;
 import de.olech2412.mensahub.junction.gui.components.vaadin.datetimepicker.GermanDatePicker;
+import de.olech2412.mensahub.junction.gui.components.vaadin.dialogs.AppleDeviceUserCodeDialog;
 import de.olech2412.mensahub.junction.gui.components.vaadin.notifications.NotificationFactory;
 import de.olech2412.mensahub.junction.gui.components.vaadin.notifications.types.InfoWithAnchorNotification;
 import de.olech2412.mensahub.junction.gui.components.vaadin.notifications.types.NotificationType;
@@ -33,6 +35,7 @@ import de.olech2412.mensahub.models.Rating;
 import de.olech2412.mensahub.models.authentification.MailUser;
 import de.olech2412.mensahub.models.result.Result;
 import de.olech2412.mensahub.models.result.errors.jpa.JPAError;
+import jakarta.servlet.http.Cookie;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -48,6 +51,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 @Route("mealPlan")
 @PageTitle("Speiseplan")
@@ -61,11 +65,11 @@ public class MealPlan extends VerticalLayout implements BeforeEnterObserver {
     private final ComboBox<Mensa> mensaComboBox = new ComboBox<>();
     private final GermanDatePicker datePicker = new GermanDatePicker();
     private final MealPlanService mealPlanService;
+    private final Button buttonOneDayBack = new Button(VaadinIcon.CHEVRON_CIRCLE_LEFT_O.create());
+    private final Button buttonOneDayForward = new Button(VaadinIcon.CHEVRON_CIRCLE_RIGHT_O.create());
     HorizontalLayout row = new HorizontalLayout();
     @Autowired
     RatingRepository ratingRepository;
-    private Button buttonOneDayBack = new Button(VaadinIcon.CHEVRON_CIRCLE_LEFT_O.create());
-    private Button buttonOneDayForward = new Button(VaadinIcon.CHEVRON_CIRCLE_RIGHT_O.create());
     @Autowired
     private MailUserService mailUserService;
     @Autowired
@@ -155,7 +159,7 @@ public class MealPlan extends VerticalLayout implements BeforeEnterObserver {
             if (changeEvent.getValue() == null || mensaComboBox.isEmpty()) {
                 return;
             }
-            if (mailUser != null){
+            if (mailUser != null) {
                 datePicker.setEnabled(false);
             }
             buildMealPlan(changeEvent.getValue(), mensaComboBox.getValue());
@@ -271,36 +275,114 @@ public class MealPlan extends VerticalLayout implements BeforeEnterObserver {
         String date = "";
         String userCode;
 
+        // Prüfen, ob der Cookie bereits vorhanden ist
+        Cookie[] cookies = VaadinService.getCurrentRequest().getCookies();
+        Cookie userCodeCookie = null;
+
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if ("userCode".equals(cookie.getName())) {
+                    userCodeCookie = cookie;
+                    break;
+                }
+            }
+        }
+
         if (params.containsKey("userCode")) {
             userCode = params.get("userCode").get(0);
 
-            Result<MailUser, JPAError> mailUserJPAErrorResult = mailUserService.findMailUserByDeactivationCode(userCode);
+            if (userCodeCookie != null) {
+                // Der Cookie ist vorhanden, jetzt vergleichen wir den Wert
+                if (userCode.equals(userCodeCookie.getValue())) {
+                    Result<MailUser, JPAError> mailUserByCookieResult = mailUserService.findMailUserByDeactivationCode(userCodeCookie.getValue());
+                    if (mailUserByCookieResult.isSuccess()) {
+                        mailUser = mailUserByCookieResult.getData();
+                        log.info("User identified by cookie");
+                    } else {
+                        log.error("Cookie is corrupt or manipulated");
+                    }
+                } else {
+                    // Der Cookie-Wert unterscheidet sich, Cookie aktualisieren
+                    Result<MailUser, JPAError> mailUserJPAErrorResult = mailUserService.findMailUserByDeactivationCode(userCode);
 
-            if (mailUserJPAErrorResult.isSuccess()) {
-                mailUser = mailUserJPAErrorResult.getData();
+                    if (mailUserJPAErrorResult.isSuccess()) {
+                        mailUser = mailUserJPAErrorResult.getData();
+                        userCodeCookie.setValue(userCode);
+                        userCodeCookie.setPath("/");
+                        userCodeCookie.setMaxAge(2147483647);
+                        userCodeCookie.setSecure(true);
+                        userCodeCookie.setHttpOnly(true);
+                        VaadinService.getCurrentResponse().addCookie(userCodeCookie);
+                        log.info("User identified by deactivation code, cookie is renewed");
+                    } else {
+                        log.info("Error identify user by deactivation code");
+                        NotificationFactory.create(NotificationType.ERROR, "Ungültige Nutzerkennung. Erweiterte Funktionen stehen nicht zur Verfügung");
+                    }
+                }
             } else {
-                NotificationFactory.create(NotificationType.ERROR, "Ungültige Nutzerkennung. Erweiterte Funktionen stehen nicht zur Verfügung");
+                // Wenn der Cookie nicht existiert, führen wir die DB-Abfrage durch und setzen den Cookie
+                Result<MailUser, JPAError> mailUserJPAErrorResult = mailUserService.findMailUserByDeactivationCode(userCode);
+
+                if (mailUserJPAErrorResult.isSuccess()) {
+                    mailUser = mailUserJPAErrorResult.getData();
+
+                    // Setze den Cookie
+                    Cookie newUserCodeCookie = new Cookie("userCode", userCode);
+                    newUserCodeCookie.setPath("/");
+                    newUserCodeCookie.setMaxAge(2147483647);
+                    newUserCodeCookie.setSecure(true);
+                    newUserCodeCookie.setHttpOnly(true);
+                    VaadinService.getCurrentResponse().addCookie(newUserCodeCookie);
+                } else {
+                    log.error("Cannot identify user via url parameter {}", mailUser);
+                    NotificationFactory.create(NotificationType.ERROR, "Ungültige Nutzerkennung. Erweiterte Funktionen stehen nicht zur Verfügung").open();
+                }
             }
         } else {
-            UI.getCurrent().getPage().executeJs("return !!window.localStorage.getItem('infoNotificationShown');")
-                    .then(jsonValue -> {
-                        boolean isShown = jsonValue.asBoolean();
-                        if (!isShown) {
-                            InfoWithAnchorNotification infoNotification = new InfoWithAnchorNotification(
-                                    "Mit einem MensaHub-Account kannst das Essen zusätzlich bewerten und dir Empfehlungen berechnen lassen -> ",
-                                    "Zur Anmeldung", NewsletterView.class);
-
-                            infoNotification.getCloseButton().addClickListener(event -> {
-                                infoNotification.close();
-                                // Speichern, dass die Nachricht angezeigt wurde
-                                UI.getCurrent().getPage().executeJs("window.localStorage.setItem('infoNotificationShown', 'true');");
-                            });
-                            infoNotification.addThemeVariants(NotificationVariant.LUMO_WARNING);
-
-                            infoNotification.open();
-                        }
-                    });
+            if (userCodeCookie != null) {
+                Result<MailUser, JPAError> mailUserByCookieResult = mailUserService.findMailUserByDeactivationCode(userCodeCookie.getValue());
+                if (mailUserByCookieResult.isSuccess()) {
+                    mailUser = mailUserByCookieResult.getData();
+                    log.info("User identified by cookie");
+                } else {
+                    log.error("Cookie is corrupt or manipulated");
+                }
+            }
         }
+
+        AtomicBoolean applePWAInfoNotificationShown = new AtomicBoolean(false);
+        UI.getCurrent().getPage().executeJs("return !!window.localStorage.getItem('applePWAInfoNotificationShown');")
+                .then(jsonValue -> {
+                    applePWAInfoNotificationShown.set(jsonValue.asBoolean());
+                });
+
+        AppleDeviceUserCodeDialog appleDeviceUserCodeDialog = new AppleDeviceUserCodeDialog();
+        Cookie finalUserCodeCookie = userCodeCookie;
+        UI.getCurrent().getPage().executeJs(
+                "return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;" // check if pwa
+        ).then(Boolean.class, isPWA -> {
+            if (Boolean.TRUE.equals(isPWA) && finalUserCodeCookie == null && !applePWAInfoNotificationShown.get() && AppleDeviceUserCodeDialog.isAppleDevice()) { // check if pwa, info not shown and device is apple bloated
+                appleDeviceUserCodeDialog.open();
+            }
+        });
+        UI.getCurrent().getPage().executeJs("return !!window.localStorage.getItem('infoNotificationShown');")
+                .then(jsonValue -> {
+                    boolean isShown = jsonValue.asBoolean();
+                    if (!isShown && !appleDeviceUserCodeDialog.isOpened()) {
+                        InfoWithAnchorNotification infoNotification = new InfoWithAnchorNotification(
+                                "Mit einem MensaHub-Account kannst das Essen zusätzlich bewerten und dir Empfehlungen berechnen lassen -> ",
+                                "Zur Anmeldung", NewsletterView.class);
+
+                        infoNotification.getCloseButton().addClickListener(event -> {
+                            infoNotification.close();
+                            // Speichern, dass die Nachricht angezeigt wurde
+                            UI.getCurrent().getPage().executeJs("window.localStorage.setItem('infoNotificationShown', 'true');");
+                        });
+                        infoNotification.addThemeVariants(NotificationVariant.LUMO_WARNING);
+
+                        infoNotification.open();
+                    }
+                });
 
         if (params.containsKey("mensa")) {
             mensaParam = params.get("mensa").get(0);
