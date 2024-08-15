@@ -365,6 +365,7 @@ public class MealPlan extends VerticalLayout implements BeforeEnterObserver {
                 appleDeviceUserCodeDialog.open();
             }
         });
+        UI.getCurrent().getPage().executeJs("window.localStorage.setItem('applePWAInfoNotificationShown', 'true');");
         UI.getCurrent().getPage().executeJs("return !!window.localStorage.getItem('infoNotificationShown');")
                 .then(jsonValue -> {
                     boolean isShown = jsonValue.asBoolean();
@@ -375,14 +376,13 @@ public class MealPlan extends VerticalLayout implements BeforeEnterObserver {
 
                         infoNotification.getCloseButton().addClickListener(event -> {
                             infoNotification.close();
-                            // Speichern, dass die Nachricht angezeigt wurde
-                            UI.getCurrent().getPage().executeJs("window.localStorage.setItem('infoNotificationShown', 'true');");
                         });
                         infoNotification.addThemeVariants(NotificationVariant.LUMO_WARNING);
 
                         infoNotification.open();
                     }
                 });
+        UI.getCurrent().getPage().executeJs("window.localStorage.setItem('infoNotificationShown', 'true');");
 
         if (params.containsKey("mensa")) {
             mensaParam = params.get("mensa").get(0);

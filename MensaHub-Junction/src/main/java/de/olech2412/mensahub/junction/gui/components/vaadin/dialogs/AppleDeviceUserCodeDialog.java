@@ -44,7 +44,6 @@ public class AppleDeviceUserCodeDialog extends Dialog {
                 saveUserCodeAsCookie(userCode);
                 NotificationFactory.create(NotificationType.SUCCESS, "Nutzerkennung erfolgreich gespeichert").open();
                 // speichern im localstorage, damit info nicht erneut angezeigt wird sowie die nutzer scam notification
-                UI.getCurrent().getPage().executeJs("window.localStorage.setItem('applePWAInfoNotificationShown', 'true');");
                 UI.getCurrent().getPage().executeJs("window.localStorage.setItem('infoNotificationShown', 'true');");
                 close();
                 UI.getCurrent().getPage().reload();
@@ -62,7 +61,6 @@ public class AppleDeviceUserCodeDialog extends Dialog {
 
         setCloseOnEsc(false);
         setCloseOnOutsideClick(false);
-
         VerticalLayout layout = new VerticalLayout(title, description, linkField, footerButtonLayout);
         add(layout);
     }
