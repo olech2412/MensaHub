@@ -167,7 +167,7 @@ public class DeveloperRegisterView extends Composite implements BeforeEnterObser
         registerButton.addClickShortcut(Key.ENTER);
 
         H1 header = new H1("Erstelle deinen persönlichen API Zugang");
-        StreamResource logoStream = new StreamResource("mensaHub_logo.png", () -> getClass().getResourceAsStream("/static/img/MensaHub_logo.PNG"));
+        StreamResource logoStream = new StreamResource("mensaHub_logo.webp", () -> getClass().getResourceAsStream("/static/img/MensaHub_logo.webp"));
         Image logoImage = new Image(logoStream, "Logo");
         HorizontalLayout image = new HorizontalLayout(logoImage);
         image.setWidth(100f, Unit.PERCENTAGE);

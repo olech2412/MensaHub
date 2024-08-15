@@ -51,7 +51,7 @@ public class LoginView extends VerticalLayout implements BeforeEnterObserver {
 
         login.setI18n(loginI18n);
 
-        StreamResource logoStream = new StreamResource("MensaHub_logo.png", () -> getClass().getResourceAsStream("/static/img/MensaHub_logo.PNG"));
+        StreamResource logoStream = new StreamResource("mensaHub_logo.webp", () -> getClass().getResourceAsStream("/static/img/MensaHub_logo.webp"));
         Image logoImage = new Image(logoStream, "Logo");
 
         Span info = new Span("Diese Anwendung wird ausschließlich für private Zwecke genutzt!");
