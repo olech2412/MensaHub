@@ -28,7 +28,7 @@ import java.security.NoSuchAlgorithmException;
 @SpringBootApplication
 @Theme("mensaHub-theme")
 @NpmPackage(value = "line-awesome", version = "1.3.0")
-@PWA(name = "MensaHub", shortName = "MensaHub")
+@PWA(name = "MensaHub", shortName = "MensaHub", manifestPath = "manifest.webmanifest")
 @EntityScan(basePackages = {"de.olech2412.mensahub.models"})
 @Slf4j
 @EnableAsync

@@ -36,6 +36,7 @@ public class SecurityConfig extends VaadinWebSecurity {
 
         http.authorizeHttpRequests(authorizationManagerRequestMatcherRegistry -> {
             authorizationManagerRequestMatcherRegistry.requestMatchers("/images/**").permitAll();
+            authorizationManagerRequestMatcherRegistry.requestMatchers("/manifest.webmanifest").permitAll();
         });
 
         super.configure(http);
