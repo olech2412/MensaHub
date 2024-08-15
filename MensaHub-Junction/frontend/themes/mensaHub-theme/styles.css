@@ -16,7 +16,7 @@ html {
     --lumo-border-radius: calc(var(--lumo-size-m) / 2);
 }
 
-.button-link{
+.button-link {
     background-color: #166bbd;
     color: #ffffff;
     border: none;
@@ -68,12 +68,12 @@ html {
     -webkit-text-fill-color: transparent;
 }
 
-.activationview-mealbox{
-    width: 100%;
+.activationview-mealbox {
+    max-width: 70%;
 }
 
 @media (max-width: 750px) {
     .activationview-mealbox {
-        width: 50%;
+        max-width: 100%;
     }
 }

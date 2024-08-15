@@ -7,7 +7,6 @@ import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.html.H3;
-import com.vaadin.flow.component.html.H4;
 import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.notification.Notification;
@@ -121,6 +120,7 @@ public class ActivationView extends VerticalLayout implements BeforeEnterObserve
         // Create layout to hold meal and navigation buttons
         mealLayout.setWidthFull();
         mealLayout.setJustifyContentMode(JustifyContentMode.CENTER);
+        // if device width below 750 pixel set specific class
         mealLayout.addClassName("activationview-mealbox");
 
         // Set the user for further rating logic
@@ -348,9 +348,11 @@ public class ActivationView extends VerticalLayout implements BeforeEnterObserve
     private void handleMailUserActivation(String activationCode) {
         MailUser activatedUser = mailUserRepository.findByActivationCode_Code(activationCode);
         add(new H2("Hallo: " + activatedUser.getFirstname() + "!"));
-        add(new Paragraph("Deine E-Mail-Adresse wurde erfolgreich verifiziert. Du kannst nun den Newsletter empfangen und Gerichte bewerten."));
+        Paragraph p = new Paragraph("Deine E-Mail-Adresse wurde erfolgreich verifiziert. Du kannst nun den Newsletter empfangen und Gerichte bewerten.");
+        p.setMaxWidth(90, Unit.PERCENTAGE);
+        add(p);
         Paragraph info = new Paragraph("Bitte tue uns/dir noch einen Gefallen und bewerte die folgenden Gerichte, damit wir dir bestimmte Gerichte aufgrund deiner Bewertungen und Bewertungen der Community empfehlen können. Die Vorschläge kannst du dann im Speiseplan, als auch im Newsletter sehen.");
-        info.setWidth(50, Unit.PERCENTAGE);
+        info.setWidth(90, Unit.PERCENTAGE);
         add(info);
         activatedUser.setEnabled(true);
         addUserMealsAndDivider(activatedUser);
