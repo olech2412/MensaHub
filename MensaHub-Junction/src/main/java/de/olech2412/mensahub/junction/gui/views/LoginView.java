@@ -11,6 +11,7 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.StreamResource;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
+import de.olech2412.mensahub.junction.gui.components.vaadin.notifications.types.CookieNotification;
 
 @Route("login")
 @PageTitle("Login")
@@ -20,9 +21,10 @@ public class LoginView extends VerticalLayout implements BeforeEnterObserver {
     private final LoginForm login = new LoginForm();
 
     public LoginView() {
-
         addClassName("login-view");
         setSizeFull();
+
+        new CookieNotification(); // check if cookies are already accepted or show the cookie banner
 
         setJustifyContentMode(JustifyContentMode.CENTER);
         setAlignItems(Alignment.CENTER);

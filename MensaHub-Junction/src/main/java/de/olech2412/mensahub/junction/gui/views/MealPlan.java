@@ -21,6 +21,7 @@ import de.olech2412.mensahub.junction.gui.components.own.boxes.MealBox;
 import de.olech2412.mensahub.junction.gui.components.vaadin.datetimepicker.GermanDatePicker;
 import de.olech2412.mensahub.junction.gui.components.vaadin.dialogs.AppleDeviceUserCodeDialog;
 import de.olech2412.mensahub.junction.gui.components.vaadin.notifications.NotificationFactory;
+import de.olech2412.mensahub.junction.gui.components.vaadin.notifications.types.CookieNotification;
 import de.olech2412.mensahub.junction.gui.components.vaadin.notifications.types.InfoWithAnchorNotification;
 import de.olech2412.mensahub.junction.gui.components.vaadin.notifications.types.NotificationType;
 import de.olech2412.mensahub.junction.jpa.repository.RatingRepository;
@@ -81,6 +82,8 @@ public class MealPlan extends VerticalLayout implements BeforeEnterObserver {
         this.mealsService = mealsService;
         this.mensaService = mensaService;
         this.mealPlanService = mealPlanService;
+
+        new CookieNotification(); // check if cookies are already accepted or show the cookie banner
 
         datePicker.setValue(LocalDate.now());
 
