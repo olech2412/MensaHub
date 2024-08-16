@@ -17,6 +17,7 @@ import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.StreamResource;
+import de.olech2412.mensahub.junction.gui.components.vaadin.notifications.types.CookieNotification;
 import de.olech2412.mensahub.junction.jpa.repository.API_UserRepository;
 import de.olech2412.mensahub.junction.security.SecurityService;
 import de.olech2412.mensahub.models.authentification.API_User;
@@ -61,6 +62,7 @@ public class DeveloperView extends Composite implements BeforeEnterObserver {
 
     @Override
     protected Component initContent() {
+        new CookieNotification(); // check if cookies are already accepted or show the cookie banner
         findUser();
         layout = new VerticalLayout();
 

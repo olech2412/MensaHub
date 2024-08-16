@@ -6,6 +6,7 @@ import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
+import de.olech2412.mensahub.junction.gui.components.vaadin.notifications.types.CookieNotification;
 import jakarta.annotation.security.PermitAll;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,6 +19,7 @@ public class DataProtectionView extends VerticalLayout implements BeforeEnterObs
     Logger logger = LoggerFactory.getLogger(DataProtectionView.class);
 
     public DataProtectionView() {
+        new CookieNotification(); // check if cookies are already accepted or show the cookie banner
         add(new H1("Datenschutzerklärung"));
         add(new H2("1. Datenschutz auf einen Blick"));
         add(new H3("Allgemeine Hinweise"));

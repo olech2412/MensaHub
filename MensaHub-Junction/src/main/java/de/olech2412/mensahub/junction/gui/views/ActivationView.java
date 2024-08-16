@@ -22,6 +22,7 @@ import de.olech2412.mensahub.junction.email.Mailer;
 import de.olech2412.mensahub.junction.gui.components.own.Divider;
 import de.olech2412.mensahub.junction.gui.components.own.boxes.MealBox;
 import de.olech2412.mensahub.junction.gui.components.vaadin.notifications.NotificationFactory;
+import de.olech2412.mensahub.junction.gui.components.vaadin.notifications.types.CookieNotification;
 import de.olech2412.mensahub.junction.gui.components.vaadin.notifications.types.NotificationType;
 import de.olech2412.mensahub.junction.jpa.repository.API_UserRepository;
 import de.olech2412.mensahub.junction.jpa.repository.ActivationCodeRepository;
@@ -75,6 +76,8 @@ public class ActivationView extends VerticalLayout implements BeforeEnterObserve
         this.apiUserRepository = apiUserRepository;
         this.deactivationCodeRepository = deactivationCodeRepository;
         this.mailer = mailer;
+
+        new CookieNotification(); // check if cookies are already accepted or show the cookie banner
     }
 
     private void addUserMealsAndDivider(MailUser activatedUser) {

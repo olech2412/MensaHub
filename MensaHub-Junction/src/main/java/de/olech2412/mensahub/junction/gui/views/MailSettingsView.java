@@ -25,6 +25,7 @@ import de.olech2412.mensahub.junction.gui.components.vaadin.datetimepicker.Germa
 import de.olech2412.mensahub.junction.gui.components.vaadin.dialogs.MailUserSetupDialog;
 import de.olech2412.mensahub.junction.gui.components.vaadin.dialogs.PreferencesDialog;
 import de.olech2412.mensahub.junction.gui.components.vaadin.notifications.NotificationFactory;
+import de.olech2412.mensahub.junction.gui.components.vaadin.notifications.types.CookieNotification;
 import de.olech2412.mensahub.junction.gui.components.vaadin.notifications.types.NotificationType;
 import de.olech2412.mensahub.junction.jpa.repository.API_UserRepository;
 import de.olech2412.mensahub.junction.jpa.repository.ActivationCodeRepository;
@@ -79,6 +80,8 @@ public class MailSettingsView extends Composite implements BeforeEnterObserver {
         this.activationCodeRepository = activationCodeRepository;
         this.mensaRepository = mensaRepository;
         this.mealsService = mealsService;
+
+        new CookieNotification(); // check if cookies are already accepted or show the cookie banner
     }
 
     @Override

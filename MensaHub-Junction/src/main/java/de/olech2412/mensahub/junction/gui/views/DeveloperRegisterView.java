@@ -26,6 +26,7 @@ import com.vaadin.flow.server.WebBrowser;
 import de.olech2412.mensahub.junction.config.Config;
 import de.olech2412.mensahub.junction.email.Mailer;
 import de.olech2412.mensahub.junction.gui.components.vaadin.notifications.NotificationFactory;
+import de.olech2412.mensahub.junction.gui.components.vaadin.notifications.types.CookieNotification;
 import de.olech2412.mensahub.junction.gui.components.vaadin.notifications.types.NotificationType;
 import de.olech2412.mensahub.junction.jpa.repository.API_UserRepository;
 import de.olech2412.mensahub.junction.jpa.repository.ActivationCodeRepository;
@@ -89,6 +90,7 @@ public class DeveloperRegisterView extends Composite implements BeforeEnterObser
      * @throws InvalidKeyException       if the key is invalid
      */
     private VerticalLayout init() throws IOException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
+        new CookieNotification(); // check if cookies are already accepted or show the cookie banner
         apiUsername = new TextField("Dein API Username");
         apiUsername.setMaxLength(100);
         apiUsername.setMinLength(2);

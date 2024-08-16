@@ -26,6 +26,7 @@ import com.vaadin.flow.server.*;
 import de.olech2412.mensahub.junction.config.Config;
 import de.olech2412.mensahub.junction.email.Mailer;
 import de.olech2412.mensahub.junction.gui.components.vaadin.dialogs.PreferencesDialog;
+import de.olech2412.mensahub.junction.gui.components.vaadin.notifications.types.CookieNotification;
 import de.olech2412.mensahub.junction.gui.components.vaadin.notifications.types.PermanentNotificationMiddleScreenPosition;
 import de.olech2412.mensahub.junction.jpa.repository.ActivationCodeRepository;
 import de.olech2412.mensahub.junction.jpa.repository.DeactivationCodeRepository;
@@ -83,6 +84,8 @@ public class NewsletterView extends HorizontalLayout implements BeforeEnterObser
     public NewsletterView(MensaService mensaService, MealsService mealsService) throws IOException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
         this.mensaService = mensaService;
         this.mealsService = mealsService;
+
+        new CookieNotification(); // check if cookies are already accepted or show the cookie banner
 
         VerticalLayout mainLayout = init();
 
