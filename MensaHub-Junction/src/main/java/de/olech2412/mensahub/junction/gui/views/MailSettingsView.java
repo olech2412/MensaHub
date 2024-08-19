@@ -24,6 +24,7 @@ import de.olech2412.mensahub.junction.email.Mailer;
 import de.olech2412.mensahub.junction.gui.components.vaadin.datetimepicker.GermanDatePicker;
 import de.olech2412.mensahub.junction.gui.components.vaadin.dialogs.MailUserSetupDialog;
 import de.olech2412.mensahub.junction.gui.components.vaadin.dialogs.PreferencesDialog;
+import de.olech2412.mensahub.junction.gui.components.vaadin.dialogs.PushNotificationDialog;
 import de.olech2412.mensahub.junction.gui.components.vaadin.notifications.NotificationFactory;
 import de.olech2412.mensahub.junction.gui.components.vaadin.notifications.types.CookieNotification;
 import de.olech2412.mensahub.junction.gui.components.vaadin.notifications.types.NotificationType;
@@ -34,6 +35,7 @@ import de.olech2412.mensahub.junction.jpa.repository.mensen.MensaRepository;
 import de.olech2412.mensahub.junction.jpa.services.MailUserService;
 import de.olech2412.mensahub.junction.jpa.services.PreferencesService;
 import de.olech2412.mensahub.junction.jpa.services.meals.MealsService;
+import de.olech2412.mensahub.junction.webpush.WebPushService;
 import de.olech2412.mensahub.models.Mensa;
 import de.olech2412.mensahub.models.Preferences;
 import de.olech2412.mensahub.models.authentification.MailUser;
@@ -72,14 +74,17 @@ public class MailSettingsView extends Composite implements BeforeEnterObserver {
     @Autowired
     private PreferencesService preferencesService;
 
+    private WebPushService webPushService;
+
     public MailSettingsView(DeactivationCodeRepository deactivationCodeRepository, MailUserService mailUserService,
                             ActivationCodeRepository activationCodeRepository, MensaRepository mensaRepository,
-                            MealsService mealsService) {
+                            MealsService mealsService, WebPushService webPushService) {
         this.deactivationCodeRepository = deactivationCodeRepository;
         this.mailUserService = mailUserService;
         this.activationCodeRepository = activationCodeRepository;
         this.mensaRepository = mensaRepository;
         this.mealsService = mealsService;
+        this.webPushService = webPushService;
 
         new CookieNotification(); // check if cookies are already accepted or show the cookie banner
     }
@@ -201,7 +206,15 @@ public class MailSettingsView extends Composite implements BeforeEnterObserver {
             mailUserSetupDialog.open();
         });
 
-        FormLayout formLayout = new FormLayout(headlineDelete, explanationDelete, deactivate, deactivateForTime, mailUserSettings, preferences);
+        Button pushNotificationDialogButton = new Button("Push Benachrichtigungen");
+        pushNotificationDialogButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+        pushNotificationDialogButton.setIcon(VaadinIcon.BELL_O.create());
+        pushNotificationDialogButton.addClickListener(buttonClickEvent -> {
+            PushNotificationDialog pushNotificationDialog = new PushNotificationDialog(webPushService, mailUserService, mailUser);
+            pushNotificationDialog.open();
+        });
+
+        FormLayout formLayout = new FormLayout(headlineDelete, explanationDelete, deactivate, deactivateForTime, mailUserSettings, preferences, pushNotificationDialogButton);
 
         content.add(formLayout);
         layout.add(content);
