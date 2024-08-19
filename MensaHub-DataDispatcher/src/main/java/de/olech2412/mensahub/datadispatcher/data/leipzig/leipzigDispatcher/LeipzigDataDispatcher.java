@@ -1,5 +1,7 @@
 package de.olech2412.mensahub.datadispatcher.data.leipzig.leipzigDispatcher;
 
+import de.olech2412.mensahub.APIConfiguration;
+import de.olech2412.mensahub.CollaborativeFilteringAPIAdapter;
 import de.olech2412.mensahub.datadispatcher.config.Config;
 import de.olech2412.mensahub.datadispatcher.data.leipzig.html_caller.HTML_Caller;
 import de.olech2412.mensahub.datadispatcher.email.Mailer;
@@ -13,21 +15,35 @@ import de.olech2412.mensahub.datadispatcher.monitoring.MonitoringTags;
 import de.olech2412.mensahub.models.Meal;
 import de.olech2412.mensahub.models.Mensa;
 import de.olech2412.mensahub.models.Rating;
+import de.olech2412.mensahub.models.addons.predictions.PredictionRequest;
+import de.olech2412.mensahub.models.addons.predictions.PredictionResult;
 import de.olech2412.mensahub.models.authentification.MailUser;
 import de.olech2412.mensahub.models.result.Result;
 import de.olech2412.mensahub.models.result.errors.Application;
 import de.olech2412.mensahub.models.result.errors.ErrorEntity;
+import de.olech2412.mensahub.models.result.errors.api.APIError;
+import de.olech2412.mensahub.models.result.errors.api.APIErrors;
 import de.olech2412.mensahub.models.result.errors.mail.MailError;
 import de.olech2412.mensahub.models.result.errors.parser.ParserError;
 import io.micrometer.core.annotation.Counted;
 import io.micrometer.core.instrument.Counter;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.*;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.RestTemplate;
 
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
+import java.io.IOException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -108,7 +124,7 @@ public class LeipzigDataDispatcher {
 
 
     @Scheduled(cron = "0 00 08 ? * MON-FRI")
-    public void sendEmails() {
+    public void sendEmails() throws NoSuchPaddingException, IllegalBlockSizeException, IOException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
         Counter mailCounterSuccess = monitoringConfig.customCounter("mails_success", MonitoringTags.MENSAHUB_DATA_DISPATCHER_APPLICATION_TAG.getValue(),
                 "How many mails were sent successfully");
         Counter mailCounterFailure = monitoringConfig.customCounter("mails_failure", MonitoringTags.MENSAHUB_DATA_DISPATCHER_APPLICATION_TAG.getValue(),
@@ -126,12 +142,32 @@ public class LeipzigDataDispatcher {
                         mailCounterFailure.increment();
                         errorEntityRepository.save(new ErrorEntity(mailResult.getError().message(), mailResult.getError().error().getCode(), Application.DATA_DISPATCHER));
                     }
+                    if(mailUser.isPushNotificationsEnabled()){
+                        sendPushNotification(buildMealMessage(mealsService.findAllMealsByServingDateAndMensa(today, mensa), mailUser),
+                                "Speiseplan - " + LocalDate.now().format(java.time.format.DateTimeFormatter.ofPattern("dd.MM.yyyy")) + " - " + mensa.getName(),
+                                mailUser.getEmail());
+                    }
                 }
             }
         }
     }
 
-    public void checkTheData(List<Meal> data, Mensa mensa) {
+    private String buildMealMessage(List<Meal> allMealsByServingDateAndMensa, MailUser mailUser) throws NoSuchPaddingException, IllegalBlockSizeException, IOException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
+        StringBuilder mealMessage = new StringBuilder();
+        for (Meal meal : allMealsByServingDateAndMensa) {
+            Result<PredictionResult, APIError> predictionResultAPIErrorResult = getRecommendationScore(meal, mailUser);
+
+            if(predictionResultAPIErrorResult.isSuccess()){
+                mealMessage.append(meal.getName()).append(" / Empfehlung: ").append(Math.round(predictionResultAPIErrorResult.getData().getPredictedRating()))
+                        .append("/5").append("\n");
+            } else {
+                mealMessage.append(meal.getName()).append("\n");
+            }
+        }
+        return mealMessage.toString();
+    }
+
+    public void checkTheData(List<Meal> data, Mensa mensa) throws NoSuchPaddingException, IllegalBlockSizeException, IOException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
         for (Meal newMeal : data) {
             List<Meal> databaseMeals = mealsService.findAllMealsByServingDateAndMensa(newMeal.getServingDate(), mensa);
             if (databaseMeals.isEmpty()) {
@@ -184,7 +220,7 @@ public class LeipzigDataDispatcher {
     }
 
     @Counted(value = "detected_updates", description = "How many updates were detected")
-    public List<Result<MailUser, MailError>> forceSendMail(Mensa wantedMensa) {
+    public List<Result<MailUser, MailError>> forceSendMail(Mensa wantedMensa) throws NoSuchPaddingException, IllegalBlockSizeException, IOException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
         Mailer mailer = new Mailer();
         LocalDate today = LocalDate.now();
         Counter updateSentCounter = monitoringConfig.customCounter("updates_sent", MonitoringTags.MENSAHUB_DATA_DISPATCHER_APPLICATION_TAG.getValue(),
@@ -207,6 +243,12 @@ public class LeipzigDataDispatcher {
                             updateSentCounterFailure.increment();
                             errorEntityRepository.save(new ErrorEntity(mailResult.getError().message(), mailResult.getError().error().getCode(), Application.DATA_DISPATCHER));
                             results.add(mailResult);
+                        }
+
+                        if(mailUser.isPushNotificationsEnabled()){
+                            sendPushNotification("Wir haben Änderungen am heutigen Speiseplan für die Mensa " + mensa.getName() + " erkannt.",
+                                    "Es gibt Änderungen am Speiseplan für heute",
+                                    mailUser.getEmail());
                         }
                     }
                 }
@@ -243,5 +285,55 @@ public class LeipzigDataDispatcher {
             }
         }
         return results;
+    }
+
+    public void sendPushNotification(String message, String title, String mailAdress) throws NoSuchPaddingException, IllegalBlockSizeException, IOException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
+        // URL des Endpunkts
+        String url = "http://localhost:8082/api/webpush/send";
+
+        // Header setzen
+        org.springframework.http.HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+
+        // Parameter setzen
+        MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
+        map.add("message", message);
+        map.add("title", title);
+        map.add("mailAdress", mailAdress);
+        map.add("apiKey", Config.getInstance().getProperty("mensaHub.junction.push.notification.api.key"));
+
+        // Request erstellen
+        HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(map, headers);
+
+        // RestTemplate verwenden, um die Anfrage zu senden
+        RestTemplate restTemplate = new RestTemplate();
+        ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.POST, request, String.class);
+
+        // Antwort auswerten
+        if (response.getStatusCode().is2xxSuccessful()) {
+            log.info("Push notification sent successfully to {}", mailAdress);
+        } else {
+            log.error("Push notification sent failed to {} with error code {}", mailAdress, response.getStatusCode());
+        }
+    }
+
+    public Result<PredictionResult, APIError> getRecommendationScore(Meal meal, MailUser mailUser) throws NoSuchPaddingException, IllegalBlockSizeException, IOException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
+        APIConfiguration apiConfiguration = new APIConfiguration();
+        apiConfiguration.setBaseUrl(Config.getInstance().getProperty("mensaHub.junction.collaborative.filter.api.baseUrl"));
+        CollaborativeFilteringAPIAdapter collaborativeFilteringAPIAdapter = new CollaborativeFilteringAPIAdapter(apiConfiguration);
+
+        if (collaborativeFilteringAPIAdapter.isAPIAvailable()) {
+            PredictionRequest predictionRequest = new PredictionRequest(Math.toIntExact(mailUser.getId()), meal.getName(), Math.toIntExact(meal.getId()));
+            Result<List<Result<PredictionResult, APIError>>, APIError> predictionResults = collaborativeFilteringAPIAdapter.predict(List.of(predictionRequest));
+
+            if (predictionResults.isSuccess()) {
+                return predictionResults.getData().get(0);
+            } else {
+                log.error("Prediction failed for meal {}. Error: {}", meal.getName(), predictionResults.getError());
+            }
+        }
+
+        // api is not available
+        return Result.error(new APIError("API not reachable", APIErrors.NETWORK_ERROR));
     }
 }

@@ -104,6 +104,9 @@ public class Config {
         propertiesToEncrypt.add("mensaHub.database.name");
         propertiesToEncrypt.add("mensaHub.database.username");
         propertiesToEncrypt.add("mensaHub.junction.mail.sender.password");
+        propertiesToEncrypt.add("mensaHub.junction.push.notification.api.key");
+        propertiesToEncrypt.add("mensaHub.junction.push.notification.private.key");
+        propertiesToEncrypt.add("mensaHub.junction.push.notification.public.key");
 
         for (String key : propertiesToEncrypt) {
             String property = getPropertyEncrypted(key);

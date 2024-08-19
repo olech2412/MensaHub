@@ -33,7 +33,7 @@ public class MensaHub_DataDispatcher {
         ConfigurableApplicationContext configurableApplicationContext = SpringApplication.run(MensaHub_DataDispatcher.class, args);
         LeipzigDataDispatcher leipzigDataDispatcher = configurableApplicationContext.getBean(LeipzigDataDispatcher.class);
 
-        leipzigDataDispatcher.callData();
+        leipzigDataDispatcher.sendEmails();
 
         if (Arrays.stream(args).toList().contains("sendMailManual")) {
             log.info("Sending emails manually");
