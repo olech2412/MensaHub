@@ -1,9 +1,13 @@
 package de.olech2412.mensahub.models.authentification;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
 @Entity
 @Table(name = "subscriptions")
+@Getter
+@Setter
 public class SubscriptionEntity {
     
     @Id
@@ -24,19 +28,10 @@ public class SubscriptionEntity {
         this.keys = keys;
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public String getEndpoint() {
-        return endpoint;
-    }
-
-    public KeysEntity getKeys() {
-        return keys;
-    }
 
     @Embeddable
+    @Getter
+    @Setter
     public static class KeysEntity {
 
         @Column(name = "p256dh", nullable = false)
@@ -51,14 +46,6 @@ public class SubscriptionEntity {
         public KeysEntity(String p256dh, String auth) {
             this.p256dh = p256dh;
             this.auth = auth;
-        }
-
-        public String getP256dh() {
-            return p256dh;
-        }
-
-        public String getAuth() {
-            return auth;
         }
     }
 }

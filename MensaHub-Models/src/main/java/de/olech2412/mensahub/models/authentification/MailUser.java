@@ -45,6 +45,9 @@ public class MailUser {
     private boolean wantsCollaborationInfoMail; // if the user wants to get mails about collaborations only
     @OneToOne(cascade = CascadeType.ALL)
     private Preferences preferences;
+    private boolean pushNotificationsEnabled; // user wants push notifications?
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    private SubscriptionEntity subscription;
 
     /**
      * Default constructor for the mail-user.
