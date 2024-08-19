@@ -289,7 +289,7 @@ public class LeipzigDataDispatcher {
 
     public void sendPushNotification(String message, String title, String mailAdress) throws NoSuchPaddingException, IllegalBlockSizeException, IOException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
         // URL des Endpunkts
-        String url = "http://localhost:8082/api/webpush/send";
+        String url = Config.getInstance().getProperty("mensaHub.dataDispatcher.junction.address") + "/api/webpush/send";
 
         // Header setzen
         org.springframework.http.HttpHeaders headers = new HttpHeaders();
