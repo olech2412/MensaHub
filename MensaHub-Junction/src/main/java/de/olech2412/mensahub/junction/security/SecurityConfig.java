@@ -43,6 +43,8 @@ public class SecurityConfig extends VaadinWebSecurity {
             authorizationManagerRequestMatcherRegistry.requestMatchers("/images/**").permitAll();
             authorizationManagerRequestMatcherRegistry.requestMatchers("/manifest.webmanifest").permitAll();
             authorizationManagerRequestMatcherRegistry.requestMatchers("/icons/**").permitAll();
+            authorizationManagerRequestMatcherRegistry.requestMatchers("/login").permitAll();
+            authorizationManagerRequestMatcherRegistry.requestMatchers("/sw.js").permitAll();
         });
 
         super.configure(http);
@@ -59,7 +61,8 @@ public class SecurityConfig extends VaadinWebSecurity {
                 "/static/**",
                 "/public/**",
                 "/resources/**",
-                "/META-INF/**"
+                "/META-INF/**",
+                "/sw.js"
         );
     }
 
