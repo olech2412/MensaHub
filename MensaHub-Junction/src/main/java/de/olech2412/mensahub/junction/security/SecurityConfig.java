@@ -41,20 +41,25 @@ public class SecurityConfig extends VaadinWebSecurity {
     protected void configure(HttpSecurity http) throws Exception {
 
         http.authorizeHttpRequests(authorizationManagerRequestMatcherRegistry -> {
-            authorizationManagerRequestMatcherRegistry.requestMatchers("/images/**").permitAll();
-            authorizationManagerRequestMatcherRegistry.requestMatchers("/manifest.webmanifest").permitAll();
-            authorizationManagerRequestMatcherRegistry.requestMatchers("/icons/**").permitAll();
-            authorizationManagerRequestMatcherRegistry.requestMatchers("/login").permitAll();
-            authorizationManagerRequestMatcherRegistry.requestMatchers("/sw.js").permitAll();
-        });
-
-        super.configure(http);
+                    authorizationManagerRequestMatcherRegistry.requestMatchers("/images/**").permitAll();
+                    authorizationManagerRequestMatcherRegistry.requestMatchers("/manifest.webmanifest").permitAll();
+                    authorizationManagerRequestMatcherRegistry.requestMatchers("/icons/**").permitAll();
+                    authorizationManagerRequestMatcherRegistry.requestMatchers("/login").permitAll();
+                    authorizationManagerRequestMatcherRegistry.requestMatchers("/sw.js").permitAll();
+                    authorizationManagerRequestMatcherRegistry.requestMatchers("/VAADIN/**").permitAll();
+                    authorizationManagerRequestMatcherRegistry.requestMatchers("/vaadin/**").permitAll();
+                })
+                .formLogin(httpSecurityFormLoginConfigurer -> {
+                    httpSecurityFormLoginConfigurer.loginPage("/login").loginProcessingUrl("/login");
+                    httpSecurityFormLoginConfigurer.successForwardUrl("/redirect");
+                });
 
         setLoginView(http, LoginView.class);
+        super.configure(http);
     }
 
     @Override
-    public void configure(WebSecurity web) throws Exception {
+    public void configure(WebSecurity web) {
         web.ignoring().requestMatchers(
                 "/icons/**",
                 "/images/**",
@@ -63,7 +68,9 @@ public class SecurityConfig extends VaadinWebSecurity {
                 "/public/**",
                 "/resources/**",
                 "/META-INF/**",
-                "/sw.js"
+                "/sw.js",
+                "/VAADIN/**",
+                "/vaadin/**"
         );
     }
 

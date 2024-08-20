@@ -16,7 +16,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import java.util.List;
 
 @PageTitle("MensaHub-Redirect")
-@Route(value = "")
+@Route(value = "redirect")
 @RolesAllowed({Role.Names.ROLE_ADMIN, Role.Names.ROLE_SUPER_ADMIN, Role.Names.ROLE_LOGIN_USER})
 public class RedirectView extends HorizontalLayout implements BeforeEnterObserver {
 
