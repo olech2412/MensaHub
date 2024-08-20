@@ -139,7 +139,7 @@ public class PushNotificationDialog extends Dialog {
         });
 
         subscribe.addClickListener(e -> {
-            webpush.subscribe(subscribe.getUI().get(), subscription -> {
+            webpush.subscribe(UI.getCurrent(), subscription -> {
                 subscribe.setEnabled(false);
                 unsubscribe.setEnabled(true);
                 currentUser.setPushNotificationsEnabled(true);
@@ -162,7 +162,7 @@ public class PushNotificationDialog extends Dialog {
         });
 
         unsubscribe.addClickListener(e -> {
-            webpush.unsubscribe(unsubscribe.getUI().get(), subscription -> {
+            webpush.unsubscribe(UI.getCurrent(), subscription -> {
 
                 subscribe.setEnabled(true);
                 unsubscribe.setEnabled(false);
