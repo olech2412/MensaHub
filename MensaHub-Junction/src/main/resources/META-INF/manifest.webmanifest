@@ -7,17 +7,17 @@
   "start_url": "/mealPlan?date=today&mensa=6",
   "icons": [
     {
-      "src": "icons/icon-144x144.png",
+      "src": "icons/icon.png",
       "sizes": "144x144",
       "type": "image/png"
     },
     {
-      "src": "icons/icon-192x192.png",
+      "src": "icons/icon.png",
       "sizes": "192x192",
       "type": "image/png"
     },
     {
-      "src": "icons/icon-512x512.png",
+      "src": "icons/icon.png",
       "sizes": "512x512",
       "type": "image/png"
     }
@@ -30,7 +30,7 @@
       "url": "/mealPlan?date=today&mensa=4",
       "icons": [
         {
-          "src": "icons/icon-192x192.png",
+          "src": "icons/icon.png",
           "sizes": "192x192",
           "type": "image/png"
         }
@@ -43,7 +43,7 @@
       "url": "/mealPlan",
       "icons": [
         {
-          "src": "icons/icon-192x192.png",
+          "src": "icons/icon.png",
           "sizes": "192x192",
           "type": "image/png"
         }
@@ -56,7 +56,7 @@
       "url": "/newsletter",
       "icons": [
         {
-          "src": "icons/icon-192x192.png",
+          "src": "icons/icon.png",
           "sizes": "192x192",
           "type": "image/png"
         }
