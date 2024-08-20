@@ -115,8 +115,12 @@ public class MailUserService {
         mailUserRepository.delete(mailUser);
     }
 
-    public MailUser initializeSubscription(MailUser mailUser) {
+    @Transactional
+    public MailUser initialize(MailUser mailUser) {
+        List<MailUser> mailUsers = mailUserRepository.findByEmail(mailUser.getEmail());
+        mailUser = mailUsers.get(0);
         Hibernate.initialize(mailUser.getSubscriptions());
+        Hibernate.initialize(mailUser.getMensas());
         return mailUser;
     }
 }

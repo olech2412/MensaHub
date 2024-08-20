@@ -28,8 +28,6 @@ import de.olech2412.mensahub.models.authentification.SubscriptionEntity;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import nl.martijndwars.webpush.Subscription;
-import org.hibernate.Hibernate;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
@@ -46,6 +44,8 @@ public class PushNotificationDialog extends Dialog {
 
     private SubscriptionEntityRepository subscriptionEntityRepository;
 
+    private MailUser currentUser;
+
     public PushNotificationDialog(WebPushService webPushService, MailUserService mailUserService, MailUser mailUser, SubscriptionEntityRepository subscriptionEntityRepository) {
         super("Push-Benachrichtigung");
 
@@ -53,6 +53,7 @@ public class PushNotificationDialog extends Dialog {
         this.webPushService = webPushService;
         this.mailUserService = mailUserService;
 
+        currentUser = mailUserService.initialize(mailUser);
 
         // iOS & iPadOS Header
         Icon warningIcon = new Icon(VaadinIcon.WARNING);
@@ -132,26 +133,24 @@ public class PushNotificationDialog extends Dialog {
         Button unsubscribe = new Button("Abmelden");
         unsubscribe.setIcon(VaadinIcon.TRASH.create());
 
-        AtomicReference<Subscription> existingSubscription = new AtomicReference<>();
         webpush.fetchExistingSubscription(UI.getCurrent(), subscription -> {
-            if (subscription != null) {
-                existingSubscription.set(subscription);
-            }
+            log.info(subscription != null ? subscription.toString() : "No subscription found");
+
+            subscribe.setEnabled(subscription == null);
+            unsubscribe.setEnabled(subscription != null);
         });
 
-        subscribe.setEnabled(existingSubscription.get() == null);
         subscribe.addClickListener(e -> {
             webpush.subscribe(subscribe.getUI().get(), subscription -> {
-
                 subscribe.setEnabled(false);
                 unsubscribe.setEnabled(true);
-                mailUser.setPushNotificationsEnabled(true);
+                currentUser.setPushNotificationsEnabled(true);
 
-                List<SubscriptionEntity> existingSubscriptions = new java.util.ArrayList<>(mailUser.getSubscriptions().stream().toList());
-                existingSubscriptions.add(SubscriptionConverter.convertToEntity(subscription, VaadinSession.getCurrent().getBrowser().toString()));
-                mailUser.setSubscriptions(existingSubscriptions);
+                List<SubscriptionEntity> existingSubscriptions = new java.util.ArrayList<>(currentUser.getSubscriptions().stream().toList());
+                existingSubscriptions.add(SubscriptionConverter.convertToEntity(subscription, VaadinSession.getCurrent().getBrowser().getBrowserApplication()));
+                currentUser.setSubscriptions(existingSubscriptions);
 
-                mailUserService.saveMailUser(mailUser);
+                mailUserService.saveMailUser(currentUser);
 
                 NotificationFactory.create(NotificationType.SUCCESS, "Push Notifications wurden abonniert. Überprüfe den Empfang der Testnachricht," +
                         " wenn du diese nicht erhalten hast, überprüfe deine System-/Browsereinstellungen").open();
@@ -159,27 +158,24 @@ public class PushNotificationDialog extends Dialog {
                 webpush.sendNotification(subscription, new WebPushMessage("MensaHub-Test", "Wenn du diese Nachricht empfangen kannst," +
                         " wurden die Push Benachrichtigungen erfolgreich eingerichtet"));
 
-                log.info("User {} enabled push notifications. Endpoint: {}. Device: {}", mailUser.getEmail(),
+                log.info("User {} enabled push notifications. Endpoint: {}. Device: {}", currentUser.getEmail(),
                         subscription.endpoint(), VaadinSession.getCurrent().getBrowser());
             });
         });
 
-        unsubscribe.setEnabled(existingSubscription.get() != null);
         unsubscribe.addClickListener(e -> {
             webpush.unsubscribe(unsubscribe.getUI().get(), subscription -> {
 
                 subscribe.setEnabled(true);
                 unsubscribe.setEnabled(false);
-                mailUser.setPushNotificationsEnabled(false);
+                currentUser.setPushNotificationsEnabled(false);
 
                 SubscriptionEntity subscriptionEntity = subscriptionEntityRepository.findByEndpoint(subscription.endpoint());
                 subscriptionEntityRepository.delete(subscriptionEntity);
 
-                mailUserService.saveMailUser(mailUser);
-
                 NotificationFactory.create(NotificationType.SUCCESS, "Push Notifications wurden für dich deaktiviert").open();
 
-                log.info("User {} disabled push notifications. Endpoint: {}. Device: {}", mailUser.getEmail(),
+                log.info("User {} disabled push notifications. Endpoint: {}. Device: {}", currentUser.getEmail(),
                         subscription.endpoint(), VaadinSession.getCurrent().getBrowser());
             });
         });
