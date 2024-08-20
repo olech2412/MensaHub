@@ -198,6 +198,8 @@ public class MealPlan extends VerticalLayout implements BeforeEnterObserver {
             throw new RuntimeException(e);
         }
 
+        datePicker.setValue(servingDate);
+
         if (mailUser == null) {
             UI.getCurrent().getPage().getHistory().replaceState(null, String.format("/mealPlan?date=%s" +
                     String.format("&mensa=%s", mensaComboBox.getValue().getId()), servingDate));
