@@ -12,6 +12,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
+import org.springframework.web.filter.ForwardedHeaderFilter;
 
 import javax.sql.DataSource;
 
@@ -64,6 +65,11 @@ public class SecurityConfig extends VaadinWebSecurity {
                 "/META-INF/**",
                 "/sw.js"
         );
+    }
+
+    @Bean
+    ForwardedHeaderFilter forwardedHeaderFilter() {
+        return new ForwardedHeaderFilter();
     }
 
 
