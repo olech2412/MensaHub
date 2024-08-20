@@ -45,7 +45,8 @@ public class SecurityConfig extends VaadinWebSecurity {
             authorizationManagerRequestMatcherRegistry.requestMatchers("/icons/**").permitAll();
             authorizationManagerRequestMatcherRegistry.requestMatchers("/login").permitAll();
             authorizationManagerRequestMatcherRegistry.requestMatchers("/sw.js").permitAll();
-        });
+        })
+        .requiresChannel(channelRequestMatcherRegistry -> channelRequestMatcherRegistry.anyRequest().requiresSecure());
 
         super.configure(http);
 
