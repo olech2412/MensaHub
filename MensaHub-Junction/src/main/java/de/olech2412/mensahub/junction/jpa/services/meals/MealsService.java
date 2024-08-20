@@ -5,7 +5,6 @@ import de.olech2412.mensahub.junction.jpa.repository.ErrorEntityRepository;
 import de.olech2412.mensahub.junction.jpa.repository.meals.MealRepository;
 import de.olech2412.mensahub.models.Meal;
 import de.olech2412.mensahub.models.Mensa;
-import de.olech2412.mensahub.models.jobs.Job;
 import de.olech2412.mensahub.models.result.Result;
 import de.olech2412.mensahub.models.result.errors.Application;
 import de.olech2412.mensahub.models.result.errors.ErrorEntity;

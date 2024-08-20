@@ -7,7 +7,6 @@ import de.olech2412.mensahub.junction.jpa.services.MailUserService;
 import de.olech2412.mensahub.models.authentification.MailUser;
 import de.olech2412.mensahub.models.authentification.SubscriptionEntity;
 import lombok.extern.slf4j.Slf4j;
-import nl.martijndwars.webpush.Subscription;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -35,13 +34,13 @@ public class WebPushTriggerEndpoint {
         try {
             MailUser mailUser;
 
-            if(!Config.getInstance().getProperty("mensaHub.junction.push.notification.api.key").equals(apiKey)){
+            if (!Config.getInstance().getProperty("mensaHub.junction.push.notification.api.key").equals(apiKey)) {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
             }
 
 
-                if (mailUserService.findMailUserByEmail(mailAdress).isEmpty()) {
-                    log.error("Cannot find mail adress: {}", mailAdress);
+            if (mailUserService.findMailUserByEmail(mailAdress).isEmpty()) {
+                log.error("Cannot find mail adress: {}", mailAdress);
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Cannot find mailAdress");
             }
 

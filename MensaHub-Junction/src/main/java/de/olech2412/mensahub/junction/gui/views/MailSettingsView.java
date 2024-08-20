@@ -75,9 +75,9 @@ public class MailSettingsView extends Composite implements BeforeEnterObserver {
     @Autowired
     private PreferencesService preferencesService;
 
-    private SubscriptionEntityRepository subscriptionEntityRepository;
+    private final SubscriptionEntityRepository subscriptionEntityRepository;
 
-    private WebPushService webPushService;
+    private final WebPushService webPushService;
 
     public MailSettingsView(DeactivationCodeRepository deactivationCodeRepository, MailUserService mailUserService,
                             ActivationCodeRepository activationCodeRepository, MensaRepository mensaRepository,

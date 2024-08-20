@@ -6,17 +6,17 @@ import com.vaadin.flow.component.Unit;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dialog.Dialog;
 import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.component.html.ListItem;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.html.UnorderedList;
-import com.vaadin.flow.component.html.ListItem;
+import com.vaadin.flow.component.icon.Icon;
+import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.server.VaadinSession;
 import com.vaadin.flow.server.webpush.WebPush;
 import com.vaadin.flow.server.webpush.WebPushMessage;
 import de.olech2412.mensahub.junction.gui.components.vaadin.layouts.generic.FooterButtonLayout;
-import com.vaadin.flow.component.icon.Icon;
-import com.vaadin.flow.component.icon.VaadinIcon;
 import de.olech2412.mensahub.junction.gui.components.vaadin.notifications.NotificationFactory;
 import de.olech2412.mensahub.junction.gui.components.vaadin.notifications.types.NotificationType;
 import de.olech2412.mensahub.junction.helper.SubscriptionConverter;
@@ -27,24 +27,22 @@ import de.olech2412.mensahub.models.authentification.MailUser;
 import de.olech2412.mensahub.models.authentification.SubscriptionEntity;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import nl.martijndwars.webpush.Subscription;
 
 import java.util.List;
-import java.util.concurrent.atomic.AtomicReference;
 
 @Getter
 @Slf4j
 public class PushNotificationDialog extends Dialog {
 
-    private FooterButtonLayout footerButtonLayout = new FooterButtonLayout();
+    private final FooterButtonLayout footerButtonLayout = new FooterButtonLayout();
 
-    private WebPushService webPushService;
+    private final WebPushService webPushService;
 
-    private MailUserService mailUserService;
+    private final MailUserService mailUserService;
 
-    private SubscriptionEntityRepository subscriptionEntityRepository;
+    private final SubscriptionEntityRepository subscriptionEntityRepository;
 
-    private MailUser currentUser;
+    private final MailUser currentUser;
 
     public PushNotificationDialog(WebPushService webPushService, MailUserService mailUserService, MailUser mailUser, SubscriptionEntityRepository subscriptionEntityRepository) {
         super("Push-Benachrichtigung");

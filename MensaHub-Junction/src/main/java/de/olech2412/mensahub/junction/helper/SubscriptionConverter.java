@@ -11,6 +11,7 @@ public class SubscriptionConverter {
 
     /**
      * Convert the model object to the database entity
+     *
      * @param subscription as nl.martijndwars.webpush.Subscription
      * @return subscription as de.olech2412.mensahub.models.authentification.SubscriptionEntity
      */
@@ -24,6 +25,7 @@ public class SubscriptionConverter {
 
     /**
      * Convert the database entity to the model object
+     *
      * @param entity as de.olech2412.mensahub.models.authentification.SubscriptionEntity
      * @return subscription as nl.martijndwars.webpush.Subscription
      */

@@ -19,9 +19,9 @@ import java.util.regex.Pattern;
 @Getter
 public class CustomComboBoxLayout extends VerticalLayout {
 
+    private final List<String> values = new ArrayList<>();
     TextField textField;
     FormLayout badges = new FormLayout();
-    private final List<String> values = new ArrayList<>();
     @Setter
     private Pattern pattern;
 
