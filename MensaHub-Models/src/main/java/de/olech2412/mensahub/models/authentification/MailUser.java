@@ -8,7 +8,9 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -46,8 +48,9 @@ public class MailUser {
     @OneToOne(cascade = CascadeType.ALL)
     private Preferences preferences;
     private boolean pushNotificationsEnabled; // user wants push notifications?
-    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
-    private SubscriptionEntity subscription;
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "subscription_id")
+    private List<SubscriptionEntity> subscriptions = new ArrayList<>();
 
     /**
      * Default constructor for the mail-user.

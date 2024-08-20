@@ -1,6 +1,7 @@
 package de.olech2412.mensahub.junction.gui.components.vaadin.dialogs;
 
 import com.vaadin.flow.component.Text;
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.Unit;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.dialog.Dialog;
@@ -10,6 +11,7 @@ import com.vaadin.flow.component.html.UnorderedList;
 import com.vaadin.flow.component.html.ListItem;
 import com.vaadin.flow.component.orderedlayout.FlexComponent;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import com.vaadin.flow.server.VaadinSession;
 import com.vaadin.flow.server.webpush.WebPush;
 import com.vaadin.flow.server.webpush.WebPushMessage;
 import de.olech2412.mensahub.junction.gui.components.vaadin.layouts.generic.FooterButtonLayout;
@@ -17,11 +19,18 @@ import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import de.olech2412.mensahub.junction.gui.components.vaadin.notifications.NotificationFactory;
 import de.olech2412.mensahub.junction.gui.components.vaadin.notifications.types.NotificationType;
+import de.olech2412.mensahub.junction.helper.SubscriptionConverter;
+import de.olech2412.mensahub.junction.jpa.repository.SubscriptionEntityRepository;
 import de.olech2412.mensahub.junction.jpa.services.MailUserService;
 import de.olech2412.mensahub.junction.webpush.WebPushService;
 import de.olech2412.mensahub.models.authentification.MailUser;
+import de.olech2412.mensahub.models.authentification.SubscriptionEntity;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import nl.martijndwars.webpush.Subscription;
+
+import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 
 @Getter
 @Slf4j
@@ -33,11 +42,18 @@ public class PushNotificationDialog extends Dialog {
 
     private MailUserService mailUserService;
 
-    public PushNotificationDialog(WebPushService webPushService, MailUserService mailUserService, MailUser mailUser) {
+    private SubscriptionEntityRepository subscriptionEntityRepository;
+
+    private MailUser currentUser;
+
+    public PushNotificationDialog(WebPushService webPushService, MailUserService mailUserService, MailUser mailUser, SubscriptionEntityRepository subscriptionEntityRepository) {
         super("Push-Benachrichtigung");
 
+        this.subscriptionEntityRepository = subscriptionEntityRepository;
         this.webPushService = webPushService;
         this.mailUserService = mailUserService;
+
+        currentUser = mailUserService.initialize(mailUser);
 
         // iOS & iPadOS Header
         Icon warningIcon = new Icon(VaadinIcon.WARNING);
@@ -117,34 +133,50 @@ public class PushNotificationDialog extends Dialog {
         Button unsubscribe = new Button("Abmelden");
         unsubscribe.setIcon(VaadinIcon.TRASH.create());
 
-        subscribe.setEnabled(!mailUser.isPushNotificationsEnabled());
+        webpush.fetchExistingSubscription(UI.getCurrent(), subscription -> {
+            log.info(subscription != null ? subscription.toString() : "No subscription found");
+
+            subscribe.setEnabled(subscription == null);
+            unsubscribe.setEnabled(subscription != null);
+        });
+
         subscribe.addClickListener(e -> {
             webpush.subscribe(subscribe.getUI().get(), subscription -> {
-                webPushService.store(subscription);
                 subscribe.setEnabled(false);
                 unsubscribe.setEnabled(true);
-                mailUser.setPushNotificationsEnabled(true);
-                mailUser.setSubscription(mailUserService.convertToEntity(subscription));
-                mailUserService.saveMailUser(mailUser);
+                currentUser.setPushNotificationsEnabled(true);
+
+                List<SubscriptionEntity> existingSubscriptions = new java.util.ArrayList<>(currentUser.getSubscriptions().stream().toList());
+                existingSubscriptions.add(SubscriptionConverter.convertToEntity(subscription, VaadinSession.getCurrent().getBrowser().getBrowserApplication()));
+                currentUser.setSubscriptions(existingSubscriptions);
+
+                mailUserService.saveMailUser(currentUser);
+
                 NotificationFactory.create(NotificationType.SUCCESS, "Push Notifications wurden abonniert. Überprüfe den Empfang der Testnachricht," +
                         " wenn du diese nicht erhalten hast, überprüfe deine System-/Browsereinstellungen").open();
+
                 webpush.sendNotification(subscription, new WebPushMessage("MensaHub-Test", "Wenn du diese Nachricht empfangen kannst," +
                         " wurden die Push Benachrichtigungen erfolgreich eingerichtet"));
-                log.info("User {} enabled push notifications", mailUser.getEmail());
+
+                log.info("User {} enabled push notifications. Endpoint: {}. Device: {}", currentUser.getEmail(),
+                        subscription.endpoint(), VaadinSession.getCurrent().getBrowser());
             });
         });
 
-        unsubscribe.setEnabled(mailUser.isPushNotificationsEnabled());
         unsubscribe.addClickListener(e -> {
             webpush.unsubscribe(unsubscribe.getUI().get(), subscription -> {
-                webPushService.remove(subscription);
+
                 subscribe.setEnabled(true);
                 unsubscribe.setEnabled(false);
-                mailUser.setPushNotificationsEnabled(false);
-                mailUser.setSubscription(null);
-                mailUserService.saveMailUser(mailUser);
+                currentUser.setPushNotificationsEnabled(false);
+
+                SubscriptionEntity subscriptionEntity = subscriptionEntityRepository.findByEndpoint(subscription.endpoint());
+                subscriptionEntityRepository.delete(subscriptionEntity);
+
                 NotificationFactory.create(NotificationType.SUCCESS, "Push Notifications wurden für dich deaktiviert").open();
-                log.info("User {} disabled push notifications", mailUser.getEmail());
+
+                log.info("User {} disabled push notifications. Endpoint: {}. Device: {}", currentUser.getEmail(),
+                        subscription.endpoint(), VaadinSession.getCurrent().getBrowser());
             });
         });
 

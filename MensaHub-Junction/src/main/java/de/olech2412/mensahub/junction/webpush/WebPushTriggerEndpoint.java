@@ -2,9 +2,12 @@ package de.olech2412.mensahub.junction.webpush;
 
 import com.vaadin.flow.server.webpush.WebPushMessage;
 import de.olech2412.mensahub.junction.config.Config;
+import de.olech2412.mensahub.junction.helper.SubscriptionConverter;
 import de.olech2412.mensahub.junction.jpa.services.MailUserService;
 import de.olech2412.mensahub.models.authentification.MailUser;
+import de.olech2412.mensahub.models.authentification.SubscriptionEntity;
 import lombok.extern.slf4j.Slf4j;
+import nl.martijndwars.webpush.Subscription;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -49,14 +52,18 @@ public class WebPushTriggerEndpoint {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Mail notifications are disabled for this user");
             }
 
-            if (mailUser.getSubscription() == null) {
+            if (mailUser.getSubscriptions() == null) {
                 log.error("Subscription is null for user {}", mailAdress);
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("No subscription found for this user");
             }
 
-            webPushService.webPush.sendNotification(mailUserService.convertToModel(mailUser.getSubscription()),
-                    new WebPushMessage(title, message));
-            log.info("WebPush notification sent to user {} with title {} and message {}", mailAdress, title, message);
+            for (SubscriptionEntity subscription : mailUser.getSubscriptions()) {
+                webPushService.webPush.sendNotification(SubscriptionConverter.convertToModel(subscription),
+                        new WebPushMessage(title, message));
+                log.info("WebPush notification sent to user {} for device {} with title {} and message {}",
+                        mailAdress, subscription.getDeviceInfo(), title, message);
+            }
+
             return ResponseEntity.ok("Push notification sent successfully");
         } catch (Exception e) {
             log.error("Error while sending web push notification", e);

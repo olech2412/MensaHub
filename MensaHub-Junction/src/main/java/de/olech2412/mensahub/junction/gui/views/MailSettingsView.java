@@ -31,6 +31,7 @@ import de.olech2412.mensahub.junction.gui.components.vaadin.notifications.types.
 import de.olech2412.mensahub.junction.jpa.repository.API_UserRepository;
 import de.olech2412.mensahub.junction.jpa.repository.ActivationCodeRepository;
 import de.olech2412.mensahub.junction.jpa.repository.DeactivationCodeRepository;
+import de.olech2412.mensahub.junction.jpa.repository.SubscriptionEntityRepository;
 import de.olech2412.mensahub.junction.jpa.repository.mensen.MensaRepository;
 import de.olech2412.mensahub.junction.jpa.services.MailUserService;
 import de.olech2412.mensahub.junction.jpa.services.PreferencesService;
@@ -74,17 +75,20 @@ public class MailSettingsView extends Composite implements BeforeEnterObserver {
     @Autowired
     private PreferencesService preferencesService;
 
+    private SubscriptionEntityRepository subscriptionEntityRepository;
+
     private WebPushService webPushService;
 
     public MailSettingsView(DeactivationCodeRepository deactivationCodeRepository, MailUserService mailUserService,
                             ActivationCodeRepository activationCodeRepository, MensaRepository mensaRepository,
-                            MealsService mealsService, WebPushService webPushService) {
+                            MealsService mealsService, WebPushService webPushService, SubscriptionEntityRepository subscriptionEntityRepository) {
         this.deactivationCodeRepository = deactivationCodeRepository;
         this.mailUserService = mailUserService;
         this.activationCodeRepository = activationCodeRepository;
         this.mensaRepository = mensaRepository;
         this.mealsService = mealsService;
         this.webPushService = webPushService;
+        this.subscriptionEntityRepository = subscriptionEntityRepository;
 
         new CookieNotification(); // check if cookies are already accepted or show the cookie banner
     }
@@ -210,7 +214,7 @@ public class MailSettingsView extends Composite implements BeforeEnterObserver {
         pushNotificationDialogButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
         pushNotificationDialogButton.setIcon(VaadinIcon.BELL_O.create());
         pushNotificationDialogButton.addClickListener(buttonClickEvent -> {
-            PushNotificationDialog pushNotificationDialog = new PushNotificationDialog(webPushService, mailUserService, mailUser);
+            PushNotificationDialog pushNotificationDialog = new PushNotificationDialog(webPushService, mailUserService, mailUser, subscriptionEntityRepository);
             pushNotificationDialog.open();
         });
 

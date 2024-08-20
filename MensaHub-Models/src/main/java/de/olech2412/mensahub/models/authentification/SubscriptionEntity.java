@@ -20,12 +20,15 @@ public class SubscriptionEntity {
     @Embedded
     private KeysEntity keys;
 
+    private String deviceInfo;
+
     public SubscriptionEntity() {
     }
 
-    public SubscriptionEntity(String endpoint, KeysEntity keys) {
+    public SubscriptionEntity(String endpoint, KeysEntity keys, String deviceInfo) {
         this.endpoint = endpoint;
         this.keys = keys;
+        this.deviceInfo = deviceInfo;
     }
 
 
