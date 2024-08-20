@@ -63,6 +63,6 @@ public class MensaHub_Junction implements AppShellConfigurator {
         // load credentials for push notifications
         System.setProperty("push.private.key", Config.getInstance().getProperty("mensaHub.junction.push.notification.private.key"));
         System.setProperty("push.public.key", Config.getInstance().getProperty("mensaHub.junction.push.notification.public.key"));
-        System.setProperty("push.subject", "mailto:olechristoph2412@gmail.com");
+        System.setProperty("push.subject", Config.getInstance().getProperty("mensaHub.junction.address"));
     }
 }

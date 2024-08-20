@@ -119,6 +119,13 @@ public class PushNotificationDialog extends Dialog {
         braveContent.getStyle().set("border-radius", "8px");
         braveContent.getStyle().set("background-color", "#fdfde8");
 
+        UI.getCurrent().getPage().executeJs(
+                "return window.navigator.serviceWorker.register('/sw.js').then(registration => { return registration.scope; }).catch(error => { throw error; });"
+        ).then(String.class, scope -> {
+            // Verwende den zurückgegebenen Wert
+            System.out.println("Service Worker scope: " + scope);
+        });
+
         footerButtonLayout.declineButton.addClickListener(buttonClickEvent -> this.close());
         footerButtonLayout.acceptButton.setVisible(false);
         footerButtonLayout.acceptButton.setWidth(0, Unit.PIXELS);
