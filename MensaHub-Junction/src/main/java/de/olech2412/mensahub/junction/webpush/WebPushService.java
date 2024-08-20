@@ -1,9 +1,12 @@
 package de.olech2412.mensahub.junction.webpush;
 
+import de.olech2412.mensahub.junction.helper.SubscriptionConverter;
+import de.olech2412.mensahub.junction.jpa.repository.SubscriptionEntityRepository;
 import lombok.extern.slf4j.Slf4j;
 import nl.martijndwars.webpush.Subscription;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -25,14 +28,13 @@ public class WebPushService {
     @Value("${push.subject}")
     private String subject;
 
-    private final Map<String, Subscription> endpointToSubscription = new HashMap<>();
+    @Autowired
+    private SubscriptionEntityRepository subscriptionEntityRepository;
 
     WebPush webPush;
 
     /**
      * Initialize security and push service for initial get request.
-     *
-     * @throws GeneralSecurityException security exception for security complications
      */
     public WebPush getWebPush() {
         if(webPush == null) {
@@ -48,31 +50,14 @@ public class WebPushService {
      * @param body message body
      */
     public void notifyAll(String title, String body) {
-        endpointToSubscription.values().forEach(subscription -> {
-            webPush.sendNotification(subscription, new WebPushMessage(title, body));
+        subscriptionEntityRepository.findAll().forEach(subscription -> {
+            webPush.sendNotification(SubscriptionConverter.convertToModel(subscription), new WebPushMessage(title, body));
         });
     }
 
-    public void store(Subscription subscription) {
-        log.info("Subscribed to {}", subscription.endpoint());
-        /*
-         * Note, in a real world app you'll want to persist these
-         * in the backend. Also, you probably want to know which
-         * subscription belongs to which user to send custom messages
-         * for different users. In this demo, we'll just use
-         * endpoint URL as key to store subscriptions in memory.
-         */
-        endpointToSubscription.put(subscription.endpoint(), subscription);
-    }
-
-
-    public void remove(Subscription subscription) {
-        log.info("Unsubscribed from {}", subscription.endpoint());
-        endpointToSubscription.remove(subscription.endpoint());
-    }
 
     public boolean isEmpty() {
-        return endpointToSubscription.isEmpty();
+        return subscriptionEntityRepository.findAll().isEmpty();
     }
 
 }

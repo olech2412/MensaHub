@@ -5,7 +5,6 @@ import de.olech2412.mensahub.junction.jpa.repository.mensen.MensaRepository;
 import de.olech2412.mensahub.models.Mensa;
 import de.olech2412.mensahub.models.Rating;
 import de.olech2412.mensahub.models.authentification.MailUser;
-import de.olech2412.mensahub.models.authentification.SubscriptionEntity;
 import de.olech2412.mensahub.models.jobs.Job;
 import de.olech2412.mensahub.models.result.Result;
 import de.olech2412.mensahub.models.result.errors.Application;
@@ -13,7 +12,6 @@ import de.olech2412.mensahub.models.result.errors.ErrorEntity;
 import de.olech2412.mensahub.models.result.errors.jpa.JPAError;
 import de.olech2412.mensahub.models.result.errors.jpa.JPAErrors;
 import lombok.extern.slf4j.Slf4j;
-import nl.martijndwars.webpush.Subscription;
 import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -117,17 +115,8 @@ public class MailUserService {
         mailUserRepository.delete(mailUser);
     }
 
-    public SubscriptionEntity convertToEntity(Subscription subscription) {
-        return new SubscriptionEntity(
-                subscription.endpoint(),
-                new SubscriptionEntity.KeysEntity(subscription.keys().p256dh(), subscription.keys().auth())
-        );
-    }
-
-    public Subscription convertToModel(SubscriptionEntity entity) {
-        return new Subscription(
-                entity.getEndpoint(),
-                new Subscription.Keys(entity.getKeys().getP256dh(), entity.getKeys().getAuth())
-        );
+    public MailUser initializeSubscription(MailUser mailUser) {
+        Hibernate.initialize(mailUser.getSubscriptions());
+        return mailUser;
     }
 }

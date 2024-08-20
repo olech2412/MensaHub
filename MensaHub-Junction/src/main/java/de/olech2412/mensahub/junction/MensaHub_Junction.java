@@ -19,12 +19,6 @@ import java.io.IOException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 
-/**
- * The entry point of the Spring Boot application.
- * <p>
- * Use the @PWA annotation make the application installable on phones, tablets
- * and some desktop browsers.
- */
 @SpringBootApplication
 @Theme("mensaHub-theme")
 @NpmPackage(value = "line-awesome", version = "1.3.0")
@@ -68,6 +62,6 @@ public class MensaHub_Junction implements AppShellConfigurator {
         // load credentials for push notifications
         System.setProperty("push.private.key", Config.getInstance().getProperty("mensaHub.junction.push.notification.private.key"));
         System.setProperty("push.public.key", Config.getInstance().getProperty("mensaHub.junction.push.notification.public.key"));
-        System.setProperty("push.subject", Config.getInstance().getProperty("mensaHub.junction.address"));
+        System.setProperty("push.subject", "mailto:olechristoph2412@gmail.com");
     }
 }
