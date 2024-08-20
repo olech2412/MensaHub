@@ -50,6 +50,20 @@ public class SecurityConfig extends VaadinWebSecurity {
         setLoginView(http, LoginView.class);
     }
 
+    @Override
+    public void configure(WebSecurity web) throws Exception {
+        web.ignoring().requestMatchers(
+                "/icons/**",
+                "/images/**",
+                "/manifest.webmanifest",
+                "/static/**",
+                "/public/**",
+                "/resources/**",
+                "/META-INF/**"
+        );
+    }
+
+
     @Bean
     public UserDetailsService userDetailsService() {
         return new InMemoryUserDetailsManager();
