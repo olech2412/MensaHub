@@ -8,6 +8,7 @@ import com.vaadin.flow.router.Route;
 import de.olech2412.mensahub.junction.security.SecurityService;
 import de.olech2412.mensahub.models.authentification.Role;
 import jakarta.annotation.security.PermitAll;
+import jakarta.annotation.security.RolesAllowed;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -16,7 +17,7 @@ import java.util.List;
 
 @PageTitle("MensaHub-Redirect")
 @Route(value = "")
-@PermitAll
+@RolesAllowed({Role.Names.ROLE_ADMIN, Role.Names.ROLE_SUPER_ADMIN, Role.Names.ROLE_LOGIN_USER})
 public class RedirectView extends HorizontalLayout implements BeforeEnterObserver {
 
     @Autowired
