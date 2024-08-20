@@ -10,7 +10,6 @@ import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.StreamResource;
-import com.vaadin.flow.server.VaadinSession;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
 import de.olech2412.mensahub.junction.gui.components.vaadin.notifications.types.CookieNotification;
 import lombok.extern.slf4j.Slf4j;
@@ -55,8 +54,6 @@ public class LoginView extends VerticalLayout implements BeforeEnterObserver {
         loginI18n.setHeader(loginI18nHeader);
 
         login.setI18n(loginI18n);
-
-        log.info(VaadinSession.getCurrent().getBrowser().getAddress());
 
         StreamResource logoStream = new StreamResource("mensaHub_logo.webp", () -> getClass().getResourceAsStream("/static/img/MensaHub_logo.webp"));
         Image logoImage = new Image(logoStream, "Logo");

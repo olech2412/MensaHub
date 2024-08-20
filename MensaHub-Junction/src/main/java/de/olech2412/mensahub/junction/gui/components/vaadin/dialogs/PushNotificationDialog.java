@@ -62,7 +62,7 @@ public class PushNotificationDialog extends Dialog {
         iosTitle.getStyle().set("font-weight", "bold");
         iosTitle.getStyle().set("font-size", "16px");
 
-        Div iosHeader = new Div(warningIcon, iosTitle);
+        Div iosHeader = new Div(iosTitle);
         iosHeader.getStyle().set("display", "flex");
         iosHeader.getStyle().set("align-items", "center");
 
@@ -118,13 +118,6 @@ public class PushNotificationDialog extends Dialog {
         braveContent.getStyle().set("border", "1px solid #ffcc00");
         braveContent.getStyle().set("border-radius", "8px");
         braveContent.getStyle().set("background-color", "#fdfde8");
-
-        UI.getCurrent().getPage().executeJs(
-                "return window.navigator.serviceWorker.register('/sw.js').then(registration => { return registration.scope; }).catch(error => { throw error; });"
-        ).then(String.class, scope -> {
-            // Verwende den zurückgegebenen Wert
-            System.out.println("Service Worker scope: " + scope);
-        });
 
         footerButtonLayout.declineButton.addClickListener(buttonClickEvent -> this.close());
         footerButtonLayout.acceptButton.setVisible(false);
