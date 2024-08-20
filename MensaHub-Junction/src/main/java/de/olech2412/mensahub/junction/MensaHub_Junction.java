@@ -4,6 +4,7 @@ import com.vaadin.flow.component.dependency.NpmPackage;
 import com.vaadin.flow.component.page.AppShellConfigurator;
 import com.vaadin.flow.component.page.Push;
 import com.vaadin.flow.server.PWA;
+import com.vaadin.flow.shared.communication.PushMode;
 import com.vaadin.flow.theme.Theme;
 import de.olech2412.mensahub.junction.config.Config;
 import lombok.extern.slf4j.Slf4j;
@@ -26,7 +27,7 @@ import java.security.NoSuchAlgorithmException;
 @EntityScan(basePackages = {"de.olech2412.mensahub.models"})
 @Slf4j
 @EnableAsync
-@Push
+@Push(PushMode.AUTOMATIC)
 public class MensaHub_Junction implements AppShellConfigurator {
 
     public static void main(String[] args) throws IOException, NoSuchPaddingException, IllegalBlockSizeException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {

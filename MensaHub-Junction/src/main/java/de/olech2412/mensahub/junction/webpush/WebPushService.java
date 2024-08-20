@@ -20,6 +20,7 @@ public class WebPushService {
     private String privateKey;
     @Value("${push.subject}")
     private String subject;
+
     @Autowired
     private SubscriptionEntityRepository subscriptionEntityRepository;
 
