@@ -48,10 +48,6 @@ public class SecurityConfig extends VaadinWebSecurity {
                     authorizationManagerRequestMatcherRegistry.requestMatchers("/sw.js").permitAll();
                     authorizationManagerRequestMatcherRegistry.requestMatchers("/VAADIN/**").permitAll();
                     authorizationManagerRequestMatcherRegistry.requestMatchers("/vaadin/**").permitAll();
-                })
-                .formLogin(httpSecurityFormLoginConfigurer -> {
-                    httpSecurityFormLoginConfigurer.loginPage("/login").loginProcessingUrl("/login");
-                    httpSecurityFormLoginConfigurer.successForwardUrl("/redirect");
                 });
 
         setLoginView(http, LoginView.class);
