@@ -24,12 +24,6 @@ public class SecurityConfig extends VaadinWebSecurity {
     @Autowired
     private DataSource dataSource;
 
-    private final RouteUtil routeUtil;
-
-    public SecurityConfig(RouteUtil routeUtil) {
-        this.routeUtil = routeUtil;
-    }
-
     @Autowired
     public void configAuthentication(AuthenticationManagerBuilder auth) throws Exception {
         // Authentifizierung für die Benutzer der Webanwendung (aus Datenbank)
