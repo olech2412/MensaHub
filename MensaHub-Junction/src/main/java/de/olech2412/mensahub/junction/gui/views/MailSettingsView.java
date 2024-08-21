@@ -19,9 +19,11 @@ import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.server.StreamResource;
+import com.vaadin.flow.server.VaadinService;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
 import de.olech2412.mensahub.junction.email.Mailer;
 import de.olech2412.mensahub.junction.gui.components.vaadin.datetimepicker.GermanDatePicker;
+import de.olech2412.mensahub.junction.gui.components.vaadin.dialogs.AppleDeviceUserCodeDialog;
 import de.olech2412.mensahub.junction.gui.components.vaadin.dialogs.MailUserSetupDialog;
 import de.olech2412.mensahub.junction.gui.components.vaadin.dialogs.PreferencesDialog;
 import de.olech2412.mensahub.junction.gui.components.vaadin.dialogs.PushNotificationDialog;
@@ -43,6 +45,8 @@ import de.olech2412.mensahub.models.authentification.MailUser;
 import de.olech2412.mensahub.models.result.Result;
 import de.olech2412.mensahub.models.result.errors.jpa.JPAError;
 import jakarta.mail.MessagingException;
+import jakarta.servlet.http.Cookie;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,10 +61,12 @@ import java.security.NoSuchAlgorithmException;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 @Route("deactivate")
 @PageTitle("Verwaltung deiner E-Mail-Einstellungen")
 @AnonymousAllowed
+@Slf4j
 public class MailSettingsView extends Composite implements BeforeEnterObserver {
     private final DeactivationCodeRepository deactivationCodeRepository;
     private final MailUserService mailUserService;
@@ -78,6 +84,8 @@ public class MailSettingsView extends Composite implements BeforeEnterObserver {
     private final SubscriptionEntityRepository subscriptionEntityRepository;
 
     private final WebPushService webPushService;
+
+    private MailUser mailUser;
 
     public MailSettingsView(DeactivationCodeRepository deactivationCodeRepository, MailUserService mailUserService,
                             ActivationCodeRepository activationCodeRepository, MensaRepository mensaRepository,
@@ -115,14 +123,105 @@ public class MailSettingsView extends Composite implements BeforeEnterObserver {
         try {
             Map<String, List<String>> params = event.getLocation().getQueryParameters().getParameters();
 
-            String code = params.get("code").get(0);
+            String userCode = "";
 
-            if (deactivationCodeRepository.findByCode(code).isEmpty()) {
-                content.add(new Text("Hast du dich gerade abgemeldet? Wenn ja, dann ist alles in Ordnung! "));
-                content.add(new Text("Wenn nicht, ist etwas schief gelaufen. Bitte kontaktiere im Zweifelsfall den Administrator!"));
+            // Prüfen, ob der Cookie bereits vorhanden ist
+            Cookie[] cookies = VaadinService.getCurrentRequest().getCookies();
+            Cookie userCodeCookie = null;
+
+            if (cookies != null) {
+                for (Cookie cookie : cookies) {
+                    if ("userCode".equals(cookie.getName())) {
+                        userCodeCookie = cookie;
+                        break;
+                    }
+                }
+            }
+
+            if (params.containsKey("code")) {
+                userCode = params.get("code").get(0);
+
+                if (userCodeCookie != null) {
+                    // Der Cookie ist vorhanden, jetzt vergleichen wir den Wert
+                    if (userCode.equals(userCodeCookie.getValue())) {
+                        Result<MailUser, JPAError> mailUserByCookieResult = mailUserService.findMailUserByDeactivationCode(userCodeCookie.getValue());
+                        if (mailUserByCookieResult.isSuccess()) {
+                            mailUser = mailUserByCookieResult.getData();
+                            log.info("User identified by cookie");
+                        } else {
+                            log.error("Cookie is corrupt or manipulated");
+                        }
+                    } else {
+                        // Der Cookie-Wert unterscheidet sich, Cookie aktualisieren
+                        Result<MailUser, JPAError> mailUserJPAErrorResult = mailUserService.findMailUserByDeactivationCode(userCode);
+
+                        if (mailUserJPAErrorResult.isSuccess()) {
+                            mailUser = mailUserJPAErrorResult.getData();
+                            userCodeCookie.setValue(userCode);
+                            userCodeCookie.setPath("/");
+                            userCodeCookie.setMaxAge(2147483647);
+                            userCodeCookie.setSecure(true);
+                            userCodeCookie.setHttpOnly(true);
+                            VaadinService.getCurrentResponse().addCookie(userCodeCookie);
+                            log.info("User identified by deactivation code, cookie is renewed");
+                        } else {
+                            log.info("Error identify user by deactivation code");
+                            NotificationFactory.create(NotificationType.ERROR, "Ungültige Nutzerkennung. Erweiterte Funktionen stehen nicht zur Verfügung");
+                        }
+                    }
+                } else {
+                    // Wenn der Cookie nicht existiert, führen wir die DB-Abfrage durch und setzen den Cookie
+                    Result<MailUser, JPAError> mailUserJPAErrorResult = mailUserService.findMailUserByDeactivationCode(userCode);
+
+                    if (mailUserJPAErrorResult.isSuccess()) {
+                        mailUser = mailUserJPAErrorResult.getData();
+
+                        // Setze den Cookie
+                        Cookie newUserCodeCookie = new Cookie("userCode", userCode);
+                        newUserCodeCookie.setPath("/");
+                        newUserCodeCookie.setMaxAge(2147483647);
+                        newUserCodeCookie.setSecure(true);
+                        newUserCodeCookie.setHttpOnly(true);
+                        VaadinService.getCurrentResponse().addCookie(newUserCodeCookie);
+                    } else {
+                        log.error("Cannot identify user via url parameter {}", mailUser);
+                        NotificationFactory.create(NotificationType.ERROR, "Ungültige Nutzerkennung. Erweiterte Funktionen stehen nicht zur Verfügung").open();
+                    }
+                }
+            } else { // es existiert kein url parameter
+                if (userCodeCookie != null) {
+                    Result<MailUser, JPAError> mailUserByCookieResult = mailUserService.findMailUserByDeactivationCode(userCodeCookie.getValue());
+                    if (mailUserByCookieResult.isSuccess()) {
+                        mailUser = mailUserByCookieResult.getData();
+                        log.info("User identified by cookie");
+                    } else {
+                        log.error("Cookie is corrupt or manipulated");
+                    }
+                }
+            }
+
+            AtomicBoolean applePWAInfoNotificationShown = new AtomicBoolean(false);
+            UI.getCurrent().getPage().executeJs("return !!window.localStorage.getItem('applePWAInfoNotificationShown');")
+                    .then(jsonValue -> {
+                        applePWAInfoNotificationShown.set(jsonValue.asBoolean());
+                    });
+
+            AppleDeviceUserCodeDialog appleDeviceUserCodeDialog = new AppleDeviceUserCodeDialog();
+            Cookie finalUserCodeCookie = userCodeCookie;
+            UI.getCurrent().getPage().executeJs(
+                    "return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;" // check if pwa
+            ).then(Boolean.class, isPWA -> {
+                if (Boolean.TRUE.equals(isPWA) && !appleDeviceUserCodeDialog.isOpened() && finalUserCodeCookie == null && !applePWAInfoNotificationShown.get() && AppleDeviceUserCodeDialog.isAppleDevice()) { // check if pwa, info not shown and device is apple bloated
+                    appleDeviceUserCodeDialog.open();
+                }
+            });
+            UI.getCurrent().getPage().executeJs("window.localStorage.setItem('applePWAInfoNotificationShown', 'true');");
+
+            if (deactivationCodeRepository.findByCode(userCode).isEmpty() && mailUser == null) {
+                content.add(new Text("Wir konnten dich leider nicht identifizieren. Bitte rufe die Seite mit einem gültigen Link (z.B. aus der E-Mail)"));
                 layout.add(content);
             } else {
-                initDeactivationView(code);
+                initDeactivationView();
             }
         } catch (NullPointerException nullPointerException) {
             logger.warn("User tried to navigate to DeactivationView but there is no code");
@@ -134,20 +233,18 @@ public class MailSettingsView extends Composite implements BeforeEnterObserver {
     }
 
     @Transactional
-    protected void initDeactivationView(String code) throws MessagingException {
-        Result<MailUser, JPAError> mailUserResult = mailUserService.findMailUserByDeactivationCode(code);
-
-        if (!mailUserResult.isSuccess()) {
-            layout.add(new Paragraph("Der Nutzer konnte nicht identifiziert werden. Wenn du der Meinung bist, es " +
-                    "handelt sich um einen Fehler, kontaktiere bitte den Administrator."));
-            return;
-        }
-
-        MailUser mailUser = mailUserResult.getData();
-
+    protected void initDeactivationView() throws MessagingException {
         H3 headlineDelete = new H3("Du möchtest keine weiteren Emails von uns oder deine Einstellungen bearbeiten? Hier sind deine Optionen...");
         Text explanationDelete = new Text("Der klick auf \"Vollständig Deaktivieren\" hat eine sofortige Löschung deiner Daten zur Folge." +
                 " Durch klick auf \"Zeitweise Deaktivieren\" kannst du deinen Account für gewisse Zeit deaktivieren und anschließend weiter nutzen");
+
+        Button redirectToMealPlanButton = new Button(VaadinIcon.CHEVRON_CIRCLE_RIGHT.create());
+        redirectToMealPlanButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+        redirectToMealPlanButton.setText("Zum Speiseplan");
+        redirectToMealPlanButton.setTooltipText("Du wirst zum Speiseplan weitergeleitet");
+        redirectToMealPlanButton.addClickListener(buttonClickEvent -> {
+            UI.getCurrent().navigate(MealPlan.class);
+        });
 
         Button deactivate = new Button("Vollständig Deaktivieren");
         deactivate.setIcon(VaadinIcon.TRASH.create());
@@ -218,7 +315,7 @@ public class MailSettingsView extends Composite implements BeforeEnterObserver {
             pushNotificationDialog.open();
         });
 
-        FormLayout formLayout = new FormLayout(headlineDelete, explanationDelete, deactivate, deactivateForTime, mailUserSettings, preferences, pushNotificationDialogButton);
+        FormLayout formLayout = new FormLayout(headlineDelete, explanationDelete, redirectToMealPlanButton, deactivate, deactivateForTime, mailUserSettings, preferences, pushNotificationDialogButton);
 
         content.add(formLayout);
         layout.add(content);

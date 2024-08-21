@@ -34,10 +34,10 @@
   ],
   "shortcuts": [
     {
-      "name": "Mensa am Park Speiseplan",
-      "short_name": "Mensa am Park Speiseplan",
-      "description": "Zeigt den aktuellen Speiseplan an für die Mensa am Park",
-      "url": "/mealPlan?date=today&mensa=4",
+      "name": "MensaHub-Einstellungen",
+      "short_name": "MensaHub-Einstellungen",
+      "description": "Deine personalisierten MensaHub-Einstellungen werden geladen",
+      "url": "/deactivate",
       "icons": [
         {
           "src": "icons/icon.png",

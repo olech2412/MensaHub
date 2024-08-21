@@ -78,6 +78,8 @@ public class MealPlan extends VerticalLayout implements BeforeEnterObserver {
 
     private MailUser mailUser;
 
+    VerticalLayout headerComboboxDatePickerButtonsLayout = new VerticalLayout();
+
     public MealPlan(MealsService mealsService, MensaService mensaService, MealPlanService mealPlanService) {
         this.mealsService = mealsService;
         this.mensaService = mensaService;
@@ -91,7 +93,7 @@ public class MealPlan extends VerticalLayout implements BeforeEnterObserver {
         mensaComboBox.setItems(mensaService.getAllMensas());
         mensaComboBox.setItemLabelGenerator(Mensa::getName);
 
-        VerticalLayout headerComboboxDatePickerButtonsLayout = new VerticalLayout();
+
         headerComboboxDatePickerButtonsLayout.setWidth(100f, Unit.PERCENTAGE);
         headerComboboxDatePickerButtonsLayout.setAlignItems(Alignment.CENTER);
         headerComboboxDatePickerButtonsLayout.setJustifyContentMode(JustifyContentMode.CENTER);
@@ -353,6 +355,17 @@ public class MealPlan extends VerticalLayout implements BeforeEnterObserver {
                     log.error("Cookie is corrupt or manipulated");
                 }
             }
+        }
+
+        if(mailUser != null){
+            Button redirectToMensaHubSettings = new Button(VaadinIcon.CHEVRON_CIRCLE_RIGHT.create());
+            redirectToMensaHubSettings.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+            redirectToMensaHubSettings.setText("MensaHub-Einstellungen");
+            redirectToMensaHubSettings.setTooltipText("Du wirst zu deinen MensaHub-Einstellungen weitergeleitet");
+            redirectToMensaHubSettings.addClickListener(buttonClickEvent -> {
+                UI.getCurrent().navigate(MailSettingsView.class);
+            });
+            headerComboboxDatePickerButtonsLayout.add(redirectToMensaHubSettings);
         }
 
         AtomicBoolean applePWAInfoNotificationShown = new AtomicBoolean(false);
