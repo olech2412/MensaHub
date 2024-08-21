@@ -1,5 +1,6 @@
 package de.olech2412.mensahub.junction.security;
 
+import com.vaadin.flow.router.internal.RouteUtil;
 import com.vaadin.flow.spring.security.VaadinWebSecurity;
 import de.olech2412.mensahub.junction.gui.views.LoginView;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +24,12 @@ public class SecurityConfig extends VaadinWebSecurity {
     @Autowired
     private DataSource dataSource;
 
+    private final RouteUtil routeUtil;
+
+    public SecurityConfig(RouteUtil routeUtil) {
+        this.routeUtil = routeUtil;
+    }
+
     @Autowired
     public void configAuthentication(AuthenticationManagerBuilder auth) throws Exception {
         // Authentifizierung für die Benutzer der Webanwendung (aus Datenbank)
@@ -39,7 +46,12 @@ public class SecurityConfig extends VaadinWebSecurity {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
+
+
         http
+                .requiresChannel(channelRequestMatcherRegistry -> {
+                    channelRequestMatcherRegistry.anyRequest().requiresSecure();
+                })
                 .authorizeHttpRequests(authorizationManagerRequestMatcherRegistry -> {
                     authorizationManagerRequestMatcherRegistry.requestMatchers("/images/**").permitAll();
                     authorizationManagerRequestMatcherRegistry.requestMatchers("/manifest.webmanifest").permitAll();
