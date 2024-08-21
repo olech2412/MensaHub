@@ -142,7 +142,23 @@ public class LeipzigDataDispatcher {
                         mailCounterFailure.increment();
                         errorEntityRepository.save(new ErrorEntity(mailResult.getError().message(), mailResult.getError().error().getCode(), Application.DATA_DISPATCHER));
                     }
-                    if(mailUser.isPushNotificationsEnabled()){
+                    if (mailUser.isPushNotificationsEnabled()) {
+                        sendPushNotification(buildMealMessage(mealsService.findAllMealsByServingDateAndMensa(today, mensa), mailUser),
+                                "Speiseplan - " + LocalDate.now().format(java.time.format.DateTimeFormatter.ofPattern("dd.MM.yyyy")) + " - " + mensa.getName(),
+                                mailUser.getEmail());
+                    }
+                }
+            } else {
+                for (Mensa mensa : mailUser.getMensas()) {
+                    Result<MailUser, MailError> mailResult = mailer.sendSpeiseplan(mailUser, mealsService.findAllMealsByServingDateAndMensa(today, mensa), mensa, false);
+                    if (mailResult.isSuccess()) {
+                        mailCounterSuccess.increment();
+                        log.info("Regular mail sent to {} for mensa {}", mailUser.getEmail(), mensa.getName());
+                    } else {
+                        mailCounterFailure.increment();
+                        errorEntityRepository.save(new ErrorEntity(mailResult.getError().message(), mailResult.getError().error().getCode(), Application.DATA_DISPATCHER));
+                    }
+                    if (mailUser.isPushNotificationsEnabled()) {
                         sendPushNotification(buildMealMessage(mealsService.findAllMealsByServingDateAndMensa(today, mensa), mailUser),
                                 "Speiseplan - " + LocalDate.now().format(java.time.format.DateTimeFormatter.ofPattern("dd.MM.yyyy")) + " - " + mensa.getName(),
                                 mailUser.getEmail());
@@ -157,7 +173,7 @@ public class LeipzigDataDispatcher {
         for (Meal meal : allMealsByServingDateAndMensa) {
             Result<PredictionResult, APIError> predictionResultAPIErrorResult = getRecommendationScore(meal, mailUser);
 
-            if(predictionResultAPIErrorResult.isSuccess()){
+            if (predictionResultAPIErrorResult.isSuccess()) {
                 mealMessage.append(meal.getName()).append(" / Empfehlung: ").append(Math.round(predictionResultAPIErrorResult.getData().getPredictedRating()))
                         .append("/5").append("\n");
             } else {
@@ -233,22 +249,32 @@ public class LeipzigDataDispatcher {
                 List<Meal> meals = mealsService.findAllMealsByServingDateAndMensa(today, mensa);
                 List<MailUser> mailUsers = mailUserService.findAllByMensasAndEnabled(mensa, true);
                 for (MailUser mailUser : mailUsers) {
-                    if (mailUser.isWantsUpdate()) {
-                        Result<MailUser, MailError> mailResult = mailer.sendSpeiseplan(mailUser, meals, mensa, true);
-                        if (mailResult.isSuccess()) {
-                            updateSentCounter.increment();
-                            log.info("Update sent to {} for mensa {}", mailUser.getEmail(), mensa.getName());
-                            results.add(mailResult);
-                        } else {
-                            updateSentCounterFailure.increment();
-                            errorEntityRepository.save(new ErrorEntity(mailResult.getError().message(), mailResult.getError().error().getCode(), Application.DATA_DISPATCHER));
-                            results.add(mailResult);
-                        }
+                    if (mailUser.isEnabled()) {
+                        if (mailUser.isWantsUpdate()) {
+                            Result<MailUser, MailError> mailResult = mailer.sendSpeiseplan(mailUser, meals, mensa, true);
+                            if (mailResult.isSuccess()) {
+                                updateSentCounter.increment();
+                                log.info("Update sent to {} for mensa {}", mailUser.getEmail(), mensa.getName());
+                                results.add(mailResult);
+                            } else {
+                                updateSentCounterFailure.increment();
+                                errorEntityRepository.save(new ErrorEntity(mailResult.getError().message(), mailResult.getError().error().getCode(), Application.DATA_DISPATCHER));
+                                results.add(mailResult);
+                            }
 
-                        if(mailUser.isPushNotificationsEnabled()){
-                            sendPushNotification("Wir haben Änderungen am heutigen Speiseplan für die Mensa " + mensa.getName() + " erkannt.",
-                                    "Es gibt Änderungen am Speiseplan für heute",
-                                    mailUser.getEmail());
+                            if (mailUser.isPushNotificationsEnabled()) {
+                                sendPushNotification("Wir haben Änderungen am heutigen Speiseplan für die Mensa " + mensa.getName() + " erkannt.",
+                                        "Es gibt Änderungen am Speiseplan für heute",
+                                        mailUser.getEmail());
+                            }
+                        }
+                    } else {
+                        if (mailUser.isWantsUpdate()) {
+                            if (mailUser.isPushNotificationsEnabled()) {
+                                sendPushNotification("Wir haben Änderungen am heutigen Speiseplan für die Mensa " + mensa.getName() + " erkannt.",
+                                        "Es gibt Änderungen am Speiseplan für heute",
+                                        mailUser.getEmail());
+                            }
                         }
                     }
                 }
