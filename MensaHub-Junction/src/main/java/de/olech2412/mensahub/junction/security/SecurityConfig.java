@@ -39,8 +39,8 @@ public class SecurityConfig extends VaadinWebSecurity {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-
-        http.authorizeHttpRequests(authorizationManagerRequestMatcherRegistry -> {
+        http
+                .authorizeHttpRequests(authorizationManagerRequestMatcherRegistry -> {
                     authorizationManagerRequestMatcherRegistry.requestMatchers("/images/**").permitAll();
                     authorizationManagerRequestMatcherRegistry.requestMatchers("/manifest.webmanifest").permitAll();
                     authorizationManagerRequestMatcherRegistry.requestMatchers("/icons/**").permitAll();
@@ -50,7 +50,7 @@ public class SecurityConfig extends VaadinWebSecurity {
                     authorizationManagerRequestMatcherRegistry.requestMatchers("/vaadin/**").permitAll();
                 });
 
-        setLoginView(http, "https://mensahub.olech2412.de/login");
+        setLoginView(http, LoginView.class);
         super.configure(http);
     }
 
