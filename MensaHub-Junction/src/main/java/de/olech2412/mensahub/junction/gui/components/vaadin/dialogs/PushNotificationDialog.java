@@ -150,6 +150,7 @@ public class PushNotificationDialog extends Dialog {
                 NotificationFactory.create(NotificationType.SUCCESS, "Push Notifications wurden abonniert. Überprüfe den Empfang der Testnachricht," +
                         " wenn du diese nicht erhalten hast, überprüfe deine System-/Browsereinstellungen").open();
 
+
                 webpush.sendNotification(subscription, new WebPushMessage("MensaHub-Test", "Wenn du diese Nachricht empfangen kannst," +
                         " wurden die Push Benachrichtigungen erfolgreich eingerichtet"));
 
