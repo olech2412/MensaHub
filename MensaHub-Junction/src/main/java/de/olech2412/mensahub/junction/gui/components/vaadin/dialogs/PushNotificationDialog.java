@@ -42,16 +42,12 @@ public class PushNotificationDialog extends Dialog {
 
     private final SubscriptionEntityRepository subscriptionEntityRepository;
 
-    private final MailUser currentUser;
-
     public PushNotificationDialog(WebPushService webPushService, MailUserService mailUserService, MailUser mailUser, SubscriptionEntityRepository subscriptionEntityRepository) {
         super("Push-Benachrichtigung");
 
         this.subscriptionEntityRepository = subscriptionEntityRepository;
         this.webPushService = webPushService;
         this.mailUserService = mailUserService;
-
-        currentUser = mailUserService.initialize(mailUser);
 
         // iOS & iPadOS Header
         Icon warningIcon = new Icon(VaadinIcon.WARNING);
@@ -140,6 +136,7 @@ public class PushNotificationDialog extends Dialog {
 
         subscribe.addClickListener(e -> {
             webpush.subscribe(UI.getCurrent(), subscription -> {
+                MailUser currentUser = mailUserService.initialize(mailUserService.findMailUserByEmail(mailUser.getEmail()).get(0));
                 subscribe.setEnabled(false);
                 unsubscribe.setEnabled(true);
                 currentUser.setPushNotificationsEnabled(true);
@@ -163,13 +160,17 @@ public class PushNotificationDialog extends Dialog {
 
         unsubscribe.addClickListener(e -> {
             webpush.unsubscribe(UI.getCurrent(), subscription -> {
-
+                MailUser currentUser = mailUserService.initialize(mailUserService.findMailUserByEmail(mailUser.getEmail()).get(0));
                 subscribe.setEnabled(true);
                 unsubscribe.setEnabled(false);
                 currentUser.setPushNotificationsEnabled(false);
 
                 SubscriptionEntity subscriptionEntity = subscriptionEntityRepository.findByEndpoint(subscription.endpoint());
                 subscriptionEntityRepository.delete(subscriptionEntity);
+
+                List<SubscriptionEntity> existingSubscriptions = new java.util.ArrayList<>(currentUser.getSubscriptions().stream().toList());
+                existingSubscriptions.remove(subscriptionEntity);
+                currentUser.setSubscriptions(existingSubscriptions);
 
                 NotificationFactory.create(NotificationType.SUCCESS, "Push Notifications wurden für dich deaktiviert").open();
 
