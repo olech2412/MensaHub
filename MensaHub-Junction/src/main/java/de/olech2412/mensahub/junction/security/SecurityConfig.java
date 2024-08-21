@@ -50,7 +50,7 @@ public class SecurityConfig extends VaadinWebSecurity {
                     authorizationManagerRequestMatcherRegistry.requestMatchers("/vaadin/**").permitAll();
                 });
 
-        setLoginView(http, LoginView.class);
+        setLoginView(http, "https://mensahub.olech2412.de/login");
         super.configure(http);
     }
 
