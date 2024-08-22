@@ -76,13 +76,14 @@ public class MealsService {
         List<Meal> meals = meals_Repository.findAllByServingDateAndMensa(servingDate, mensa);
         HashMap<Rating, Meal> deletedRatings = new HashMap<>();
         for (Meal meal : meals) {
-            Optional<Rating> ratingOptional = ratingRepository.findByMealId(meal.getId());
+            Optional<List<Rating>> ratingOptional = ratingRepository.findAllByMealId(meal.getId());
             if (ratingOptional.isPresent()) {
-                deletedRatings.put(ratingOptional.get(), meal);
-                Rating unchainedRating = ratingOptional.get();
-                unchainedRating.setMeal(null);
-                ratingRepository.save(unchainedRating);
-                log.info("Unchained rating for meal {} for mensa {} from user {}", meal.getName(), mensa.getName(), ratingOptional.get().getMailUser().getEmail());
+                for (Rating rating : ratingOptional.get()) {
+                    deletedRatings.put(rating, meal);
+                    rating.setMeal(null);
+                    ratingRepository.save(rating);
+                    log.info("Unchained rating {} for meal {} for mensa {} from user", rating, meal.getName(), mensa.getName());
+                }
             }
             meals_Repository.delete(meal);
         }

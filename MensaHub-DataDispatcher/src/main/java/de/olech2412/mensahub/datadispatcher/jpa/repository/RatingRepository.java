@@ -11,6 +11,6 @@ public interface RatingRepository extends JpaRepository<Rating, Long> {
 
     List<Rating> findAllByMailUserAndMealName(MailUser mailUser, String mealName);
 
-    Optional<Rating> findByMealId(Long mealId);
+    Optional<List<Rating>> findAllByMealId(Long mealId);
 
 }
