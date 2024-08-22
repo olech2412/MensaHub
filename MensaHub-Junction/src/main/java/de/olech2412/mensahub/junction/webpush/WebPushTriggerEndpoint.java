@@ -57,7 +57,7 @@ public class WebPushTriggerEndpoint {
             }
 
             for (SubscriptionEntity subscription : mailUser.getSubscriptions()) {
-                webPushService.webPush.sendNotification(SubscriptionConverter.convertToModel(subscription),
+                webPushService.getWebPush().sendNotification(SubscriptionConverter.convertToModel(subscription),
                         new WebPushMessage(title, message));
                 log.info("WebPush notification sent to user {} for device {} with title {} and message {}",
                         mailAdress, subscription.getDeviceInfo(), title, message);

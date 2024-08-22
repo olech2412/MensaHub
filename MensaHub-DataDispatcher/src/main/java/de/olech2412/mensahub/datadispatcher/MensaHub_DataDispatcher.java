@@ -1,6 +1,7 @@
 package de.olech2412.mensahub.datadispatcher;
 
 import de.olech2412.mensahub.datadispatcher.config.Config;
+import de.olech2412.mensahub.datadispatcher.data.jobs.JobManager;
 import de.olech2412.mensahub.datadispatcher.data.leipzig.leipzigDispatcher.LeipzigDataDispatcher;
 import de.olech2412.mensahub.models.Mensa;
 import lombok.extern.log4j.Log4j2;
@@ -32,8 +33,9 @@ public class MensaHub_DataDispatcher {
         configureEnvironment();
         ConfigurableApplicationContext configurableApplicationContext = SpringApplication.run(MensaHub_DataDispatcher.class, args);
         LeipzigDataDispatcher leipzigDataDispatcher = configurableApplicationContext.getBean(LeipzigDataDispatcher.class);
+        JobManager jobManager = configurableApplicationContext.getBean(JobManager.class);
 
-        leipzigDataDispatcher.callData();
+        jobManager.checkForJobs();
 
         if (Arrays.stream(args).toList().contains("sendMailManual")) {
             log.info("Sending emails manually");
