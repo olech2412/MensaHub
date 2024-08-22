@@ -72,6 +72,7 @@ public class JobManager {
                 if (errors == 0) {
                     job.setExecuted(true);
                     job.setJobStatus(JobStatus.SUCCESS);
+                    job.setExecuteAt(LocalDateTime.now());
                     Result<Job, JPAError> saveResult = jobService.saveJob(job);
                     if (saveResult.isSuccess()) {
                         log.info("Successful executed job {}", job.getUuid());

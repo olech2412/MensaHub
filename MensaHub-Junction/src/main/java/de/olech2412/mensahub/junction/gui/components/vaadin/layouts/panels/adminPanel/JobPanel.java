@@ -31,6 +31,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 
@@ -113,6 +114,8 @@ public class JobPanel extends VerticalLayout {
             // if this happens, the view is fucked up so throw an error
             throw new RuntimeException(resultFetchAllJobs.getError().message());
         } else {
+            // sort after creation time
+            resultFetchAllJobs.getData().sort(Comparator.comparing(Job::getCreationDate));
             gridListDataView = jobGrid.setItems(resultFetchAllJobs.getData());
         }
 

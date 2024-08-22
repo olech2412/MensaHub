@@ -53,6 +53,8 @@ public class JobGrid extends Grid<Job> {
         addColumn(job -> formatDateTime(job.getExecuteAt())).setHeader("Zeitpunkt Ausführung").setAutoWidth(true).setSortable(true);
         addComponentColumn(job -> formatBoolean(job.isExecuted())).setHeader("Ausgeführt").setAutoWidth(true).setSortable(true);
         //setTooltipGenerator(job -> "Eindeutige Id: " + job.getUuid().toString());
+        addColumn(Job::getTitle);
+        addColumn(Job::getMessage);
 
         setPartNameGenerator(job -> {
             if (job.getProponent() != null && !job.isExecuted()) {
