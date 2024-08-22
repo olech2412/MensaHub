@@ -30,6 +30,7 @@ public class WebPushTriggerEndpoint {
     public ResponseEntity<String> sendPushNotification(@RequestParam String message,
                                                        @RequestParam String title,
                                                        @RequestParam String mailAdress,
+                                                       @RequestParam String targetUrl,
                                                        @RequestParam String apiKey) {
         try {
             MailUser mailUser;
@@ -58,9 +59,9 @@ public class WebPushTriggerEndpoint {
 
             for (SubscriptionEntity subscription : mailUser.getSubscriptions()) {
                 webPushService.getWebPush().sendNotification(SubscriptionConverter.convertToModel(subscription),
-                        new CustomWebPushMessage(title, message, "https://mensahub.olech2412.de/mealPlan?date=today&mensa=6"));
-                log.info("WebPush notification sent to user {} for device {} with title {} and message {}",
-                        mailAdress, subscription.getDeviceInfo(), title, message);
+                        new CustomWebPushMessage(title, message, targetUrl));
+                log.info("WebPush notification sent to user {} for device {} with title {} and message {} and targetUrl {}",
+                        mailAdress, subscription.getDeviceInfo(), title, message,  targetUrl);
             }
 
             return ResponseEntity.ok("Push notification sent successfully");

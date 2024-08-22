@@ -147,7 +147,7 @@ public class LeipzigDataDispatcher {
                     if (mailUser.isPushNotificationsEnabled()) {
                         sendPushNotification(buildMealMessage(mealsService.findAllMealsByServingDateAndMensa(today, mensa), mailUser),
                                 "Speiseplan - " + LocalDate.now().format(java.time.format.DateTimeFormatter.ofPattern("dd.MM.yyyy")) + " - " + mensa.getName(),
-                                mailUser.getEmail());
+                                mailUser, mensa);
                     }
                 }
             } else {
@@ -163,7 +163,7 @@ public class LeipzigDataDispatcher {
                     if (mailUser.isPushNotificationsEnabled()) {
                         sendPushNotification(buildMealMessage(mealsService.findAllMealsByServingDateAndMensa(today, mensa), mailUser),
                                 "Speiseplan - " + LocalDate.now().format(java.time.format.DateTimeFormatter.ofPattern("dd.MM.yyyy")) + " - " + mensa.getName(),
-                                mailUser.getEmail());
+                                mailUser, mensa);
                     }
                 }
             }
@@ -269,7 +269,7 @@ public class LeipzigDataDispatcher {
                             if (mailUser.isPushNotificationsEnabled()) {
                                 sendPushNotification("Wir haben Änderungen am heutigen Speiseplan für die Mensa " + mensa.getName() + " erkannt.",
                                         "Es gibt Änderungen am Speiseplan für heute",
-                                        mailUser.getEmail());
+                                        mailUser, mensa);
                             }
                         }
                     } else {
@@ -277,7 +277,7 @@ public class LeipzigDataDispatcher {
                             if (mailUser.isPushNotificationsEnabled()) {
                                 sendPushNotification("Wir haben Änderungen am heutigen Speiseplan für die Mensa " + mensa.getName() + " erkannt.",
                                         "Es gibt Änderungen am Speiseplan für heute",
-                                        mailUser.getEmail());
+                                        mailUser, mensa);
                             }
                         }
                     }
@@ -317,7 +317,7 @@ public class LeipzigDataDispatcher {
         return results;
     }
 
-    public Result<String, JobError> sendPushNotification(String message, String title, String mailAdress) throws NoSuchPaddingException, IllegalBlockSizeException, IOException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
+    public Result<MailUser, JobError> sendPushNotification(String message, String title, MailUser mailUser, Mensa mensa) throws NoSuchPaddingException, IllegalBlockSizeException, IOException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
         // URL des Endpunkts
         String url = Config.getInstance().getProperty("mensaHub.dataDispatcher.junction.address") + "/api/webpush/send";
 
@@ -325,11 +325,20 @@ public class LeipzigDataDispatcher {
         org.springframework.http.HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 
+        String targetUrl;
+
+        if (mensa == null){
+            targetUrl = Config.getInstance().getProperty("mensaHub.junction.address") + "/mealPlan/date=today";
+        } else {
+            targetUrl = Config.getInstance().getProperty("mensaHub.junction.address") + "/mealPlan/date=today&mensa=" + mensa.getId();
+        }
+
         // Parameter setzen
         MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
         map.add("message", message);
         map.add("title", title);
-        map.add("mailAdress", mailAdress);
+        map.add("mailAdress", mailUser.getEmail());
+        map.add("targetUrl", targetUrl);
         map.add("apiKey", Config.getInstance().getProperty("mensaHub.junction.push.notification.api.key"));
 
         // Request erstellen
@@ -341,11 +350,11 @@ public class LeipzigDataDispatcher {
 
         // Antwort auswerten
         if (response.getStatusCode().is2xxSuccessful()) {
-            log.info("Push notification sent successfully to {}", mailAdress);
-            return Result.success(mailAdress);
+            log.info("Push notification sent successfully to {}", mailUser.getEmail());
+            return Result.success(mailUser);
         } else {
-            log.error("Push notification sent failed to {} with error code {}", mailAdress, response.getStatusCode());
-            return Result.error(new JobError(String.format("Push notification sent failed to %s with error code %s", mailAdress, response.getStatusCode()), JobErrors.UNKNOWN));
+            log.error("Push notification sent failed to {} with error code {}", mailUser.getEmail(), response.getStatusCode());
+            return Result.error(new JobError(String.format("Push notification sent failed to %s with error code %s", mailUser.getEmail(), response.getStatusCode()), JobErrors.UNKNOWN));
         }
     }
 

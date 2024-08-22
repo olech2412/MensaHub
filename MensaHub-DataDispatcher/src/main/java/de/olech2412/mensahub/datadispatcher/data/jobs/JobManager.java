@@ -46,7 +46,7 @@ public class JobManager {
         if (jobs.isSuccess()) {
             for (Job job : jobs.getData()) {
                 List<Result<MailUser, MailError>> executeJobResults = new ArrayList<>();
-                List<Result<String, JobError>> executedPushNotificationJobs = new ArrayList<>();
+                List<Result<MailUser, JobError>> executedPushNotificationJobs = new ArrayList<>();
                 switch (job.getJobType()) {
                     case SEND_EMAILS -> {
                         List<Result<MailUser, MailError>> results = leipzigDataDispatcher.forceSendMail(job.getMailUsers(), false);
@@ -58,7 +58,7 @@ public class JobManager {
                     }
                     case SEND_PUSH_NOTIFICATION -> {
                         for (MailUser mailUser : job.getMailUsers()) {
-                            Result<String, JobError> results = leipzigDataDispatcher.sendPushNotification(job.getTitle(), job.getMessage(), mailUser.getEmail());
+                            Result<MailUser, JobError> results = leipzigDataDispatcher.sendPushNotification(job.getTitle(), job.getMessage(), mailUser, null);
                             executedPushNotificationJobs.add(results);
                         }
                     }

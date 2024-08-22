@@ -154,7 +154,7 @@ public class PushNotificationDialog extends Dialog {
 
 
                 webpush.sendNotification(subscription, new CustomWebPushMessage("MensaHub-Test", "Wenn du diese Nachricht empfangen kannst," +
-                        " wurden die Push Benachrichtigungen erfolgreich eingerichtet", "https://mensahub.olech2412.de/mealPlan?date=today&mensa=6"));
+                        " wurden die Push Benachrichtigungen erfolgreich eingerichtet", "https://mensahub.olech2412.de/mealPlan?date=today"));
 
                 log.info("User {} enabled push notifications. Endpoint: {}. Device: {}", currentUser.getEmail(),
                         subscription.endpoint(), VaadinSession.getCurrent().getBrowser());
