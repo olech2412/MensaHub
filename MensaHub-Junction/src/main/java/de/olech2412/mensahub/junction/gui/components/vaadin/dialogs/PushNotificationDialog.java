@@ -22,6 +22,8 @@ import de.olech2412.mensahub.junction.gui.components.vaadin.notifications.types.
 import de.olech2412.mensahub.junction.helper.SubscriptionConverter;
 import de.olech2412.mensahub.junction.jpa.repository.SubscriptionEntityRepository;
 import de.olech2412.mensahub.junction.jpa.services.MailUserService;
+import de.olech2412.mensahub.junction.webpush.CustomWebPush;
+import de.olech2412.mensahub.junction.webpush.CustomWebPushMessage;
 import de.olech2412.mensahub.junction.webpush.WebPushService;
 import de.olech2412.mensahub.models.authentification.MailUser;
 import de.olech2412.mensahub.models.authentification.SubscriptionEntity;
@@ -120,7 +122,7 @@ public class PushNotificationDialog extends Dialog {
         footerButtonLayout.acceptButton.setWidth(0, Unit.PIXELS);
         footerButtonLayout.declineButton.setWidth(100f, Unit.PERCENTAGE);
 
-        WebPush webpush = webPushService.getWebPush();
+        CustomWebPush webpush = webPushService.getWebPush();
 
         Button subscribe = new Button("Anmelden");
         subscribe.setIcon(VaadinIcon.CHECK.create());
@@ -151,8 +153,8 @@ public class PushNotificationDialog extends Dialog {
                         " wenn du diese nicht erhalten hast, überprüfe deine System-/Browsereinstellungen").open();
 
 
-                webpush.sendNotification(subscription, new WebPushMessage("MensaHub-Test", "Wenn du diese Nachricht empfangen kannst," +
-                        " wurden die Push Benachrichtigungen erfolgreich eingerichtet"));
+                webpush.sendNotification(subscription, new CustomWebPushMessage("MensaHub-Test", "Wenn du diese Nachricht empfangen kannst," +
+                        " wurden die Push Benachrichtigungen erfolgreich eingerichtet", "https://mensahub.olech2412.de/mealPlan?date=today&mensa=6"));
 
                 log.info("User {} enabled push notifications. Endpoint: {}. Device: {}", currentUser.getEmail(),
                         subscription.endpoint(), VaadinSession.getCurrent().getBrowser());

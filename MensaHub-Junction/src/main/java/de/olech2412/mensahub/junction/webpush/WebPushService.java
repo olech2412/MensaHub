@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class WebPushService {
 
-    WebPush webPush;
+    CustomWebPush webPush;
     @Value("${push.public.key}") // env variables loaded in Spring init class from config
     private String publicKey;
     @Value("${push.private.key}")
@@ -27,23 +27,11 @@ public class WebPushService {
     /**
      * Initialize security and push service for initial get request.
      */
-    public WebPush getWebPush() {
+    public CustomWebPush getWebPush() {
         if (webPush == null) {
-            webPush = new WebPush(publicKey, privateKey, subject);
+            webPush = new CustomWebPush(publicKey, privateKey, subject);
         }
         return webPush;
-    }
-
-    /**
-     * Send a notification to all subscriptions.
-     *
-     * @param title message title
-     * @param body  message body
-     */
-    public void notifyAll(String title, String body) {
-        subscriptionEntityRepository.findAll().forEach(subscription -> {
-            webPush.sendNotification(SubscriptionConverter.convertToModel(subscription), new WebPushMessage(title, body));
-        });
     }
 
 
