@@ -56,13 +56,12 @@ public class WebPushTriggerEndpoint {
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("No subscription found for this user");
             }
 
-            /**
             for (SubscriptionEntity subscription : mailUser.getSubscriptions()) {
                 webPushService.getWebPush().sendNotification(SubscriptionConverter.convertToModel(subscription),
-                        new WebPushMessage(title, message));
+                        new CustomWebPushMessage(title, message, "https://mensahub.olech2412.de/mealPlan?date=today&mensa=6"));
                 log.info("WebPush notification sent to user {} for device {} with title {} and message {}",
                         mailAdress, subscription.getDeviceInfo(), title, message);
-            }*/
+            }
 
             return ResponseEntity.ok("Push notification sent successfully");
         } catch (Exception e) {
