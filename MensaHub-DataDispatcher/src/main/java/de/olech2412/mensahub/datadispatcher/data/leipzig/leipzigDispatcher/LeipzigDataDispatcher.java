@@ -23,6 +23,8 @@ import de.olech2412.mensahub.models.result.errors.Application;
 import de.olech2412.mensahub.models.result.errors.ErrorEntity;
 import de.olech2412.mensahub.models.result.errors.api.APIError;
 import de.olech2412.mensahub.models.result.errors.api.APIErrors;
+import de.olech2412.mensahub.models.result.errors.job.JobError;
+import de.olech2412.mensahub.models.result.errors.job.JobErrors;
 import de.olech2412.mensahub.models.result.errors.mail.MailError;
 import de.olech2412.mensahub.models.result.errors.parser.ParserError;
 import io.micrometer.core.annotation.Counted;
@@ -313,7 +315,7 @@ public class LeipzigDataDispatcher {
         return results;
     }
 
-    public void sendPushNotification(String message, String title, String mailAdress) throws NoSuchPaddingException, IllegalBlockSizeException, IOException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
+    public Result<String, JobError> sendPushNotification(String message, String title, String mailAdress) throws NoSuchPaddingException, IllegalBlockSizeException, IOException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
         // URL des Endpunkts
         String url = Config.getInstance().getProperty("mensaHub.dataDispatcher.junction.address") + "/api/webpush/send";
 
@@ -338,8 +340,10 @@ public class LeipzigDataDispatcher {
         // Antwort auswerten
         if (response.getStatusCode().is2xxSuccessful()) {
             log.info("Push notification sent successfully to {}", mailAdress);
+            return Result.success(mailAdress);
         } else {
             log.error("Push notification sent failed to {} with error code {}", mailAdress, response.getStatusCode());
+            return Result.error(new JobError(String.format("Push notification sent failed to %s with error code %s", mailAdress, response.getStatusCode()), JobErrors.UNKNOWN));
         }
     }
 

@@ -6,6 +6,7 @@ import de.olech2412.mensahub.models.authentification.MailUser;
 import de.olech2412.mensahub.models.jobs.Job;
 import de.olech2412.mensahub.models.jobs.JobStatus;
 import de.olech2412.mensahub.models.result.Result;
+import de.olech2412.mensahub.models.result.errors.job.JobError;
 import de.olech2412.mensahub.models.result.errors.jpa.JPAError;
 import de.olech2412.mensahub.models.result.errors.mail.MailError;
 import lombok.extern.slf4j.Slf4j;
@@ -13,6 +14,12 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
+import java.io.IOException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -33,12 +40,13 @@ public class JobManager {
 
     @Scheduled(cron = "0 */5 * * * *")
     @Transactional
-    public void checkForJobs() {
+    public void checkForJobs() throws NoSuchPaddingException, IllegalBlockSizeException, IOException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
         Result<List<Job>, JPAError> jobs = jobService.findAllByEnabledAndExecutedAndExecuteAtIsNullOrExecuteAtIsAfter(true, false, LocalDateTime.now());
 
         if (jobs.isSuccess()) {
             for (Job job : jobs.getData()) {
                 List<Result<MailUser, MailError>> executeJobResults = new ArrayList<>();
+                List<Result<String, JobError>> executedPushNotificationJobs = new ArrayList<>();
                 switch (job.getJobType()) {
                     case SEND_EMAILS -> {
                         List<Result<MailUser, MailError>> results = leipzigDataDispatcher.forceSendMail(job.getMailUsers(), false);
@@ -48,12 +56,20 @@ public class JobManager {
                         List<Result<MailUser, MailError>> results = leipzigDataDispatcher.forceSendMail(job.getMailUsers(), true);
                         executeJobResults.addAll(results);
                     }
+                    case SEND_PUSH_NOTIFICATION -> {
+                        for (MailUser mailUser : job.getMailUsers()) {
+                            Result<String, JobError> results = leipzigDataDispatcher.sendPushNotification(job.getTitle(), job.getMessage(), mailUser.getEmail());
+                            executedPushNotificationJobs.add(results);
+                        }
+                    }
                     default ->
                             log.error("Ungültiger Jobtyp gefunden: {} für den Job: {}", job.getJobType(), job.getUuid());
                 }
 
-                List<Result<MailUser, MailError>> errors = executeJobResults.stream().filter(mailUserMailErrorResult -> !mailUserMailErrorResult.isSuccess()).toList();
-                if (errors.isEmpty()) {
+                int errors = executeJobResults.stream().filter(mailUserMailErrorResult -> !mailUserMailErrorResult.isSuccess()).toList().size();
+                errors = errors + executedPushNotificationJobs.stream().filter(mailUserMailErrorResult -> !mailUserMailErrorResult.isSuccess()).toList().size();
+
+                if (errors == 0) {
                     job.setExecuted(true);
                     job.setJobStatus(JobStatus.SUCCESS);
                     Result<Job, JPAError> saveResult = jobService.saveJob(job);

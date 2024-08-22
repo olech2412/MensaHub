@@ -48,6 +48,10 @@ public class Job {
     @Enumerated(EnumType.STRING)
     private JobStatus jobStatus;
 
+    private String title; // used for the push notifications
+
+    private String message; // used for the push notifications
+
     @Override
     public String toString() {
         return "JobDTO{" +

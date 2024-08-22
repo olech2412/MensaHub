@@ -20,6 +20,7 @@ import de.olech2412.mensahub.junction.jpa.services.JobService;
 import de.olech2412.mensahub.junction.jpa.services.MailUserService;
 import de.olech2412.mensahub.junction.jpa.services.UserService;
 import de.olech2412.mensahub.junction.security.SecurityService;
+import de.olech2412.mensahub.models.authentification.MailUser;
 import de.olech2412.mensahub.models.authentification.Users;
 import de.olech2412.mensahub.models.helper.JobBuilder;
 import de.olech2412.mensahub.models.jobs.Job;
@@ -36,6 +37,8 @@ import javax.crypto.NoSuchPaddingException;
 import java.io.IOException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
+import java.util.List;
 
 @Slf4j
 public class AdminPanel extends VerticalLayout {
@@ -62,7 +65,14 @@ public class AdminPanel extends VerticalLayout {
         setAlignItems(Alignment.CENTER);
         setJustifyContentMode(JustifyContentMode.CENTER);
 
-        createJobDialog = new CreateJobDialog(mailUserService.findAll(), usersRepository.findAllByEnabledTrueAndProponentTrueAndUsernameNot(securityService.getAuthenticatedUser().getUsername()));
+        List<MailUser> mailUsers = mailUserService.findAll();
+        List<MailUser> initializedMailUsers = new ArrayList<>();
+        for (MailUser m : mailUsers) {
+            MailUser initializedMailUser = mailUserService.initialize(m);
+            initializedMailUsers.add(initializedMailUser);
+        }
+
+        createJobDialog = new CreateJobDialog(initializedMailUsers, usersRepository.findAllByEnabledTrueAndProponentTrueAndUsernameNot(securityService.getAuthenticatedUser().getUsername()));
 
         createJobDialog.getFooterButtonLayout().getAcceptButton().addClickListener(buttonClickEvent -> {
             try {
@@ -134,6 +144,8 @@ public class AdminPanel extends VerticalLayout {
                 .mailUsers(createJobDialog.getSimpleConfLayout().getMailUserComboBox().getValue().stream().toList())
                 .executeAt(createJobDialog.getExtendedConfLayout().getExecuteAtTimePicker().getValue())
                 .proponent(createJobDialog.getExtendedConfLayout().getProponentComboBox().getValue())
+                .title(createJobDialog.getExtendedConfLayout().getPushMessageTitle().getValue())
+                .message(createJobDialog.getExtendedConfLayout().getPushMessageMessage().getValue())
                 .build(jobCreator);
 
         if (!jobBuildResult.isSuccess()) {

@@ -19,6 +19,8 @@ public class JobBuilder {
     private Users proponent;
     private LocalDateTime executeAt;
     private boolean needsPermission;
+    private String title;
+    private String message;
 
     public JobBuilder() {
     }
@@ -48,6 +50,16 @@ public class JobBuilder {
         return this;
     }
 
+    public JobBuilder title(String title) {
+        this.title = title;
+        return this;
+    }
+
+    public JobBuilder message(String message) {
+        this.message = message;
+        return this;
+    }
+
 
     public Result<Job, JobError> build(Users user) {
         Job job = new Job();
@@ -58,6 +70,8 @@ public class JobBuilder {
         job.setCreator(user);
         job.setJobStatus(JobStatus.PENDING);
         job.setNeedsPermission(this.needsPermission);
+        job.setTitle(this.title);
+        job.setMessage(this.message);
 
         Result<Job, JobError> correctResult = correctJobDTO(job);
 
@@ -82,6 +96,10 @@ public class JobBuilder {
 
         if (job.getCreator() == null || !job.getCreator().getProponent()) {
             return Result.error(new JobError("Es muss ein gültiger und ausreichend berechtigter Befürworter angegeben werden", JobErrors.INVALID_CONFIGURATION));
+        }
+
+        if(job.getJobType().equals(JobType.SEND_PUSH_NOTIFICATION) && job.getTitle().isEmpty() || job.getMessage().isEmpty()){
+            return Result.error(new JobError("Ein Push Notification Job benötigt immer einen Titel und eine Nachricht", JobErrors.INVALID_CONFIGURATION));
         }
 
         job.setEnabled(job.getProponent() == null);
