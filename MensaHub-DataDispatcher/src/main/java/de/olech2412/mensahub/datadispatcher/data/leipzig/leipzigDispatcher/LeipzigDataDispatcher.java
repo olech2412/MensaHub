@@ -328,9 +328,9 @@ public class LeipzigDataDispatcher {
         String targetUrl;
 
         if (mensa == null){
-            targetUrl = Config.getInstance().getProperty("mensaHub.junction.address") + "/mealPlan/date=today";
+            targetUrl = Config.getInstance().getProperty("mensaHub.junction.address") + "/mealPlan?date=today";
         } else {
-            targetUrl = Config.getInstance().getProperty("mensaHub.junction.address") + "/mealPlan/date=today&mensa=" + mensa.getId();
+            targetUrl = Config.getInstance().getProperty("mensaHub.junction.address") + "/mealPlan?date=today&mensa=" + mensa.getId();
         }
 
         // Parameter setzen
