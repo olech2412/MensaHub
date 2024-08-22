@@ -185,6 +185,7 @@ public class LeipzigDataDispatcher {
         return mealMessage.toString();
     }
 
+    @Transactional
     public void checkTheData(List<Meal> data, Mensa mensa) throws NoSuchPaddingException, IllegalBlockSizeException, IOException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
         for (Meal newMeal : data) {
             List<Meal> databaseMeals = mealsService.findAllMealsByServingDateAndMensa(newMeal.getServingDate(), mensa);
@@ -238,6 +239,7 @@ public class LeipzigDataDispatcher {
     }
 
     @Counted(value = "detected_updates", description = "How many updates were detected")
+    @Transactional
     public List<Result<MailUser, MailError>> forceSendMail(Mensa wantedMensa) throws NoSuchPaddingException, IllegalBlockSizeException, IOException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
         Mailer mailer = new Mailer();
         LocalDate today = LocalDate.now();
