@@ -49,6 +49,7 @@ public class SecurityConfig extends VaadinWebSecurity {
                     authorizationManagerRequestMatcherRegistry.requestMatchers("/sw.js").permitAll();
                     authorizationManagerRequestMatcherRegistry.requestMatchers("/VAADIN/**").permitAll();
                     authorizationManagerRequestMatcherRegistry.requestMatchers("/vaadin/**").permitAll();
+                    authorizationManagerRequestMatcherRegistry.requestMatchers("/api/webpush/**").permitAll();
                 });
 
         setLoginView(http, LoginView.class);
@@ -67,7 +68,8 @@ public class SecurityConfig extends VaadinWebSecurity {
                 "/META-INF/**",
                 "/sw.js",
                 "/VAADIN/**",
-                "/vaadin/**"
+                "/vaadin/**",
+                "/api/webpush/**"
         );
     }
 
