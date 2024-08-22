@@ -141,6 +141,9 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-maven-
 
+      - name: Install NPM bloat
+        run: 'npm i --save-dev @types/node'
+      
       - name: Build MensaHub-Junction
         run: 'mvn -s $GITHUB_WORKSPACE/.github/config/maven-settings.xml -Dpackage.publicKey=$PACKAGE_READ clean package -P production -pl MensaHub-Junction -nsu'
         env:
