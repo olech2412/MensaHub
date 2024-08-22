@@ -80,6 +80,9 @@ jobs:
           distribution: 'temurin'
           cache: maven
 
+      - name: Install NPM bloat
+        run: 'npm i --save-dev @types/node'
+
       - name: Build MensaHub-Junction
         run: 'mvn -s $GITHUB_WORKSPACE/.github/config/maven-settings.xml -Dpackage.publicKey=$PACKAGE_READ clean install -pl MensaHub-Junction'
         env:
