@@ -32,7 +32,7 @@ public class SimpleConfLayout extends FormLayout {
 
         jobToExecuteComboBox.setLabel("Auszuführender Job");
         jobToExecuteComboBox.setAllowCustomValue(false);
-        jobToExecuteComboBox.setItems(JobType.SEND_EMAILS, JobType.SEND_UPDATES);
+        jobToExecuteComboBox.setItems(JobType.SEND_EMAILS, JobType.SEND_UPDATES, JobType.SEND_PUSH_NOTIFICATION);
 
         add(mailUserComboBox, jobToExecuteComboBox, destinationTextField);
         setColspan(destinationTextField, 2);

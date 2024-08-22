@@ -47,6 +47,8 @@ public class ExtendedConfLayout extends FormLayout {
         add(infoSpan);
         add(proponentComboBox);
         add(executeAtTimePicker);
+        add(pushMessageTitle);
+        add(pushMessageMessage);
     }
 
     public boolean isFilledCorrect() {
