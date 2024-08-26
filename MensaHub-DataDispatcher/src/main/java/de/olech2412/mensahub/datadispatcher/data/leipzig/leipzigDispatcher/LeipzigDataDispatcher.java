@@ -185,7 +185,6 @@ public class LeipzigDataDispatcher {
         return mealMessage.toString();
     }
 
-    @Transactional
     public void checkTheData(List<Meal> data, Mensa mensa) throws NoSuchPaddingException, IllegalBlockSizeException, IOException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
         for (Meal newMeal : data) {
             List<Meal> databaseMeals = mealsService.findAllMealsByServingDateAndMensa(newMeal.getServingDate(), mensa);
@@ -239,7 +238,6 @@ public class LeipzigDataDispatcher {
     }
 
     @Counted(value = "detected_updates", description = "How many updates were detected")
-    @Transactional
     public List<Result<MailUser, MailError>> forceSendMail(Mensa wantedMensa) throws NoSuchPaddingException, IllegalBlockSizeException, IOException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
         Mailer mailer = new Mailer();
         LocalDate today = LocalDate.now();
@@ -346,15 +344,20 @@ public class LeipzigDataDispatcher {
 
         // RestTemplate verwenden, um die Anfrage zu senden
         RestTemplate restTemplate = new RestTemplate();
-        ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.POST, request, String.class);
+        try {
+            ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.POST, request, String.class);
 
-        // Antwort auswerten
-        if (response.getStatusCode().is2xxSuccessful()) {
-            log.info("Push notification sent successfully to {}", mailUser.getEmail());
-            return Result.success(mailUser);
-        } else {
-            log.error("Push notification sent failed to {} with error code {}", mailUser.getEmail(), response.getStatusCode());
-            return Result.error(new JobError(String.format("Push notification sent failed to %s with error code %s", mailUser.getEmail(), response.getStatusCode()), JobErrors.UNKNOWN));
+            // Antwort auswerten
+            if (response.getStatusCode().is2xxSuccessful()) {
+                log.info("Push notification sent successfully to {}", mailUser.getEmail());
+                return Result.success(mailUser);
+            } else {
+                log.error("Push notification sent failed to {} with error code {}", mailUser.getEmail(), response.getStatusCode());
+                return Result.error(new JobError(String.format("Push notification sent failed to %s with error code %s", mailUser.getEmail(), response.getStatusCode()), JobErrors.UNKNOWN));
+            }
+        } catch (Exception e){
+            log.error("Error while sending push notification to web application {}", e.getMessage());
+            return Result.error(new JobError("Error while reach web application rest endpoint for push notification", JobErrors.UNKNOWN));
         }
     }
 
