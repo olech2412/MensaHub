@@ -63,6 +63,7 @@ public class ActivationView extends VerticalLayout implements BeforeEnterObserve
     private MailUser mailUser;
     private Button prevButton;
     private Button nextButton;
+    private Button activateAnyway;
     private String activationCode;
 
     private Text indexDisplay; // New Text component for index display
@@ -81,6 +82,10 @@ public class ActivationView extends VerticalLayout implements BeforeEnterObserve
     }
 
     private void addUserMealsAndDivider(MailUser activatedUser) {
+
+        // if user alr ratings for all meals, skip activation
+
+
         add(new Divider());
         setAlignItems(Alignment.CENTER);
         HorizontalLayout mealLayout = new HorizontalLayout();
@@ -120,10 +125,10 @@ public class ActivationView extends VerticalLayout implements BeforeEnterObserve
         indexLayout.setWidthFull();
         add(indexLayout);
 
-        // Create layout to hold meal and navigation buttons
+        // Create a layout to hold meal and navigation buttons
         mealLayout.setWidthFull();
         mealLayout.setJustifyContentMode(JustifyContentMode.CENTER);
-        // if device width below 750 pixel set specific class
+        // if device width below 750 pixels set specific class
         mealLayout.addClassName("activationview-mealbox");
 
         // Set the user for further rating logic
@@ -136,7 +141,18 @@ public class ActivationView extends VerticalLayout implements BeforeEnterObserve
         mealLayout.add(currentMealBox);
 
         add(mealLayout);
-        logger.info("User activated Account successfully: {}", activatedUser.getEmail());
+
+        // Add a button to activate the user anyway
+        activateAnyway = new Button("Bewertung überspringen und sofort aktivieren");
+        activateAnyway.addThemeVariants(ButtonVariant.LUMO_ERROR, ButtonVariant.LUMO_PRIMARY);
+        activateAnyway.addClickListener(buttonClickEvent -> {
+            handleRemovingActivationCode(mailUser);
+            NotificationFactory.create(NotificationType.SUCCESS, "Aktivierung übersprungen!").open();
+            activateAnyway.setEnabled(false);
+        });
+        activateAnyway.setTooltipText("Wenn du keine Lust hast, die Gerichte zu bewerten, kannst du dennoch deinen Account aktivieren. Du kannst die Gerichte auch später im Speiseplan bewerten.");
+        add(activateAnyway);
+
     }
 
     private MealBox createMealBox(Meal meal) {
@@ -182,9 +198,7 @@ public class ActivationView extends VerticalLayout implements BeforeEnterObserve
                         List<Rating> ratingList = ratingsForNotification.getData();
                         if (ratingList.size() >= mealList.size()) {
                             NotificationFactory.create(NotificationType.SUCCESS, "Vielen Dank für deine Bewertungen!").open();
-                            mailUser.setActivationCode(null);
-                            mailUserRepository.save(mailUser);
-                            activationCodeRepository.delete(activationCodeRepository.findByCode(activationCode).get(0));
+                            handleRemovingActivationCode(mailUser);
                         }
                     }
                 }
@@ -359,5 +373,12 @@ public class ActivationView extends VerticalLayout implements BeforeEnterObserve
         add(info);
         activatedUser.setEnabled(true);
         addUserMealsAndDivider(activatedUser);
+    }
+
+    private void handleRemovingActivationCode(MailUser mailUser) {
+        mailUser.setActivationCode(null);
+        mailUserRepository.save(mailUser);
+        activationCodeRepository.delete(activationCodeRepository.findByCode(activationCode).get(0));
+        logger.info("User activated Account successfully: {}", mailUser.getEmail());
     }
 }
