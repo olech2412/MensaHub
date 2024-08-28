@@ -44,6 +44,11 @@ import org.slf4j.LoggerFactory;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * This view is used to activate a user account. The user receives an activation code via email and can activate his account by clicking on the link in the email.
+ * The user is then redirected to this view where he can rate meals. The user can skip the rating and activate his account anyway.
+ * The view is also used to activate API users. API users have to be verified by an admin before they can use the API.
+ */
 @Route("activate")
 @PageTitle("Aktivierung")
 @AnonymousAllowed
@@ -65,7 +70,6 @@ public class ActivationView extends VerticalLayout implements BeforeEnterObserve
     private Button nextButton;
     private Button activateAnyway;
     private String activationCode;
-
     private Text indexDisplay; // New Text component for index display
 
     public ActivationView(ActivationCodeRepository activationCodeRepository, MailUserRepository mailUserRepository,
@@ -81,6 +85,12 @@ public class ActivationView extends VerticalLayout implements BeforeEnterObserve
         new CookieNotification(); // check if cookies are already accepted or show the cookie banner
     }
 
+    /**
+     * This method is used to add the meals to the view and to add a divider between the meals and the activation button.
+     * The user can rate the meals and skip the rating to activate his account anyway.
+     *
+     * @param activatedUser The user that's activating his account
+     */
     private void addUserMealsAndDivider(MailUser activatedUser) {
 
         // if user alr ratings for all meals, skip activation
@@ -155,6 +165,13 @@ public class ActivationView extends VerticalLayout implements BeforeEnterObserve
 
     }
 
+    /**
+     * This method is used to create a MealBox for a given meal. The MealBox contains the meal's name, description, price, allergens, category, and a rating component.
+     * The rating component is used to rate the meal. The rating button is used to save the rating to the database.
+     *
+     * @param meal The meal for which the MealBox should be created
+     * @return The created MealBox
+     */
     private MealBox createMealBox(Meal meal) {
         MealBox mealBox = new MealBox(meal.getName(), meal.getDescription(), meal.getPrice(), meal.getAllergens(), meal.getCategory(), meal.getId().intValue());
 
@@ -209,6 +226,12 @@ public class ActivationView extends VerticalLayout implements BeforeEnterObserve
         return mealBox;
     }
 
+    /**
+     * This method is used to show the next meal in the meal list. The method updates the currentMealIndex and the MealBox.
+     * The method also updates the index display and enables/disables the navigation buttons.
+     *
+     * @param mealLayout The layout that holds the MealBox
+     */
     private void showNextMeal(HorizontalLayout mealLayout) {
         if (currentMealIndex < mealList.size() - 1) {
             currentMealIndex++;
@@ -223,6 +246,12 @@ public class ActivationView extends VerticalLayout implements BeforeEnterObserve
         }
     }
 
+    /**
+     * This method is used to show the previous meal in the meal list. The method updates the currentMealIndex and the MealBox.
+     * The method also updates the index display and enables/disables the navigation buttons.
+     *
+     * @param mealLayout The layout that holds the MealBox
+     */
     private void showPreviousMeal(HorizontalLayout mealLayout) {
         if (currentMealIndex > 0) {
             currentMealIndex--;
@@ -237,11 +266,21 @@ public class ActivationView extends VerticalLayout implements BeforeEnterObserve
         }
     }
 
+    /**
+     * This method is used to update the MealBox in the mealLayout. The method removes the current MealBox from the mealLayout and adds the new MealBox to the center position.
+     *
+     * @param mealLayout The layout that holds the MealBox
+     */
     private void updateMealBox(HorizontalLayout mealLayout) {
         mealLayout.remove(currentMealBox);
         currentMealBox = createMealBox(mealList.get(currentMealIndex));
         mealLayout.add(currentMealBox);  // Add MealBox back to the center position
     }
+
+    /**
+     * This method is used to update the index display. The method updates the index display to show the current meal index and the total number of meals.
+     * The method is called when showing the next or previous meal.
+     */
 
     private void updateIndexDisplay() {
         if (indexDisplay != null) {
@@ -249,6 +288,18 @@ public class ActivationView extends VerticalLayout implements BeforeEnterObserve
         }
     }
 
+    /**
+     * This method is used to handle the activation of a user account. The method is called when the user navigates to the ActivationView.
+     * The method checks if the activation code is valid and if the user is an API user or a mail user.
+     * If the user is an API user, the method checks if the user's email is verified. If the email is verified, the method activates the user's account.
+     * If the email is not verified, the method activates the user's email and sends an admin request to verify the user's account.
+     * If the user is a mail user, the method activates the user's email and adds the user's meals to the view.
+     * The user can rate the meals and skip the rating to activate his account anyway.
+     * The method also adds a divider between the meals and the activation button.
+     * The method is called when the user navigates to the ActivationView.
+     *
+     * @param event The BeforeEnterEvent that is triggered when the user navigates to the ActivationView
+     */
     @Override
     public void beforeEnter(BeforeEnterEvent event) {
         try {
@@ -270,6 +321,11 @@ public class ActivationView extends VerticalLayout implements BeforeEnterObserve
         }
     }
 
+    /**
+     * This method is used to handle the activation of an API user. The method checks if the user's email is verified.
+     *
+     * @param activationCode
+     */
     private void handleAPIUserActivation(String activationCode) {
         API_User apiUser = apiUserRepository.findAPI_UserByActivationCode(activationCodeRepository.findByCode(activationCode).get(0)).get();
 
@@ -280,6 +336,12 @@ public class ActivationView extends VerticalLayout implements BeforeEnterObserve
         }
     }
 
+    /**
+     * This method is used to activate an API user. The method activates the user's email and sends an admin request to verify the user's account.
+     *
+     * @param apiUser
+     * @param activationCode
+     */
     private void activateAPIUser(API_User apiUser, String activationCode) {
         add(new Text("Freischaltung erfolgreich :). Du hast deine E-Mail erfolgreich verifiziert und kannst dich somit in der Webanwendung mit deinem Account anmelden."));
         add(new Text("Im nächsten Schritt prüft der Administrator deine Anfrage"));
@@ -303,6 +365,12 @@ public class ActivationView extends VerticalLayout implements BeforeEnterObserve
         logger.info("API admin-request sent for user: {}", apiUser.getEmail());
     }
 
+    /**
+     * This method is used to add an admin review layout to the view. The layout is used to review the user's request.
+     *
+     * @param apiUser
+     * @param activationCode
+     */
     private void addAdminReviewLayout(API_User apiUser, String activationCode) {
         add(new H3("Hallo Admin! Prüfe die folgende Anfrage:"));
         add(new Text("Nutzername: " + apiUser.getApiUsername()));
@@ -362,6 +430,11 @@ public class ActivationView extends VerticalLayout implements BeforeEnterObserve
         add(new HorizontalLayout(accept, decline));
     }
 
+    /**
+     * This method is used to handle the activation of a mail user. The method activates the user's email and adds the user's meals to the view.
+     *
+     * @param activationCode
+     */
     private void handleMailUserActivation(String activationCode) {
         MailUser activatedUser = mailUserRepository.findByActivationCode_Code(activationCode);
         add(new H2("Hallo: " + activatedUser.getFirstname() + "!"));
@@ -375,6 +448,11 @@ public class ActivationView extends VerticalLayout implements BeforeEnterObserve
         addUserMealsAndDivider(activatedUser);
     }
 
+    /**
+     * This method is used to handle the removal of the activation code. The method removes the activation code from the user and deletes the activation code from the database.
+     *
+     * @param mailUser
+     */
     private void handleRemovingActivationCode(MailUser mailUser) {
         mailUser.setActivationCode(null);
         mailUserRepository.save(mailUser);
