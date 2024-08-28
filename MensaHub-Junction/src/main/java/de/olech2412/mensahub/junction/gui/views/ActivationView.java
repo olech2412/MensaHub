@@ -47,7 +47,7 @@ import java.util.Map;
 /**
  * This view is used to activate a user account. The user receives an activation code via email and can activate his account by clicking on the link in the email.
  * The user is then redirected to this view where he can rate meals. The user can skip the rating and activate his account anyway.
- * The view is also used to activate API users. API users have to be verified by an admin before they can use the API.
+ * The view is also used to activate API users. API users have to be verified by an administrator before they can use the API.
  */
 @Route("activate")
 @PageTitle("Aktivierung")
@@ -292,7 +292,7 @@ public class ActivationView extends VerticalLayout implements BeforeEnterObserve
      * This method is used to handle the activation of a user account. The method is called when the user navigates to the ActivationView.
      * The method checks if the activation code is valid and if the user is an API user or a mail user.
      * If the user is an API user, the method checks if the user's email is verified. If the email is verified, the method activates the user's account.
-     * If the email is not verified, the method activates the user's email and sends an admin request to verify the user's account.
+     * If the email is not verified, the method activates the user's email and sends an administrator request to verify the user's account.
      * If the user is a mail user, the method activates the user's email and adds the user's meals to the view.
      * The user can rate the meals and skip the rating to activate his account anyway.
      * The method also adds a divider between the meals and the activation button.
@@ -324,7 +324,7 @@ public class ActivationView extends VerticalLayout implements BeforeEnterObserve
     /**
      * This method is used to handle the activation of an API user. The method checks if the user's email is verified.
      *
-     * @param activationCode
+     * @param activationCode The activation code of the user
      */
     private void handleAPIUserActivation(String activationCode) {
         API_User apiUser = apiUserRepository.findAPI_UserByActivationCode(activationCodeRepository.findByCode(activationCode).get(0)).get();
@@ -337,10 +337,10 @@ public class ActivationView extends VerticalLayout implements BeforeEnterObserve
     }
 
     /**
-     * This method is used to activate an API user. The method activates the user's email and sends an admin request to verify the user's account.
+     * This method is used to activate an API user. The method activates the user's email and sends an administrator request to verify the user's account.
      *
-     * @param apiUser
-     * @param activationCode
+     * @param apiUser        The API user that's activating his account
+     * @param activationCode The activation code of the user
      */
     private void activateAPIUser(API_User apiUser, String activationCode) {
         add(new Text("Freischaltung erfolgreich :). Du hast deine E-Mail erfolgreich verifiziert und kannst dich somit in der Webanwendung mit deinem Account anmelden."));
@@ -366,10 +366,10 @@ public class ActivationView extends VerticalLayout implements BeforeEnterObserve
     }
 
     /**
-     * This method is used to add an admin review layout to the view. The layout is used to review the user's request.
+     * This method is used to add an administrator review layout to the view. The layout is used to review the user's request.
      *
-     * @param apiUser
-     * @param activationCode
+     * @param apiUser        The API user that's activating his account
+     * @param activationCode The activation code of the user
      */
     private void addAdminReviewLayout(API_User apiUser, String activationCode) {
         add(new H3("Hallo Admin! Prüfe die folgende Anfrage:"));
@@ -433,7 +433,7 @@ public class ActivationView extends VerticalLayout implements BeforeEnterObserve
     /**
      * This method is used to handle the activation of a mail user. The method activates the user's email and adds the user's meals to the view.
      *
-     * @param activationCode
+     * @param activationCode The activation code of the user
      */
     private void handleMailUserActivation(String activationCode) {
         MailUser activatedUser = mailUserRepository.findByActivationCode_Code(activationCode);
@@ -451,7 +451,7 @@ public class ActivationView extends VerticalLayout implements BeforeEnterObserve
     /**
      * This method is used to handle the removal of the activation code. The method removes the activation code from the user and deletes the activation code from the database.
      *
-     * @param mailUser
+     * @param mailUser The user that's activating his account
      */
     private void handleRemovingActivationCode(MailUser mailUser) {
         mailUser.setActivationCode(null);
