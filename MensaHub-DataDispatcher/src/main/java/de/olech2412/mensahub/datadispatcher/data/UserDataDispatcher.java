@@ -27,7 +27,7 @@ public class UserDataDispatcher {
     }
 
     @Scheduled(cron = "0 0 * * * *")
-    @Counted(value = "check_for_deactivated_user", description = "How often a check for deactivated users were executed")
+    @Counted(value = "check_for_deactivated_user", description = "Check for deactivated users and activates them")
     public void checkForDeactivatedUsers() {
         List<MailUser> deactivatedMailUsers = mailUserRepository.findUsersByEnabled(false);
         for (MailUser deactivatedMailUser : deactivatedMailUsers) {
