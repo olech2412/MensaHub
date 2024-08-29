@@ -16,6 +16,7 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.server.VaadinSession;
 import com.vaadin.flow.server.webpush.WebPush;
 import com.vaadin.flow.server.webpush.WebPushMessage;
+import de.olech2412.mensahub.junction.config.Config;
 import de.olech2412.mensahub.junction.gui.components.vaadin.layouts.generic.FooterButtonLayout;
 import de.olech2412.mensahub.junction.gui.components.vaadin.notifications.NotificationFactory;
 import de.olech2412.mensahub.junction.gui.components.vaadin.notifications.types.NotificationType;
@@ -30,6 +31,12 @@ import de.olech2412.mensahub.models.authentification.SubscriptionEntity;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
+import java.io.IOException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
 @Getter
@@ -153,11 +160,18 @@ public class PushNotificationDialog extends Dialog {
                         " wenn du diese nicht erhalten hast, überprüfe deine System-/Browsereinstellungen").open();
 
 
-                webpush.sendNotification(subscription, new CustomWebPushMessage("MensaHub-Test", "Wenn du diese Nachricht empfangen kannst," +
-                        " wurden die Push Benachrichtigungen erfolgreich eingerichtet", "https://mensahub.olech2412.de/mealPlan?date=today"));
+                try {
+                    String targetUrl = Config.getInstance().getProperty("mensaHub.junction.address") + "/mealPlan?date=today";
 
-                log.info("User {} enabled push notifications. Endpoint: {}. Device: {}", currentUser.getEmail(),
-                        subscription.endpoint(), VaadinSession.getCurrent().getBrowser());
+                    webpush.sendNotification(subscription, new CustomWebPushMessage("MensaHub-Test", "Wenn du diese Nachricht empfangen kannst," +
+                            " wurden die Push Benachrichtigungen erfolgreich eingerichtet", targetUrl));
+                    log.info("User {} enabled push notifications. Endpoint: {}. Device: {}", currentUser.getEmail(),
+                            subscription.endpoint(), VaadinSession.getCurrent().getBrowser());
+                } catch (IllegalBlockSizeException | BadPaddingException | NoSuchPaddingException | IOException |
+                         NoSuchAlgorithmException | InvalidKeyException ex) {
+                    log.error("Error while fetching target URL", ex);
+                    NotificationFactory.create(NotificationType.ERROR, "Huch, da ist uns ein Fehler unterlaufen... bitte versuche es später erneut").open();
+                }
             });
         });
 
