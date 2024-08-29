@@ -367,6 +367,7 @@ public class NewsletterView extends HorizontalLayout implements BeforeEnterObser
             mailUser.setEnabled(false);
             mailUser.setActivationCode(activationCode);
             mailUser.setDeactivationCode(deactivationCode);
+            mailUser.setWantsCollaborationInfoMail(wantsCollaborativeFiltering);
             mailUser.setWantsUpdate(wantUpdates);
             mailUser.setPreferences(preferences);
             mailUser.setMensas(mensa);
