@@ -445,6 +445,7 @@ public class ActivationView extends VerticalLayout implements BeforeEnterObserve
         info.setWidth(90, Unit.PERCENTAGE);
         add(info);
         activatedUser.setEnabled(true);
+        logger.info("User activated Account successfully: {}", mailUser.getEmail());
         addUserMealsAndDivider(activatedUser);
     }
 
@@ -457,6 +458,5 @@ public class ActivationView extends VerticalLayout implements BeforeEnterObserve
         mailUser.setActivationCode(null);
         mailUserRepository.save(mailUser);
         activationCodeRepository.delete(activationCodeRepository.findByCode(activationCode).get(0));
-        logger.info("User activated Account successfully: {}", mailUser.getEmail());
     }
 }
