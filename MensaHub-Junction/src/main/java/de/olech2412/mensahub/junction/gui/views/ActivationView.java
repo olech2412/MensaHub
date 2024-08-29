@@ -28,7 +28,6 @@ import de.olech2412.mensahub.junction.jpa.repository.API_UserRepository;
 import de.olech2412.mensahub.junction.jpa.repository.ActivationCodeRepository;
 import de.olech2412.mensahub.junction.jpa.repository.DeactivationCodeRepository;
 import de.olech2412.mensahub.junction.jpa.repository.MailUserRepository;
-import de.olech2412.mensahub.junction.jpa.services.MailUserService;
 import de.olech2412.mensahub.junction.jpa.services.RatingService;
 import de.olech2412.mensahub.junction.jpa.services.meals.MealsService;
 import de.olech2412.mensahub.models.Meal;
@@ -62,7 +61,6 @@ public class ActivationView extends VerticalLayout implements BeforeEnterObserve
     private final MailUserRepository mailUserRepository;
     private final MealsService mealsService;
     private final RatingService ratingService;
-    private final MailUserService mailUserService;
     Logger logger = LoggerFactory.getLogger(ActivationView.class);
     private int currentMealIndex = 0;
     private List<Meal> mealList;
@@ -75,7 +73,7 @@ public class ActivationView extends VerticalLayout implements BeforeEnterObserve
     private Text indexDisplay; // New Text component for index display
 
     public ActivationView(ActivationCodeRepository activationCodeRepository, MailUserRepository mailUserRepository,
-                          MealsService mealsService, RatingService ratingService, API_UserRepository apiUserRepository, DeactivationCodeRepository deactivationCodeRepository, Mailer mailer, MailUserService mailUserService) {
+                          MealsService mealsService, RatingService ratingService, API_UserRepository apiUserRepository, DeactivationCodeRepository deactivationCodeRepository, Mailer mailer) {
         this.activationCodeRepository = activationCodeRepository;
         this.mailUserRepository = mailUserRepository;
         this.mealsService = mealsService;
@@ -85,7 +83,6 @@ public class ActivationView extends VerticalLayout implements BeforeEnterObserve
         this.mailer = mailer;
 
         new CookieNotification(); // check if cookies are already accepted or show the cookie banner
-        this.mailUserService = mailUserService;
     }
 
     /**
