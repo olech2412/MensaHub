@@ -9,5 +9,5 @@ services:
       - FLASK_ENV=production
       - DB_USER=root
       - DB_PASSWORD=password
-      - DB_HOST=mariadb
+      - DB_HOST=host.docker.internal
       - DB_NAME=mensaHub

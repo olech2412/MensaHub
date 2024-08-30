@@ -438,14 +438,12 @@ public class ActivationView extends VerticalLayout implements BeforeEnterObserve
     private void handleMailUserActivation(String activationCode) {
         MailUser activatedUser = mailUserRepository.findByActivationCode_Code(activationCode);
         add(new H2("Hallo: " + activatedUser.getFirstname() + "!"));
-        Paragraph p = new Paragraph("Deine E-Mail-Adresse wurde erfolgreich verifiziert. Du kannst nun den Newsletter empfangen und Gerichte bewerten.");
+        Paragraph p = new Paragraph("Ein Schritt fehlt noch zur erfolgreichen Aktivierung deines Accounts. Bitte bewerte die folgenden Gerichte, um personalisierte Empfehlungen und oder den Newsletter zu erhalten.");
         p.setMaxWidth(90, Unit.PERCENTAGE);
         add(p);
-        Paragraph info = new Paragraph("Bitte tue uns/dir noch einen Gefallen und bewerte die folgenden Gerichte, damit wir dir bestimmte Gerichte aufgrund deiner Bewertungen und Bewertungen der Community empfehlen können. Die Vorschläge kannst du dann im Speiseplan, als auch im Newsletter sehen.");
+        Paragraph info = new Paragraph("Bitte tue uns/dir noch einen Gefallen und bewerte die folgenden Gerichte, damit wir dir bestimmte Gerichte aufgrund deiner Bewertungen und Bewertungen der Community empfehlen können. Die Vorschläge kannst du dann im Speiseplan, als auch im Newsletter sehen. Wenn du darauf keine Lust hast, kannst du unten auf den Überspringen-Button klicken.");
         info.setWidth(90, Unit.PERCENTAGE);
         add(info);
-        activatedUser.setEnabled(true);
-        logger.info("User activated Account successfully: {}", mailUser.getEmail());
         addUserMealsAndDivider(activatedUser);
     }
 
@@ -455,7 +453,9 @@ public class ActivationView extends VerticalLayout implements BeforeEnterObserve
      * @param mailUser The user that's activating his account
      */
     private void handleRemovingActivationCode(MailUser mailUser) {
+        logger.info("User activated Account successfully: {}", mailUser.getEmail());
         mailUser.setActivationCode(null);
+        mailUser.setEnabled(true);
         mailUserRepository.save(mailUser);
         activationCodeRepository.delete(activationCodeRepository.findByCode(activationCode).get(0));
     }

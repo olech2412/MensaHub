@@ -3,6 +3,7 @@ package de.olech2412.mensahub.datadispatcher.email;
 import de.olech2412.mensahub.datadispatcher.config.Config;
 import de.olech2412.mensahub.models.Meal;
 import de.olech2412.mensahub.models.Mensa;
+import de.olech2412.mensahub.models.addons.predictions.PredictionResult;
 import de.olech2412.mensahub.models.authentification.MailUser;
 import de.olech2412.mensahub.models.result.Result;
 import de.olech2412.mensahub.models.result.errors.mail.MailError;
@@ -589,4 +590,10 @@ public class Mailer {
                 footer;
     }
 
+    public Result<MailUser, MailError> sendCollaborationMail(MailUser emailTarget, List<PredictionResult> predictions, LocalDate servingDate) {
+        // is shall these predictions ... to the user ... for the mensa ... on the date ...
+        System.out.println(emailTarget.getEmail() + " ... " + predictions + " ... " + servingDate);
+        log.info("Sending collaboration mail to user {}", emailTarget.getEmail());
+        return Result.success(emailTarget);
+    }
 }

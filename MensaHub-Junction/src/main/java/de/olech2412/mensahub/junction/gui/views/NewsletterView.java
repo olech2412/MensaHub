@@ -165,9 +165,7 @@ public class NewsletterView extends HorizontalLayout implements BeforeEnterObser
         preferencesButton.setTooltipText("Hier kannst du Unverträglichkeiten, Ernährungsweisen sowie persönliche Vorlieben angeben");
         PreferencesDialog preferencesDialog = new PreferencesDialog(mealsService);
         preferencesButton.addClickListener(buttonClickEvent -> preferencesDialog.open());
-        preferencesDialog.getFooterButtonLayout().getAcceptButton().addClickListener(buttonClickEvent -> {
-            preferences = preferencesDialog.buildPreferences();
-        });
+        preferencesDialog.getFooterButtonLayout().getAcceptButton().addClickListener(buttonClickEvent -> preferences = preferencesDialog.buildPreferences());
 
         H1 header = new H1(welcomeText);
         StreamResource logoStream = new StreamResource("mensaHub_logo.png", () -> getClass().getResourceAsStream("/static/img/MensaHub_logo.webp"));
@@ -258,9 +256,7 @@ public class NewsletterView extends HorizontalLayout implements BeforeEnterObser
         infoText.getStyle().set("text-align", "center");
 
         Button redirectToDevView = new Button("Zur API Anmeldung");
-        redirectToDevView.addClickListener(buttonClickEvent -> {
-            UI.getCurrent().navigate(DeveloperRegisterView.class);
-        });
+        redirectToDevView.addClickListener(buttonClickEvent -> UI.getCurrent().navigate(DeveloperRegisterView.class));
         redirectToDevView.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
         redirectToDevView.getStyle().set("text-align", "center");
         redirectToDevView.setIcon(new Icon(VaadinIcon.CLOUD_O));
@@ -336,7 +332,7 @@ public class NewsletterView extends HorizontalLayout implements BeforeEnterObser
      * Save User in Database
      * User is not enabled because he didn't verify the email
      *
-     * @param email
+     * @param email the email of the user
      */
     private void createRegistratedUser(String email, String firstname, String lastname, Set<Mensa> mensa, boolean wantUpdates, boolean wantsCollaborativeFiltering, Preferences preferences) {
 
@@ -367,6 +363,7 @@ public class NewsletterView extends HorizontalLayout implements BeforeEnterObser
             mailUser.setEnabled(false);
             mailUser.setActivationCode(activationCode);
             mailUser.setDeactivationCode(deactivationCode);
+            mailUser.setWantsCollaborationInfoMail(wantsCollaborativeFiltering);
             mailUser.setWantsUpdate(wantUpdates);
             mailUser.setPreferences(preferences);
             mailUser.setMensas(mensa);
@@ -390,7 +387,7 @@ public class NewsletterView extends HorizontalLayout implements BeforeEnterObser
      * log access on the website
      * IP and information about the webbrowser is logged
      *
-     * @param beforeEnterEvent
+     * @param beforeEnterEvent the event before the user enters the page
      */
     @Override
     public void beforeEnter(BeforeEnterEvent beforeEnterEvent) {

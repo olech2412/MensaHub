@@ -27,5 +27,10 @@ public interface MailUserRepository extends ListCrudRepository<MailUser, Long> {
      */
     List<MailUser> findUsersByEnabled(Boolean enabled);
 
-
+    /**
+     * Finds all mail users that are enabled and want to receive collaboration info mails
+     *
+     * @return enabled mail users that want to receive collaboration info mails
+     */
+    List<MailUser> findMailUsersByEnabledIsTrueAndWantsCollaborationInfoMailIsTrue();
 }
