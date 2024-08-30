@@ -150,16 +150,8 @@ public class LeipzigDataDispatcher {
                                 mailUser, mensa);
                     }
                 }
-            } else {
+            } else { // if the user is not enabled (he doesn't want emails) but maybe the push notification
                 for (Mensa mensa : mailUser.getMensas()) {
-                    Result<MailUser, MailError> mailResult = mailer.sendSpeiseplan(mailUser, mealsService.findAllMealsByServingDateAndMensa(today, mensa), mensa, false);
-                    if (mailResult.isSuccess()) {
-                        mailCounterSuccess.increment();
-                        log.info("Regular mail sent to {} for mensa {}", mailUser.getEmail(), mensa.getName());
-                    } else {
-                        mailCounterFailure.increment();
-                        errorEntityRepository.save(new ErrorEntity(mailResult.getError().message(), mailResult.getError().error().getCode(), Application.DATA_DISPATCHER));
-                    }
                     if (mailUser.isPushNotificationsEnabled()) {
                         sendPushNotification(buildMealMessage(mealsService.findAllMealsByServingDateAndMensa(today, mensa), mailUser),
                                 "Speiseplan - " + LocalDate.now().format(java.time.format.DateTimeFormatter.ofPattern("dd.MM.yyyy")) + " - " + mensa.getName(),
@@ -270,7 +262,7 @@ public class LeipzigDataDispatcher {
                                         mailUser, mensa);
                             }
                         }
-                    } else {
+                    } else { // if the user is not enabled (he doesn't want emails) but maybe the push notification
                         if (mailUser.isWantsUpdate()) {
                             if (mailUser.isPushNotificationsEnabled()) {
                                 sendPushNotification("Wir haben Änderungen am heutigen Speiseplan für die Mensa " + mensa.getName() + " erkannt.",
