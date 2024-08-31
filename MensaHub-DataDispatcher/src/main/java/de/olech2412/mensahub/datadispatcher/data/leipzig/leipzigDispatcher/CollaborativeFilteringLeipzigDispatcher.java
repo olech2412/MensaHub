@@ -104,9 +104,9 @@ public class CollaborativeFilteringLeipzigDispatcher {
 
                     if (shouldSendInfos) {
 
-                        // wenn user enabled ist, dann bekommt er auf jedenfall eine mail, wenn nicht, dann nicht
-                        // wenn er zusätzlich noch push notifications enabled hat, dann bekommt er auch eine push notification, wenn nicht, dann gar nichts, dann nächster User
-                        // wenn push oder mailsending !success, dann error increment
+                        // wenn user enabled ist, bekommt er auf jeden Fall eine Mail, wenn nicht, dann nicht
+                        // wenn er zusätzlich push notifications enabled hat, dann bekommt er auch eine push notification, wenn nicht, dann gar nichts, dann nächster User
+                        // wenn mails ending !success, dann error increment
                         if (mailUser.isEnabled()) {
                             Result<MailUser, MailError> mailUserMailResult = mailer.sendCollaborationMail(mailUser, predictionResults, mensa, tomorrow);
                             if (mailUserMailResult.isSuccess()) {
