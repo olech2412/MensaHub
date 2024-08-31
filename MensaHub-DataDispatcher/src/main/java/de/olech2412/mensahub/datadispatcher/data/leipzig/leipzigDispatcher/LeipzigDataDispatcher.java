@@ -123,7 +123,6 @@ public class LeipzigDataDispatcher {
             targetUrl = Config.getInstance().getProperty("mensaHub.junction.address") + "/mealPlan?date=" + dateTargetURL + "&userCode=" + mailUser.getDeactivationCode().getCode();
         } else {
             targetUrl = Config.getInstance().getProperty("mensaHub.junction.address") + "/mealPlan?date=" + dateTargetURL + "&mensa=" + mensa.getId() + "&userCode=" + mailUser.getDeactivationCode().getCode();
-            System.out.println(targetUrl);
         }
 
         // Parameter setzen

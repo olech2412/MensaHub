@@ -55,8 +55,12 @@ public class CollaborativeFilteringLeipzigDispatcher {
         this.monitoringConfig = monitoringConfig;
     }
 
-    // schedule every 30 seconds
-    @Scheduled(cron = "0/30 * * * * *")
+    /**
+     * Sends emails to users who want to receive collaborative filtering mails
+     *
+     * @throws Exception If sending the emails fails
+     */
+    @Scheduled(cron = "0 0 18 * * *")
     public void sendEmails() throws Exception {
         Counter mailCollabCounterSuccess = monitoringConfig.customCounter("mails_collab_success", MonitoringTags.MENSAHUB_DATA_DISPATCHER_APPLICATION_TAG.getValue(),
                 "How many collab mails were sent successfully");
@@ -113,9 +117,9 @@ public class CollaborativeFilteringLeipzigDispatcher {
                                 log.error("Mail sending failed for user {}. Error: {}", mailUser.getEmail(), mailUserMailResult.getError());
                                 mailCollabCounterFailure.increment();
                             }
-                            sendCollabPushNotification(mailCollabCounterFailure, tomorrow, mailUser, mensa, predictionResults);
+                            sendCollabPushNotification(mailCollabCounterFailure, tomorrow, mailUser, mensa);
                         } else {
-                            sendCollabPushNotification(mailCollabCounterFailure, tomorrow, mailUser, mensa, predictionResults);
+                            sendCollabPushNotification(mailCollabCounterFailure, tomorrow, mailUser, mensa);
                         }
                     }
 
@@ -124,9 +128,17 @@ public class CollaborativeFilteringLeipzigDispatcher {
         }
     }
 
-    private void sendCollabPushNotification(Counter mailCollabCounterFailure, LocalDate tomorrow, MailUser mailUser, Mensa mensa, List<PredictionResult> predictionResults) throws NoSuchPaddingException, IllegalBlockSizeException, IOException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
+    /**
+     * Sends a push notification to a user
+     *
+     * @param mailCollabCounterFailure The counter to increment if sending the push notification fails
+     * @param tomorrow                 The date for the push notification
+     * @param mailUser                 The user to send the push notification to
+     * @param mensa                    The mensa to send the push notification for
+     */
+    private void sendCollabPushNotification(Counter mailCollabCounterFailure, LocalDate tomorrow, MailUser mailUser, Mensa mensa) throws NoSuchPaddingException, IllegalBlockSizeException, IOException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
         if (mailUser.isPushNotificationsEnabled()) {
-            String message = buildMealMessage(mailUser, predictionResults, mensa, tomorrow);
+            String message = buildMealMessage(mailUser, mensa, tomorrow);
             System.out.println(message);
             Result<MailUser, JobError> mailUserPushResult = sendPushNotification(message, "Empfehlungen für morgen, den " + tomorrow.format(DateTimeFormatter.ofPattern("dd.MM.yyyy")), mailUser, mensa, tomorrow);
             if (mailUserPushResult.isSuccess()) {
@@ -138,7 +150,15 @@ public class CollaborativeFilteringLeipzigDispatcher {
         }
     }
 
-    private String buildMealMessage(MailUser mailUser, List<PredictionResult> predictionResults, Mensa mensa, LocalDate tomorrow) {
+    /**
+     * Builds the message for the mail
+     *
+     * @param mailUser The user to build the message for
+     * @param mensa    The mensa to build the message for
+     * @param tomorrow The date to build the message for
+     * @return The message
+     */
+    private String buildMealMessage(MailUser mailUser, Mensa mensa, LocalDate tomorrow) {
         StringBuilder message = new StringBuilder();
         message.append("Hallo ").append(mailUser.getFirstname()).append(",\n");
         message.append("klicke hier für deine Empfehlungen für morgen, den ").append(tomorrow).append(" in der ").append(mensa.getName()).append("\n");
@@ -147,7 +167,13 @@ public class CollaborativeFilteringLeipzigDispatcher {
 
     }
 
-
+    /**
+     * Gets the predictions for a user and a list of meals
+     *
+     * @param collaborativeFilteringMealCandidates The meals to get predictions for
+     * @param mailUser                             The user to get predictions for
+     * @return A list of prediction results for the user and the meals
+     */
     private List<PredictionResult> getPredictionsForUserAndMeals(List<Meal> collaborativeFilteringMealCandidates, MailUser mailUser) throws NoSuchPaddingException, IllegalBlockSizeException, IOException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
         List<PredictionResult> predictionResults = new ArrayList<>();
         for (Meal meal : collaborativeFilteringMealCandidates) {
@@ -157,9 +183,6 @@ public class CollaborativeFilteringLeipzigDispatcher {
             } else {
                 log.error("Prediction failed for meal {}. Error: {}", meal.getName(), predictionResultAPIErrorResult.getError());
             }
-        }
-        if (predictionResults.isEmpty()) {
-            log.error("No prediction results found for user {}", mailUser.getEmail());
         }
         return predictionResults;
     }
