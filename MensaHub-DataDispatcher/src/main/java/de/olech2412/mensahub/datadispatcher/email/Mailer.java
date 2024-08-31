@@ -298,6 +298,74 @@ public class Mailer {
         return categoryString;
     }
 
+    private String getRightEmoticonForCategory(String category) {
+        if (category.contains("Fleisch")) {
+            return " \uD83E\uDD69";
+        } else if (category.contains("Fisch")) {
+            return " \uD83E\uDDA3";
+        } else if (category.contains("Vegetarisch") || category.contains("Veggie")) {
+            return " \uD83E\uDD66";
+        } else if (category.contains("Vegan")) {
+            return " \uD83E\uDD5F";
+        } else if (category.contains("Beilage")) {
+            return " \uD83E\uDDC1";
+        } else if (category.contains("Suppe")) {
+            return " \uD83C\uDF73";
+        } else if (category.contains("Dessert")) {
+            return " \uD83C\uDF6B";
+        } else if (category.contains("Salat")) {
+            return " \uD83E\uDD57";
+        } else if (category.contains("Getränk")) {
+            return " \uD83C\uDF7A";
+        } else if (category.contains("Snack")) {
+            return " \uD83C\uDF6A";
+        } else if (category.contains("Menü")) {
+            return " \uD83C\uDF5F";
+        } else if (category.contains("Pizza")) {
+            return " \uD83C\uDF55";
+        } else if (category.contains("Klima")) {
+            return " \uD83C\uDF0D";
+        } else if (category.contains("Bio")) {
+            return " \uD83C\uDF3E";
+        } else if (category.contains("Regional")) {
+            return " \uD83C\uDFE0";
+        } else if (category.contains("Fairtrade")) {
+            return " \uD83C\uDF10";
+        } else if (category.contains("Geflügel")) {
+            return " \uD83D\uDC13";
+        } else if (category.contains("Schwein")) {
+            return " \uD83D\uDC16";
+        } else if (category.contains("Rind")) {
+            return " \uD83D\uDC2E";
+        } else if (category.contains("Lamm")) {
+            return " \uD83D\uDC0F";
+        } else if (category.contains("Wild")) {
+            return " \uD83D\uDC10";
+        } else if (category.contains("Ei")) {
+            return " \uD83E\uDD5A";
+        } else if (category.contains("Pasta")) {
+            return " \uD83C\uDF5D";
+        } else if (category.contains("WOK")) {
+            return " \uD83C\uDF72";
+        } else if (category.contains("Smoothie")) {
+            return " \uD83E\uDD64";
+        } else if (category.contains("Burger")) {
+            return " \uD83C\uDF54";
+        } else if (category.contains("Schnitzel")) {
+            return " \uD83C\uDF56";
+        } else if (category.contains("Kartoffel")) {
+            return " \uD83E\uDD54";
+        } else if (category.contains("Pommes")) {
+            return " \uD83C\uDF5F";
+        } else if (category.contains("Nudeln")) {
+            return " \uD83C\uDF5D";
+        } else if (category.contains("Reis")) {
+            return " \uD83C\uDF5A";
+        } else {
+            return "";
+        }
+    }
+
     private String getRandomFunnyWelcomeText() {
         List<String> welcome = new ArrayList<>();
         welcome.add("Hallo");
@@ -665,7 +733,7 @@ public class Mailer {
         for (PredictionResult prediction : predictions) {
             String mealString = StaticEmailText.MAIL_TEXT_COLLAB;
             Meal meal = mealsService.findMealById((long) prediction.getMealId());
-            mealString = mealString.replaceFirst("%Kategorie %Emoticon", meal.getCategory());
+            mealString = mealString.replaceFirst("%Kategorie %Emoticon", meal.getCategory() + " " + getRightEmoticonForCategory(meal.getCategory()));
             mealString = mealString.replaceFirst("%MealName - %MealPrices", (prediction.getMealName() + " - " + meal.getPrice()));
             mealString = mealString.replaceFirst("%PredictedRating", Math.round(prediction.getPredictedRating()) + "/5");
             menuText.append(mealString);

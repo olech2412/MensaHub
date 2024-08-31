@@ -214,7 +214,7 @@ public class LeipzigDataDispatcher {
         Mailer mailer = new Mailer(mealsService);
         LocalDate today = LocalDate.now();
         for (MailUser mailUser : mailUserService.findAll()) {
-            if (mailUser.isEnabled()) {
+            if (mailUser.isEnabled() && !mailUser.isWantsCollaborationInfoMail()) {
                 for (Mensa mensa : mailUser.getMensas()) {
                     Result<MailUser, MailError> mailResult = mailer.sendSpeiseplan(mailUser, mealsService.findAllMealsByServingDateAndMensa(today, mensa), mensa, false);
                     if (mailResult.isSuccess()) {
@@ -308,7 +308,7 @@ public class LeipzigDataDispatcher {
                 List<Meal> meals = mealsService.findAllMealsByServingDateAndMensa(today, mensa);
                 List<MailUser> mailUsers = mailUserService.findAllByMensasAndEnabled(mensa, true);
                 for (MailUser mailUser : mailUsers) {
-                    if (mailUser.isEnabled()) {
+                    if (mailUser.isEnabled() && !mailUser.isWantsCollaborationInfoMail()) {
                         if (mailUser.isWantsUpdate()) {
                             Result<MailUser, MailError> mailResult = mailer.sendSpeiseplan(mailUser, meals, mensa, true);
                             if (mailResult.isSuccess()) {
