@@ -69,13 +69,13 @@ public class CollaborativeFilteringLeipzigDispatcher {
     }
 
     // schedule every 10 seconds
-    @Scheduled(cron = "0/20 * * * * *")
-    public void sendEmails() throws NoSuchPaddingException, IllegalBlockSizeException, IOException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
+    @Scheduled(cron = "0/30 * * * * *")
+    public void sendEmails() throws Exception {
         Counter mailCollabCounterSuccess = monitoringConfig.customCounter("mails_collab_success", MonitoringTags.MENSAHUB_DATA_DISPATCHER_APPLICATION_TAG.getValue(),
                 "How many collab mails were sent successfully");
         Counter mailCollabCounterFailure = monitoringConfig.customCounter("mails_collab_failure", MonitoringTags.MENSAHUB_DATA_DISPATCHER_APPLICATION_TAG.getValue(),
                 "How many collab mails were sent failure");
-        Mailer mailer = new Mailer();
+        Mailer mailer = new Mailer(mealsService);
         LocalDate today = LocalDate.now();
         LocalDate tomorrow = today.plusDays(3);
         List<MailUser> mailUsers = mailUserService.findMailUserEnabledAndCollabInfoMailOnly().getData();
@@ -107,58 +107,27 @@ public class CollaborativeFilteringLeipzigDispatcher {
                 continue;
             }
 
-            // TODO: if at least one meal PredictedRating for liking is equal or greater than 3 then create email text based on predictionresultlist
+            // Flag to determine if it should send an email
+            boolean shouldSendEmail = false;
+
             for (PredictionResult predictionResult : predictionResults) {
                 if (predictionResult.getPredictedRating() >= 3) {
-                    //         public Result<MailUser, MailError> sendCollaborationMail(MailUser emailTarget, List<Meal> predictions, Mensa mensa) {
-                    LocalDate servingDateOfMeal = mealsService.findMealById((long) predictionResult.getMealId()).getServingDate();
-                    mailer.sendCollaborationMail(mailUser, predictionResults, servingDateOfMeal);
-                } else {
-                    log.info("No meal with rating greater or equal to 3 found for user {}", mailUser.getEmail());
+                    shouldSendEmail = true;
+                    break; // No need to check further once we find a valid rating
                 }
             }
 
-        }
-
-            /*
-            if (mailUser.isEnabled()) {
-                for (Mensa mensa : mailUser.getMensas()) {
-                    Result<MailUser, MailError> mailResult = mailer.sendSpeiseplan(mailUser, mealsService.findAllMealsByServingDateAndMensa(today, mensa), mensa, false);
-                    if (mailResult.isSuccess()) {
-                        mailCollabCounterSuccess.increment();
-                        log.info("Regular mail sent to {} for mensa {}", mailUser.getEmail(), mensa.getName());
-                    } else {
-                        mailCollabCounterFailure.increment();
-                        errorEntityRepository.save(new ErrorEntity(mailResult.getError().message(), mailResult.getError().error().getCode(), Application.DATA_DISPATCHER));
-                    }
-                    if (mailUser.isPushNotificationsEnabled()) {
-                        sendPushNotification(buildMealMessage(mealsService.findAllMealsByServingDateAndMensa(today, mensa), mailUser),
-                                "Speiseplan - " + LocalDate.now().format(java.time.format.DateTimeFormatter.ofPattern("dd.MM.yyyy")) + " - " + mensa.getName(),
-                                mailUser, mensa);
-                    }
-                }
+            if (shouldSendEmail) {
+                mailer.sendCollaborationMail(mailUser, predictionResults);
+                mailCollabCounterSuccess.increment();
             } else {
-                for (Mensa mensa : mailUser.getMensas()) {
-                    Result<MailUser, MailError> mailResult = mailer.sendSpeiseplan(mailUser, mealsService.findAllMealsByServingDateAndMensa(today, mensa), mensa, false);
-                    if (mailResult.isSuccess()) {
-                        mailCounterSuccess.increment();
-                        log.info("Regular mail sent to {} for mensa {}", mailUser.getEmail(), mensa.getName());
-                    } else {
-                        mailCounterFailure.increment();
-                        errorEntityRepository.save(new ErrorEntity(mailResult.getError().message(), mailResult.getError().error().getCode(), Application.DATA_DISPATCHER));
-                    }
-                    if (mailUser.isPushNotificationsEnabled()) {
-                        sendPushNotification(buildMealMessage(mealsService.findAllMealsByServingDateAndMensa(today, mensa), mailUser),
-                                "Speiseplan - " + LocalDate.now().format(java.time.format.DateTimeFormatter.ofPattern("dd.MM.yyyy")) + " - " + mensa.getName(),
-                                mailUser, mensa);
-                    }
-                }
+                log.info("No meal with rating greater or equal to 3 found for user {}", mailUser.getEmail());
+                mailCollabCounterFailure.increment();
             }
-        }*/
+        }
     }
 
     private List<PredictionResult> getPredictionsForUserAndMeals(List<Meal> collaborativeFilteringMealCandidates, MailUser mailUser) throws NoSuchPaddingException, IllegalBlockSizeException, IOException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
-        StringBuilder mealMessage = new StringBuilder();
         List<PredictionResult> predictionResults = new ArrayList<>();
         for (Meal meal : collaborativeFilteringMealCandidates) {
             Result<PredictionResult, APIError> predictionResultAPIErrorResult = getPredictionScore(meal, mailUser);

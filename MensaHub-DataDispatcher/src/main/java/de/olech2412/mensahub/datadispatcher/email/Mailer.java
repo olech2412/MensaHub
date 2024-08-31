@@ -1,6 +1,7 @@
 package de.olech2412.mensahub.datadispatcher.email;
 
 import de.olech2412.mensahub.datadispatcher.config.Config;
+import de.olech2412.mensahub.datadispatcher.jpa.services.leipzig.meals.MealsService;
 import de.olech2412.mensahub.models.Meal;
 import de.olech2412.mensahub.models.Mensa;
 import de.olech2412.mensahub.models.addons.predictions.PredictionResult;
@@ -16,6 +17,7 @@ import jakarta.mail.internet.MimeMultipart;
 import lombok.extern.log4j.Log4j2;
 import net.markenwerk.utils.mail.dkim.DkimMessage;
 import net.markenwerk.utils.mail.dkim.DkimSigner;
+import org.springframework.stereotype.Service;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
@@ -29,11 +31,13 @@ import java.security.interfaces.RSAPrivateKey;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
 import java.util.Properties;
 
+@Service
 @Log4j2
 public class Mailer {
 
@@ -46,6 +50,12 @@ public class Mailer {
                  NoSuchAlgorithmException | InvalidKeyException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private MealsService mealsService;
+
+    public Mailer(MealsService mealsService) {
+        this.mealsService = mealsService;
     }
 
     private static PrivateKey loadPrivateKey(String filename) throws Exception {
@@ -590,10 +600,101 @@ public class Mailer {
                 footer;
     }
 
-    public Result<MailUser, MailError> sendCollaborationMail(MailUser emailTarget, List<PredictionResult> predictions, LocalDate servingDate) {
+    public Result<MailUser, MailError> sendCollaborationMail(MailUser emailTarget, List<PredictionResult> predictions) throws Exception {
         // is shall these predictions ... to the user ... for the mensa ... on the date ...
-        System.out.println(emailTarget.getEmail() + " ... " + predictions + " ... " + servingDate);
+        StringBuilder mealMessage = new StringBuilder();
         log.info("Sending collaboration mail to user {}", emailTarget.getEmail());
-        return Result.success(emailTarget);
+
+        try {
+
+            Properties prop = new Properties();
+            prop.put("mail.smtp.auth", Boolean.parseBoolean(Config.getInstance().getProperty("mensaHub.dataDispatcher.mail.smtpAuth")));
+            prop.put("mail.smtp.host", Config.getInstance().getProperty("mensaHub.dataDispatcher.mail.smtpHost"));
+            prop.put("mail.smtp.port", Config.getInstance().getProperty("mensaHub.dataDispatcher.mail.smtpPort"));
+            prop.put("mail.smtp.starttls.enable", "true");
+            prop.put("mail.smtp.ssl.enable", "true");
+
+            String senderMail = Config.getInstance().getProperty("mensaHub.dataDispatcher.mail.sender");
+            String senderPassword = Config.getInstance().getProperty("mensaHub.dataDispatcher.mail.sender.password");
+
+
+            Session mailSession = Session.getDefaultInstance(prop, new Authenticator() {
+
+                @Override
+                protected PasswordAuthentication getPasswordAuthentication() {
+                    return new PasswordAuthentication(senderMail, senderPassword);
+                }
+            });
+
+
+            String deactivateUrl = Config.getInstance().getProperty("mensaHub.dataDispatcher.junction.address") + "/deactivate?code=" + emailTarget.getDeactivationCode().getCode();
+            MimeMessage message = new MimeMessage(mailSession);
+            message.setFrom(new InternetAddress(senderMail));
+            message.setRecipients(
+                    Message.RecipientType.TO, InternetAddress.parse(emailTarget.getEmail()));
+
+            String msg = "";
+            msg = createEmailCollabInfo(predictions, emailTarget.getFirstname(), deactivateUrl, emailTarget.getDeactivationCode().getCode());
+            message.setSubject("Mensa Empfehlungen " +
+                    LocalDate.now().format(DateTimeFormatter.ofPattern("dd.MM.yyyy")));
+
+
+            MimeBodyPart mimeBodyPart = new MimeBodyPart();
+            mimeBodyPart.setContent(msg, "text/html; charset=utf-8");
+            Multipart multipart = new MimeMultipart();
+            multipart.addBodyPart(mimeBodyPart);
+            message.setContent(multipart);
+
+            // Lade den privaten Schlüssel
+            PrivateKey privateKey = loadPrivateKey(Config.getInstance().getProperty("mensaHub.dataDispatcher.mail.dkim_priv_path"));
+
+            RSAPrivateKey rsaPrivateKey = (RSAPrivateKey) privateKey;
+
+            // Erstelle den DKIM-Signer
+            DkimSigner signer = new DkimSigner(Config.getInstance().getProperty("mensaHub.dataDispatcher.mail.dkim_signing_domain"),
+                    Config.getInstance().getProperty("mensaHub.dataDispatcher.mail.dkim_seperator"), rsaPrivateKey);
+
+            // Signiere die Nachricht mit DKIM
+            DkimMessage dkimMessage = new DkimMessage(message, signer);
+
+            Transport.send(dkimMessage);
+            return Result.success(emailTarget);
+        } catch (Exception exception) {
+            log.error("Error while sending email for user {}", emailTarget.getEmail(), exception);
+            return Result.error(new MailError("Error while sending email for user " + emailTarget.getEmail() + " with" +
+                    " error: " + exception.getMessage(), MailErrors.UNKNOWN));
+        }
+    }
+
+    //     List<? extends Meal> menu, String firstName, String deactivateUrl, String userDeactivateCode
+    private String createEmailCollabInfo(List<PredictionResult> predictions, String firstName, String deactivateUrl, String userDeactivateCode) throws NoSuchPaddingException, IllegalBlockSizeException, IOException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
+        StringBuilder menuText = new StringBuilder();
+
+        String header = StaticEmailText.HEADER_COLLAB;
+
+        for (PredictionResult prediction : predictions) {
+            String mealString = StaticEmailText.MAIL_TEXT_COLLAB;
+            Meal meal = mealsService.findMealById((long) prediction.getMealId());
+            mealString = mealString.replaceFirst("%Mensa", meal.getMensa().getName());
+            mealString = mealString.replaceFirst("%Kategorie %Emoticon", meal.getCategory());
+            mealString = mealString.replaceFirst("%MealName - %MealPrices", prediction.getMealName());
+            mealString = mealString.replaceFirst("%PredictedRating", String.valueOf(prediction.getPredictedRating()));
+            mealString = mealString.replaceFirst("%TrustFactor", prediction.getTrustScore());
+            menuText.append(mealString);
+        }
+
+
+        header = header.replaceFirst("%RandomFunnyText", getRandomFunnyText());
+        header = header.replaceFirst("%RandomFunnyWelcomeText", getRandomFunnyWelcomeText());
+        header = header.replaceFirst("%firstName", firstName);
+
+        String footer = StaticEmailText.FOOD_PLAN_FOOTER;
+        footer = footer.replaceFirst("%s", getRandomGreetingsText());
+        footer = footer.replaceFirst("%s", deactivateUrl);
+        footer = footer.replaceFirst("%s", Config.getInstance().getProperty("mensaHub.dataDispatcher.junction.address") +
+                "/mealPlan?date=today&userCode=" + userDeactivateCode);
+
+        return header + menuText + footer;
     }
 }
+

@@ -131,7 +131,7 @@ public class LeipzigDataDispatcher {
                 "How many mails were sent successfully");
         Counter mailCounterFailure = monitoringConfig.customCounter("mails_failure", MonitoringTags.MENSAHUB_DATA_DISPATCHER_APPLICATION_TAG.getValue(),
                 "How many mails were sent failure");
-        Mailer mailer = new Mailer();
+        Mailer mailer = new Mailer(mealsService);
         LocalDate today = LocalDate.now();
         for (MailUser mailUser : mailUserService.findAll()) {
             if (mailUser.isEnabled()) {
@@ -231,7 +231,7 @@ public class LeipzigDataDispatcher {
 
     @Counted(value = "detected_updates", description = "How many updates were detected")
     public List<Result<MailUser, MailError>> forceSendMail(Mensa wantedMensa) throws NoSuchPaddingException, IllegalBlockSizeException, IOException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
-        Mailer mailer = new Mailer();
+        Mailer mailer = new Mailer(mealsService);
         LocalDate today = LocalDate.now();
         Counter updateSentCounter = monitoringConfig.customCounter("updates_sent", MonitoringTags.MENSAHUB_DATA_DISPATCHER_APPLICATION_TAG.getValue(),
                 "How many updates were sent successfully");
@@ -317,7 +317,7 @@ public class LeipzigDataDispatcher {
 
         String targetUrl;
 
-        if (mensa == null){
+        if (mensa == null) {
             targetUrl = Config.getInstance().getProperty("mensaHub.junction.address") + "/mealPlan?date=today";
         } else {
             targetUrl = Config.getInstance().getProperty("mensaHub.junction.address") + "/mealPlan?date=today&mensa=" + mensa.getId();
@@ -347,7 +347,7 @@ public class LeipzigDataDispatcher {
                 log.error("Push notification sent failed to {} with error code {}", mailUser.getEmail(), response.getStatusCode());
                 return Result.error(new JobError(String.format("Push notification sent failed to %s with error code %s", mailUser.getEmail(), response.getStatusCode()), JobErrors.UNKNOWN));
             }
-        } catch (Exception e){
+        } catch (Exception e) {
             log.error("Error while sending push notification to web application {}", e.getMessage());
             return Result.error(new JobError("Error while reach web application rest endpoint for push notification", JobErrors.UNKNOWN));
         }
