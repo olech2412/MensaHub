@@ -75,8 +75,6 @@ public class LeipzigDataDispatcher {
     private ErrorEntityRepository errorEntityRepository;
     @Autowired
     private RatingService ratingService;
-    @Autowired
-    private Meal meal;
 
 
     public LeipzigDataDispatcher(
@@ -89,6 +87,26 @@ public class LeipzigDataDispatcher {
         this.mealsService = mealsService;
         this.mailUserService = mailUserService;
         this.monitoringConfig = monitoringConfig;
+    }
+
+    public static Result<PredictionResult, APIError> getRecommendationScore(Meal meal, MailUser mailUser) throws NoSuchPaddingException, IllegalBlockSizeException, IOException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
+        APIConfiguration apiConfiguration = new APIConfiguration();
+        apiConfiguration.setBaseUrl(Config.getInstance().getProperty("mensaHub.junction.collaborative.filter.api.baseUrl"));
+        CollaborativeFilteringAPIAdapter collaborativeFilteringAPIAdapter = new CollaborativeFilteringAPIAdapter(apiConfiguration);
+
+        if (collaborativeFilteringAPIAdapter.isAPIAvailable()) {
+            PredictionRequest predictionRequest = new PredictionRequest(Math.toIntExact(mailUser.getId()), meal.getName(), Math.toIntExact(meal.getId()));
+            Result<List<Result<PredictionResult, APIError>>, APIError> predictionResults = collaborativeFilteringAPIAdapter.predict(List.of(predictionRequest));
+
+            if (predictionResults.isSuccess()) {
+                return predictionResults.getData().get(0);
+            } else {
+                log.error("Prediction failed for meal {}. Error: {}", meal.getName(), predictionResults.getError());
+            }
+        }
+
+        // api is not available
+        return Result.error(new APIError("API not reachable", APIErrors.NETWORK_ERROR));
     }
 
     @Scheduled(cron = "0 */10 * * * *")
@@ -125,7 +143,6 @@ public class LeipzigDataDispatcher {
 
         log.info("------------------ Data call for Leipzig finished ------------------");
     }
-
 
     @Scheduled(cron = "0 00 08 ? * MON-FRI")
     public void sendEmails() throws NoSuchPaddingException, IllegalBlockSizeException, IOException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
@@ -353,25 +370,5 @@ public class LeipzigDataDispatcher {
             log.error("Error while sending push notification to web application {}", e.getMessage());
             return Result.error(new JobError("Error while reach web application rest endpoint for push notification", JobErrors.UNKNOWN));
         }
-    }
-
-    public Result<PredictionResult, APIError> getRecommendationScore(Meal meal, MailUser mailUser) throws NoSuchPaddingException, IllegalBlockSizeException, IOException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
-        APIConfiguration apiConfiguration = new APIConfiguration();
-        apiConfiguration.setBaseUrl(Config.getInstance().getProperty("mensaHub.junction.collaborative.filter.api.baseUrl"));
-        CollaborativeFilteringAPIAdapter collaborativeFilteringAPIAdapter = new CollaborativeFilteringAPIAdapter(apiConfiguration);
-
-        if (collaborativeFilteringAPIAdapter.isAPIAvailable()) {
-            PredictionRequest predictionRequest = new PredictionRequest(Math.toIntExact(mailUser.getId()), meal.getName(), Math.toIntExact(meal.getId()));
-            Result<List<Result<PredictionResult, APIError>>, APIError> predictionResults = collaborativeFilteringAPIAdapter.predict(List.of(predictionRequest));
-
-            if (predictionResults.isSuccess()) {
-                return predictionResults.getData().get(0);
-            } else {
-                log.error("Prediction failed for meal {}. Error: {}", meal.getName(), predictionResults.getError());
-            }
-        }
-
-        // api is not available
-        return Result.error(new APIError("API not reachable", APIErrors.NETWORK_ERROR));
     }
 }

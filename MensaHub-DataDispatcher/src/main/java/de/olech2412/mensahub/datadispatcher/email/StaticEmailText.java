@@ -321,7 +321,6 @@ public class StaticEmailText {
             "                                              <p style=\"line-height: 24px; font-size: 16px; width: 100%; margin: 0;\" align=\"left\"><strong>Kategorie:</strong> %Kategorie %Emoticon</p>\n" +
             "                                              <p style=\"line-height: 24px; font-size: 16px; width: 100%; margin: 0;\" align=\"left\"><strong>Gericht:</strong> %MealName - %MealPrices</p>\n" +
             "                                              <p style=\"line-height: 24px; font-size: 16px; width: 100%; margin: 0;\" align=\"left\"><strong>Deine wahrscheinliche Bewertung:</strong> %PredictedRating</p>\n" +
-            "                                              <p style=\"line-height: 24px; font-size: 16px; width: 100%; margin: 0;\" align=\"left\"><strong>Pr&#228;zision der Vorhersage:</strong> %TrustFactor</p>\n" +
             "                                            </div>\n" +
             "                                            <table class=\"s-6 w-full\" role=\"presentation\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" style=\"width: 100%;\" width=\"100%\">\n" +
             "                                              <tbody>\n" +

@@ -1,24 +1,20 @@
 package de.olech2412.mensahub.datadispatcher.data.leipzig.leipzigDispatcher;
 
-import de.olech2412.mensahub.APIConfiguration;
-import de.olech2412.mensahub.CollaborativeFilteringAPIAdapter;
-import de.olech2412.mensahub.datadispatcher.config.Config;
 import de.olech2412.mensahub.datadispatcher.email.Mailer;
 import de.olech2412.mensahub.datadispatcher.jpa.repository.ErrorEntityRepository;
 import de.olech2412.mensahub.datadispatcher.jpa.services.MailUserService;
-import de.olech2412.mensahub.datadispatcher.jpa.services.RatingService;
 import de.olech2412.mensahub.datadispatcher.jpa.services.leipzig.meals.MealsService;
-import de.olech2412.mensahub.datadispatcher.jpa.services.leipzig.mensen.MensasService;
 import de.olech2412.mensahub.datadispatcher.monitoring.MonitoringConfig;
 import de.olech2412.mensahub.datadispatcher.monitoring.MonitoringTags;
 import de.olech2412.mensahub.models.Meal;
 import de.olech2412.mensahub.models.Mensa;
-import de.olech2412.mensahub.models.addons.predictions.PredictionRequest;
 import de.olech2412.mensahub.models.addons.predictions.PredictionResult;
 import de.olech2412.mensahub.models.authentification.MailUser;
 import de.olech2412.mensahub.models.result.Result;
+import de.olech2412.mensahub.models.result.errors.Application;
+import de.olech2412.mensahub.models.result.errors.ErrorEntity;
 import de.olech2412.mensahub.models.result.errors.api.APIError;
-import de.olech2412.mensahub.models.result.errors.api.APIErrors;
+import de.olech2412.mensahub.models.result.errors.mail.MailError;
 import io.micrometer.core.instrument.Counter;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,9 +30,12 @@ import java.io.IOException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+
+import static de.olech2412.mensahub.datadispatcher.data.leipzig.leipzigDispatcher.LeipzigDataDispatcher.getRecommendationScore;
 
 @Service
 @Log4j2
@@ -44,28 +43,22 @@ import java.util.Set;
 @EnableScheduling
 public class CollaborativeFilteringLeipzigDispatcher {
 
-    private final MensasService mensasService;
     private final MealsService mealsService;
     private final MonitoringConfig monitoringConfig;
     private final ErrorEntityRepository errorEntityRepository;
-    private final RatingService ratingService;
     MailUserService mailUserService;
     @Autowired
     LeipzigDataDispatcher leipzigDataDispatcher;
 
 
     public CollaborativeFilteringLeipzigDispatcher(MailUserService mailUserService,
-                                                   MensasService mensasService,
                                                    MealsService mealsService,
                                                    MonitoringConfig monitoringConfig,
-                                                   ErrorEntityRepository errorEntityRepository,
-                                                   RatingService ratingService) {
+                                                   ErrorEntityRepository errorEntityRepository) {
         this.mailUserService = mailUserService;
-        this.mensasService = mensasService;
         this.mealsService = mealsService;
         this.monitoringConfig = monitoringConfig;
         this.errorEntityRepository = errorEntityRepository;
-        this.ratingService = ratingService;
     }
 
     // schedule every 10 seconds
@@ -77,7 +70,7 @@ public class CollaborativeFilteringLeipzigDispatcher {
                 "How many collab mails were sent failure");
         Mailer mailer = new Mailer(mealsService);
         LocalDate today = LocalDate.now();
-        LocalDate tomorrow = today.plusDays(3);
+        LocalDate servingDate = today.plusDays(1);
         List<MailUser> mailUsers = mailUserService.findMailUserEnabledAndCollabInfoMailOnly().getData();
         if (mailUsers == null) {
             log.error("No mail users found");
@@ -93,12 +86,16 @@ public class CollaborativeFilteringLeipzigDispatcher {
             List<Meal> collaborativeFilteringMealCandidates = new ArrayList<>();
 
             for (Mensa mensa : subbedMensas) {
-                List<Meal> meals = mealsService.findAllMealsByServingDateAndMensa(tomorrow, mensa);
+                List<Meal> meals = mealsService.findAllMealsByServingDateAndMensa(servingDate, mensa);
                 if (meals == null) {
                     log.error("No meals found for mensa {}", mensa.getName());
                     continue;
                 }
                 collaborativeFilteringMealCandidates.addAll(meals);
+            }
+            if (collaborativeFilteringMealCandidates.isEmpty()) {
+                log.error("No meals found for user {}, probably no meals on this date: {}", mailUser.getEmail(), servingDate.format(DateTimeFormatter.ofPattern("dd.MM.yyyy")));
+                continue;
             }
             // TODO: get the PredictedRating rating of the user through collaborative filtering
             List<PredictionResult> predictionResults = getPredictionsForUserAndMeals(collaborativeFilteringMealCandidates, mailUser);
@@ -111,18 +108,29 @@ public class CollaborativeFilteringLeipzigDispatcher {
             boolean shouldSendEmail = false;
 
             for (PredictionResult predictionResult : predictionResults) {
-                if (predictionResult.getPredictedRating() >= 3) {
+                if (predictionResult.getPredictedRating() >= 3 && !predictionResult.getTrustScore().equals("niedrig")) {
                     shouldSendEmail = true;
                     break; // No need to check further once we find a valid rating
                 }
             }
 
             if (shouldSendEmail) {
-                mailer.sendCollaborationMail(mailUser, predictionResults);
-                mailCollabCounterSuccess.increment();
-            } else {
-                log.info("No meal with rating greater or equal to 3 found for user {}", mailUser.getEmail());
-                mailCollabCounterFailure.increment();
+                Result<MailUser, MailError> mailResult = mailer.sendCollaborationMail(mailUser, predictionResults, servingDate);
+                if (mailResult.isSuccess()) {
+                    mailCollabCounterSuccess.increment();
+                    log.info("Collab Info mail sent to {}", mailUser.getEmail());
+                } else {
+                    mailCollabCounterFailure.increment();
+                    errorEntityRepository.save(new ErrorEntity(mailResult.getError().message(), mailResult.getError().error().getCode(), Application.DATA_DISPATCHER));
+                }
+                // TODO: send push notification
+                /*
+                if (mailUser.isPushNotificationsEnabled()) {
+                    sendPushNotification(buildMealMessage(mealsService.findAllMealsByServingDateAndMensa(today, mensa), mailUser),
+                            "Speiseplan - " + LocalDate.now().format(java.time.format.DateTimeFormatter.ofPattern("dd.MM.yyyy")) + " - " + mensa.getName(),
+                            mailUser, mensa);
+                }
+                 */
             }
         }
     }
@@ -130,7 +138,7 @@ public class CollaborativeFilteringLeipzigDispatcher {
     private List<PredictionResult> getPredictionsForUserAndMeals(List<Meal> collaborativeFilteringMealCandidates, MailUser mailUser) throws NoSuchPaddingException, IllegalBlockSizeException, IOException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
         List<PredictionResult> predictionResults = new ArrayList<>();
         for (Meal meal : collaborativeFilteringMealCandidates) {
-            Result<PredictionResult, APIError> predictionResultAPIErrorResult = getPredictionScore(meal, mailUser);
+            Result<PredictionResult, APIError> predictionResultAPIErrorResult = getRecommendationScore(meal, mailUser);
             if (predictionResultAPIErrorResult.isSuccess()) {
                 predictionResults.add(predictionResultAPIErrorResult.getData());
             } else {
@@ -143,6 +151,7 @@ public class CollaborativeFilteringLeipzigDispatcher {
         return predictionResults;
     }
 
+    /* no used
     private Result<PredictionResult, APIError> getPredictionScore(Meal meal, MailUser mailUser) throws NoSuchPaddingException, IllegalBlockSizeException, IOException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
         APIConfiguration apiConfiguration = new APIConfiguration();
         apiConfiguration.setBaseUrl(Config.getInstance().getProperty("mensaHub.junction.collaborative.filter.api.baseUrl"));
@@ -159,5 +168,7 @@ public class CollaborativeFilteringLeipzigDispatcher {
         }
         return Result.error(new APIError("API not reachable", APIErrors.NETWORK_ERROR));
     }
+
+     */
 
 }
