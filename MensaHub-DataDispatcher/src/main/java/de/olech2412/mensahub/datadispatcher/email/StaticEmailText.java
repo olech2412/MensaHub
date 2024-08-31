@@ -215,4 +215,28 @@ public class StaticEmailText {
                     "</body>" +
                     "</html>";
 
+    public static final String MAIL_TEXT_COLLAB = "<table class=\"s-6 w-full\" role=\"presentation\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" style=\"width: 100%;\" width=\"100%\">\n" +
+            "                                              <tbody>\n" +
+            "                                                <tr>\n" +
+            "                                                  <td style=\"line-height: 24px; font-size: 24px; width: 100%; height: 24px; margin: 0;\" align=\"left\" width=\"100%\" height=\"24\">\n" +
+            "                                                    &#160;\n" +
+            "                                                  </td>\n" +
+            "                                                </tr>\n" +
+            "                                              </tbody>\n" +
+            "                                            </table>\n" +
+            "                                            <div class=\"\">\n" +
+            "                                              <p style=\"line-height: 24px; font-size: 16px; width: 100%; margin: 0;\" align=\"left\"><strong>Kategorie:</strong> %Kategorie %Emoticon</p>\n" +
+            "                                              <p style=\"line-height: 24px; font-size: 16px; width: 100%; margin: 0;\" align=\"left\"><strong>Gericht:</strong> %MealName - %MealPrices</p>\n" +
+            "                                              <p style=\"line-height: 24px; font-size: 16px; width: 100%; margin: 0;\" align=\"left\"><strong>Deine wahrscheinliche Bewertung:</strong> %PredictedRating</p>\n" +
+            "                                            </div>\n" +
+            "                                            <table class=\"s-6 w-full\" role=\"presentation\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" style=\"width: 100%;\" width=\"100%\">\n" +
+            "                                              <tbody>\n" +
+            "                                                <tr>\n" +
+            "                                                  <td style=\"line-height: 24px; font-size: 24px; width: 100%; height: 24px; margin: 0;\" align=\"left\" width=\"100%\" height=\"24\">\n" +
+            "                                                    &#160;\n" +
+            "                                                  </td>\n" +
+            "                                                </tr>\n" +
+            "                                              </tbody>\n" +
+            "                                            </table>";
+
 }

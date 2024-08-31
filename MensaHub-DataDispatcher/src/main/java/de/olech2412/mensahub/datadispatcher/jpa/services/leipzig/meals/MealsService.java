@@ -105,5 +105,9 @@ public class MealsService {
     public List<Meal> findAllByNameAndMensaAndServingDateBeforeOrderByServingDateDesc(String name, Mensa mensa, LocalDate servingDate) {
         return meals_Repository.findAllByNameAndMensaAndServingDateBeforeOrderByServingDateDesc(name, mensa, servingDate);
     }
+
+    public Meal findMealById(Long id) {
+        return meals_Repository.findMealById(id);
+    }
 }
 

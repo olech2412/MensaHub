@@ -3,6 +3,7 @@ package de.olech2412.mensahub.datadispatcher.email;
 import de.olech2412.mensahub.APIConfiguration;
 import de.olech2412.mensahub.CollaborativeFilteringAPIAdapter;
 import de.olech2412.mensahub.datadispatcher.config.Config;
+import de.olech2412.mensahub.datadispatcher.jpa.services.leipzig.meals.MealsService;
 import de.olech2412.mensahub.models.Meal;
 import de.olech2412.mensahub.models.Mensa;
 import de.olech2412.mensahub.models.addons.predictions.PredictionRequest;
@@ -24,7 +25,10 @@ import net.markenwerk.utils.mail.dkim.DkimSigner;
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.security.InvalidKeyException;
 import java.security.KeyFactory;
 import java.security.NoSuchAlgorithmException;
@@ -33,8 +37,8 @@ import java.security.interfaces.RSAPrivateKey;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
-import java.util.concurrent.*;
 import java.util.stream.Collectors;
 
 @Log4j2
@@ -53,6 +57,12 @@ public class Mailer {
                  NoSuchAlgorithmException | InvalidKeyException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private final MealsService mealsService;
+
+    public Mailer(MealsService mealsService) {
+        this.mealsService = mealsService;
     }
 
     private static PrivateKey loadPrivateKey(String filename) throws Exception {
@@ -143,21 +153,90 @@ public class Mailer {
         header = header.replaceFirst("%s", (update ? "Update zu deinem Speiseplan " : "Speiseplan ") +
                 LocalDate.now().format(java.time.format.DateTimeFormatter.ofPattern("dd.MM.yyyy")) + " - " +
                 mensa.getName());
-        header = header.replaceFirst("%s", getRandomFunnyText());
+        header = header.replaceFirst("%s", "Eine Änderung wurde für deine Mensa " + mensa.getName() + " gefunden.");
         header = header.replaceFirst("%s", getRandomFunnyWelcomeText());
         header = header.replaceFirst("%s", emailTarget.getFirstname());
-        header = header.replaceFirst("%s", update
-                ? "wir haben eine Änderung des Speiseplans festgestellt. Dabei kann es sich um diverse größere oder kleinere Änderungen handeln." + "\n" +
-                "Diese E-Mail wurde automatisch um " + LocalDateTime.now().format(java.time.format.DateTimeFormatter.ofPattern("HH:mm:ss")) + " Uhr erstellt."
-                : "nachfolgend findest du den Speiseplan für heute.");
+        header = header.replaceFirst("%s", "wir haben eine Änderung des Speiseplans festgestellt. Dabei kann es sich um diverse größere oder kleinere Änderungen handeln." + "\n" +
+                "Diese E-Mail wurde automatisch um " + LocalDateTime.now().format(java.time.format.DateTimeFormatter.ofPattern("HH:mm:ss")) + " Uhr erstellt.");
 
         String footer = StaticEmailText.FOOD_PLAN_FOOTER;
         footer = footer.replaceFirst("%s", getRandomGreetingsText());
         footer = footer.replaceFirst("%s", deactivateUrl);
-        footer = footer.replaceFirst("%s", Config.getInstance().getProperty("mensaHub.dataDispatcher.junction.address") +
-                "/mealPlan?date=today&mensa=" + mensa.getId() + "&userCode=" + emailTarget.getDeactivationCode().getCode());
+        footer = footer.replaceFirst("%s", Config.getInstance().getProperty("mensaHub.dataDispatcher.junction.address")
+                + "/mealPlan?date=today&mensa=" + mensa.getId() + "&userCode=" + emailTarget.getDeactivationCode().getCode());
 
-        return header + menuText + footer;
+
+        return header +
+                menuText +
+                footer;
+    }
+
+    private String getRightEmoticonForCategory(String category) {
+        if (category.contains("Fleisch")) {
+            return " \uD83E\uDD69";
+        } else if (category.contains("Fisch")) {
+            return " \uD83E\uDDA3";
+        } else if (category.contains("Vegetarisch") || category.contains("Veggie")) {
+            return " \uD83E\uDD66";
+        } else if (category.contains("Vegan")) {
+            return " \uD83E\uDD5F";
+        } else if (category.contains("Beilage")) {
+            return " \uD83E\uDDC1";
+        } else if (category.contains("Suppe")) {
+            return " \uD83C\uDF73";
+        } else if (category.contains("Dessert")) {
+            return " \uD83C\uDF6B";
+        } else if (category.contains("Salat")) {
+            return " \uD83E\uDD57";
+        } else if (category.contains("Getränk")) {
+            return " \uD83C\uDF7A";
+        } else if (category.contains("Snack")) {
+            return " \uD83C\uDF6A";
+        } else if (category.contains("Menü")) {
+            return " \uD83C\uDF5F";
+        } else if (category.contains("Pizza")) {
+            return " \uD83C\uDF55";
+        } else if (category.contains("Klima")) {
+            return " \uD83C\uDF0D";
+        } else if (category.contains("Bio")) {
+            return " \uD83C\uDF3E";
+        } else if (category.contains("Regional")) {
+            return " \uD83C\uDFE0";
+        } else if (category.contains("Fairtrade")) {
+            return " \uD83C\uDF10";
+        } else if (category.contains("Geflügel")) {
+            return " \uD83D\uDC13";
+        } else if (category.contains("Schwein")) {
+            return " \uD83D\uDC16";
+        } else if (category.contains("Rind")) {
+            return " \uD83D\uDC2E";
+        } else if (category.contains("Lamm")) {
+            return " \uD83D\uDC0F";
+        } else if (category.contains("Wild")) {
+            return " \uD83D\uDC10";
+        } else if (category.contains("Ei")) {
+            return " \uD83E\uDD5A";
+        } else if (category.contains("Pasta")) {
+            return " \uD83C\uDF5D";
+        } else if (category.contains("WOK")) {
+            return " \uD83C\uDF72";
+        } else if (category.contains("Smoothie")) {
+            return " \uD83E\uDD64";
+        } else if (category.contains("Burger")) {
+            return " \uD83C\uDF54";
+        } else if (category.contains("Schnitzel")) {
+            return " \uD83C\uDF56";
+        } else if (category.contains("Kartoffel")) {
+            return " \uD83E\uDD54";
+        } else if (category.contains("Pommes")) {
+            return " \uD83C\uDF5F";
+        } else if (category.contains("Nudeln")) {
+            return " \uD83C\uDF5D";
+        } else if (category.contains("Reis")) {
+            return " \uD83C\uDF5A";
+        } else {
+            return "";
+        }
     }
 
     private String getSubject(boolean update, String mensaName) {
@@ -298,5 +377,99 @@ public class Mailer {
                 "Essen ist das Einzige, was mich motiviert.", "Essen ist das Einzige, was mich glücklich macht.");
 
         return funnyTexts.get(new Random().nextInt(funnyTexts.size()));
+    }
+
+    public Result<MailUser, MailError> sendCollaborationMail(MailUser emailTarget, List<PredictionResult> predictions, Mensa mensa, LocalDate servingDate) {
+        try {
+            Properties prop = new Properties();
+            prop.put("mail.smtp.auth", Boolean.parseBoolean(Config.getInstance().getProperty("mensaHub.dataDispatcher.mail.smtpAuth")));
+            prop.put("mail.smtp.host", Config.getInstance().getProperty("mensaHub.dataDispatcher.mail.smtpHost"));
+            prop.put("mail.smtp.port", Config.getInstance().getProperty("mensaHub.dataDispatcher.mail.smtpPort"));
+            prop.put("mail.smtp.starttls.enable", "true");
+            prop.put("mail.smtp.ssl.enable", "true");
+
+            String senderMail = Config.getInstance().getProperty("mensaHub.dataDispatcher.mail.sender");
+            String senderPassword = Config.getInstance().getProperty("mensaHub.dataDispatcher.mail.sender.password");
+
+
+            Session mailSession = Session.getDefaultInstance(prop, new Authenticator() {
+
+                @Override
+                protected PasswordAuthentication getPasswordAuthentication() {
+                    return new PasswordAuthentication(senderMail, senderPassword);
+                }
+            });
+
+
+            String deactivateUrl = Config.getInstance().getProperty("mensaHub.dataDispatcher.junction.address") + "/deactivate?code=" + emailTarget.getDeactivationCode().getCode();
+            MimeMessage message = new MimeMessage(mailSession);
+            message.setFrom(new InternetAddress(senderMail));
+            message.setRecipients(
+                    Message.RecipientType.TO, InternetAddress.parse(emailTarget.getEmail()));
+
+            String msg = createEmailCollabInfo(predictions, emailTarget.getFirstname(), deactivateUrl, mensa, emailTarget.getDeactivationCode().getCode(), servingDate);
+            message.setSubject("Mensa Empfehlungen " +
+                    servingDate.format(DateTimeFormatter.ofPattern("dd.MM.yyyy")) + " - " +
+                    mensa.getName());
+
+
+            MimeBodyPart mimeBodyPart = new MimeBodyPart();
+            mimeBodyPart.setContent(msg, "text/html; charset=utf-8");
+            Multipart multipart = new MimeMultipart();
+            multipart.addBodyPart(mimeBodyPart);
+            message.setContent(multipart);
+
+            // Lade den privaten Schlüssel
+            PrivateKey privateKey = loadPrivateKey(Config.getInstance().getProperty("mensaHub.dataDispatcher.mail.dkim_priv_path"));
+
+            RSAPrivateKey rsaPrivateKey = (RSAPrivateKey) privateKey;
+
+            // Erstelle den DKIM-Signer
+            DkimSigner signer = new DkimSigner(Config.getInstance().getProperty("mensaHub.dataDispatcher.mail.dkim_signing_domain"),
+                    Config.getInstance().getProperty("mensaHub.dataDispatcher.mail.dkim_seperator"), rsaPrivateKey);
+
+            // Signiere die Nachricht mit DKIM
+            DkimMessage dkimMessage = new DkimMessage(message, signer);
+
+            Transport.send(dkimMessage);
+            return Result.success(emailTarget);
+        } catch (Exception exception) {
+            log.error("Error while sending email for user {}", emailTarget.getEmail(), exception);
+            return Result.error(new MailError("Error while sending email for user " + emailTarget.getEmail() + " with" +
+                    " error: " + exception.getMessage(), MailErrors.UNKNOWN));
+        }
+    }
+
+    //     List<? extends Meal> menu, String firstName, String deactivateUrl, String userDeactivateCode
+    private String createEmailCollabInfo(List<PredictionResult> predictions, String firstName, String deactivateUrl, Mensa mensa, String userDeactivateCode, LocalDate servingDate) throws NoSuchPaddingException, IllegalBlockSizeException, IOException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
+        StringBuilder menuText = new StringBuilder();
+
+        for (PredictionResult prediction : predictions) {
+            String mealString = StaticEmailText.MAIL_TEXT_COLLAB;
+            Meal meal = mealsService.findMealById((long) prediction.getMealId());
+            mealString = mealString.replaceFirst("%Kategorie %Emoticon", meal.getCategory() + " " + getRightEmoticonForCategory(meal.getCategory()));
+            mealString = mealString.replaceFirst("%MealName - %MealPrices", (prediction.getMealName() + " - " + meal.getPrice()));
+            mealString = mealString.replaceFirst("%PredictedRating", Math.round(prediction.getPredictedRating()) + "/5");
+            menuText.append(mealString);
+        }
+
+
+        String header = StaticEmailText.FOOD_PLAN_TEXT;
+        header = header.replaceFirst("%s", "Mensa Empfehlungen " +
+                servingDate.format(DateTimeFormatter.ofPattern("dd.MM.yyyy")) + " - " +
+                mensa.getName());
+        header = header.replaceFirst("%s", getRandomFunnyText());
+        header = header.replaceFirst("%s", getRandomFunnyWelcomeText());
+        header = header.replaceFirst("%s", firstName);
+        header = header.replaceFirst("%s", "nachfolgend werden dir mögliche Empfehlungen für Mensagerichte für morgen in der " + mensa.getName() + " angezeigt.");
+
+
+        String footer = StaticEmailText.FOOD_PLAN_FOOTER;
+        footer = footer.replaceFirst("%s", getRandomGreetingsText());
+        footer = footer.replaceFirst("%s", deactivateUrl);
+        footer = footer.replaceFirst("%s", Config.getInstance().getProperty("mensaHub.dataDispatcher.junction.address") +
+                "/mealPlan?date=today&userCode=" + userDeactivateCode);
+
+        return header + menuText + footer;
     }
 }

@@ -26,6 +26,9 @@ public class MailUserSetupDialog extends Dialog {
     Checkbox wantsUpdateCheckbox;
 
     @Getter
+    Checkbox wantsCollabInfoMail;
+
+    @Getter
     FooterButtonLayout footerButtonLayout = new FooterButtonLayout();
 
     public MailUserSetupDialog(MailUser mailUser, List<Mensa> mensen) {
@@ -37,9 +40,11 @@ public class MailUserSetupDialog extends Dialog {
         mensaComboBox.select(mailUser.getMensas());
         mensaComboBox.setWidth(100, Unit.PERCENTAGE);
 
-
         wantsUpdateCheckbox = new Checkbox("Möchtest du benachrichtigt werden, wenn Änderungen am Speiseplan festgestellt werden?");
         wantsUpdateCheckbox.setValue(mailUser.isWantsUpdate());
+
+        wantsCollabInfoMail = new Checkbox("Möchtest du nur benachrichtigt werden, wenn es Empfehlungen für dich gibt?");
+        wantsCollabInfoMail.setValue(mailUser.isWantsCollaborationInfoMail());
 
         Button cancelButton = new Button("Abbrechen");
         cancelButton.setIcon(VaadinIcon.CLOSE.create());
@@ -49,7 +54,7 @@ public class MailUserSetupDialog extends Dialog {
 
         footerButtonLayout.getDeclineButton().addClickListener(buttonClickEvent -> close());
 
-        add(new VerticalLayout(mensaComboBox, wantsUpdateCheckbox));
+        add(new VerticalLayout(mensaComboBox, wantsUpdateCheckbox, wantsCollabInfoMail));
         add(footerButtonLayout);
     }
 

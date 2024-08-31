@@ -48,9 +48,7 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
 import java.util.*;
-import java.util.concurrent.TimeUnit;
 
 @Service
 @Log4j2
@@ -86,6 +84,72 @@ public class LeipzigDataDispatcher {
         this.mealsService = mealsService;
         this.mailUserService = mailUserService;
         this.monitoringConfig = monitoringConfig;
+    }
+
+    public static Result<PredictionResult, APIError> getRecommendationScore(Meal meal, MailUser mailUser) throws NoSuchPaddingException, IllegalBlockSizeException, IOException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
+        APIConfiguration apiConfiguration = new APIConfiguration();
+        apiConfiguration.setBaseUrl(Config.getInstance().getProperty("mensaHub.junction.collaborative.filter.api.baseUrl"));
+        CollaborativeFilteringAPIAdapter collaborativeFilteringAPIAdapter = new CollaborativeFilteringAPIAdapter(apiConfiguration);
+
+        if (collaborativeFilteringAPIAdapter.isAPIAvailable()) {
+            PredictionRequest predictionRequest = new PredictionRequest(Math.toIntExact(mailUser.getId()), meal.getName(), Math.toIntExact(meal.getId()));
+            Result<List<Result<PredictionResult, APIError>>, APIError> predictionResults = collaborativeFilteringAPIAdapter.predict(List.of(predictionRequest));
+
+            if (predictionResults.isSuccess()) {
+                return predictionResults.getData().get(0);
+            } else {
+                log.error("Prediction failed for meal {}. Error: {}", meal.getName(), predictionResults.getError());
+            }
+        }
+
+        // api is not available
+        return Result.error(new APIError("API not reachable", APIErrors.NETWORK_ERROR));
+    }
+
+    public static Result<MailUser, JobError> sendPushNotification(String message, String title, MailUser mailUser, Mensa mensa, LocalDate dateTargetURL) throws NoSuchPaddingException, IllegalBlockSizeException, IOException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
+        // URL des Endpunkts
+        String url = Config.getInstance().getProperty("mensaHub.dataDispatcher.junction.address") + "/api/webpush/send";
+
+        // Header setzen
+        org.springframework.http.HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+
+        String targetUrl;
+
+        if (mensa == null) {
+            targetUrl = Config.getInstance().getProperty("mensaHub.junction.address") + "/mealPlan?date=" + dateTargetURL + "&userCode=" + mailUser.getDeactivationCode().getCode();
+        } else {
+            targetUrl = Config.getInstance().getProperty("mensaHub.junction.address") + "/mealPlan?date=" + dateTargetURL + "&mensa=" + mensa.getId() + "&userCode=" + mailUser.getDeactivationCode().getCode();
+        }
+
+        // Parameter setzen
+        MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
+        map.add("message", message);
+        map.add("title", title);
+        map.add("mailAdress", mailUser.getEmail());
+        map.add("targetUrl", targetUrl);
+        map.add("apiKey", Config.getInstance().getProperty("mensaHub.junction.push.notification.api.key"));
+
+        // Request erstellen
+        HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(map, headers);
+
+        // RestTemplate verwenden, um die Anfrage zu senden
+        RestTemplate restTemplate = new RestTemplate();
+        try {
+            ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.POST, request, String.class);
+
+            // Antwort auswerten
+            if (response.getStatusCode().is2xxSuccessful()) {
+                log.info("Push notification sent successfully to {}", mailUser.getEmail());
+                return Result.success(mailUser);
+            } else {
+                log.error("Push notification sent failed to {} with error code {}", mailUser.getEmail(), response.getStatusCode());
+                return Result.error(new JobError(java.lang.String.format("Push notification sent failed to %s with error code %s", mailUser.getEmail(), response.getStatusCode()), JobErrors.UNKNOWN));
+            }
+        } catch (Exception e) {
+            log.error("Error while sending push notification to web application {}", e.getMessage());
+            return Result.error(new JobError("Error while reach web application rest endpoint for push notification", JobErrors.UNKNOWN));
+        }
     }
 
     @Scheduled(cron = "0 */10 * * * *")
@@ -128,17 +192,16 @@ public class LeipzigDataDispatcher {
         log.info("------------------ Data call for Leipzig finished ------------------");
     }
 
-
     @Scheduled(cron = "0 00 08 ? * MON-FRI")
     public void sendEmails() throws NoSuchPaddingException, IllegalBlockSizeException, IOException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
         Counter mailCounterSuccess = monitoringConfig.customCounter("mails_success", MonitoringTags.MENSAHUB_DATA_DISPATCHER_APPLICATION_TAG.getValue(),
                 "How many mails were sent successfully");
         Counter mailCounterFailure = monitoringConfig.customCounter("mails_failure", MonitoringTags.MENSAHUB_DATA_DISPATCHER_APPLICATION_TAG.getValue(),
                 "How many mails were sent failure");
-        Mailer mailer = new Mailer();
+        Mailer mailer = new Mailer(mealsService);
         LocalDate today = LocalDate.now();
         for (MailUser mailUser : mailUserService.findAll()) {
-            if (mailUser.isEnabled()) {
+            if (mailUser.isEnabled() && !mailUser.isWantsCollaborationInfoMail()) {
                 for (Mensa mensa : mailUser.getMensas()) {
                     Result<MailUser, MailError> mailResult = mailer.sendSpeiseplan(mailUser, mealsService.findAllMealsByServingDateAndMensa(today, mensa), mensa, false);
                     if (mailResult.isSuccess()) {
@@ -151,7 +214,7 @@ public class LeipzigDataDispatcher {
                     if (mailUser.isPushNotificationsEnabled()) {
                         sendPushNotification(buildMealMessage(mealsService.findAllMealsByServingDateAndMensa(today, mensa), mailUser),
                                 "Speiseplan - " + LocalDate.now().format(java.time.format.DateTimeFormatter.ofPattern("dd.MM.yyyy")) + " - " + mensa.getName(),
-                                mailUser, mensa);
+                                mailUser, mensa, LocalDate.now());
                     }
                 }
             } else { // if the user is not enabled (he doesn't want emails) but maybe the push notification
@@ -159,7 +222,7 @@ public class LeipzigDataDispatcher {
                     if (mailUser.isPushNotificationsEnabled()) {
                         sendPushNotification(buildMealMessage(mealsService.findAllMealsByServingDateAndMensa(today, mensa), mailUser),
                                 "Speiseplan - " + LocalDate.now().format(java.time.format.DateTimeFormatter.ofPattern("dd.MM.yyyy")) + " - " + mensa.getName(),
-                                mailUser, mensa);
+                                mailUser, mensa, LocalDate.now());
                     }
                 }
             }
@@ -236,7 +299,7 @@ public class LeipzigDataDispatcher {
 
     @Counted(value = "detected_updates", description = "How many updates were detected")
     public List<Result<MailUser, MailError>> forceSendMail(Mensa wantedMensa) throws NoSuchPaddingException, IllegalBlockSizeException, IOException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
-        Mailer mailer = new Mailer();
+        Mailer mailer = new Mailer(mealsService);
         LocalDate today = LocalDate.now();
         Counter updateSentCounter = monitoringConfig.customCounter("updates_sent", MonitoringTags.MENSAHUB_DATA_DISPATCHER_APPLICATION_TAG.getValue(),
                 "How many updates were sent successfully");
@@ -248,7 +311,7 @@ public class LeipzigDataDispatcher {
                 List<Meal> meals = mealsService.findAllMealsByServingDateAndMensa(today, mensa);
                 List<MailUser> mailUsers = mailUserService.findAllByMensasAndEnabled(mensa, true);
                 for (MailUser mailUser : mailUsers) {
-                    if (mailUser.isEnabled()) {
+                    if (mailUser.isEnabled() && !mailUser.isWantsCollaborationInfoMail()) {
                         if (mailUser.isWantsUpdate()) {
                             log.info("Größe der meals für update: {}", meals.size());
                             Result<MailUser, MailError> mailResult = mailer.sendSpeiseplan(mailUser, meals, mensa, true);
@@ -265,7 +328,7 @@ public class LeipzigDataDispatcher {
                             if (mailUser.isPushNotificationsEnabled()) {
                                 sendPushNotification("Wir haben Änderungen am heutigen Speiseplan für die Mensa " + mensa.getName() + " erkannt.",
                                         "Es gibt Änderungen am Speiseplan für heute",
-                                        mailUser, mensa);
+                                        mailUser, mensa, LocalDate.now());
                             }
                         }
                     } else { // if the user is not enabled (he doesn't want emails) but maybe the push notification
@@ -273,7 +336,7 @@ public class LeipzigDataDispatcher {
                             if (mailUser.isPushNotificationsEnabled()) {
                                 sendPushNotification("Wir haben Änderungen am heutigen Speiseplan für die Mensa " + mensa.getName() + " erkannt.",
                                         "Es gibt Änderungen am Speiseplan für heute",
-                                        mailUser, mensa);
+                                        mailUser, mensa, LocalDate.now());
                             }
                         }
                     }
@@ -286,7 +349,7 @@ public class LeipzigDataDispatcher {
     @Counted(value = "detected_updates", description = "How many updates were detected")
     @Transactional
     public List<Result<MailUser, MailError>> forceSendMail(List<MailUser> mailUsers, boolean isUpdate) {
-        Mailer mailer = new Mailer();
+        Mailer mailer = new Mailer(mealsService);
         LocalDate today = LocalDate.now();
         Counter updateSentCounter = monitoringConfig.customCounter("updates_sent", MonitoringTags.MENSAHUB_DATA_DISPATCHER_APPLICATION_TAG.getValue(),
                 "How many updates were sent successfully");
@@ -312,71 +375,5 @@ public class LeipzigDataDispatcher {
             }
         }
         return results;
-    }
-
-    public Result<MailUser, JobError> sendPushNotification(String message, String title, MailUser mailUser, Mensa mensa) throws NoSuchPaddingException, IllegalBlockSizeException, IOException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
-        // URL des Endpunkts
-        String url = Config.getInstance().getProperty("mensaHub.dataDispatcher.junction.address") + "/api/webpush/send";
-
-        // Header setzen
-        org.springframework.http.HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-
-        String targetUrl;
-
-        if (mensa == null){
-            targetUrl = Config.getInstance().getProperty("mensaHub.junction.address") + "/mealPlan?date=today";
-        } else {
-            targetUrl = Config.getInstance().getProperty("mensaHub.junction.address") + "/mealPlan?date=today&mensa=" + mensa.getId();
-        }
-
-        // Parameter setzen
-        MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
-        map.add("message", message);
-        map.add("title", title);
-        map.add("mailAdress", mailUser.getEmail());
-        map.add("targetUrl", targetUrl);
-        map.add("apiKey", Config.getInstance().getProperty("mensaHub.junction.push.notification.api.key"));
-
-        // Request erstellen
-        HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(map, headers);
-
-        // RestTemplate verwenden, um die Anfrage zu senden
-        RestTemplate restTemplate = new RestTemplate();
-        try {
-            ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.POST, request, String.class);
-
-            // Antwort auswerten
-            if (response.getStatusCode().is2xxSuccessful()) {
-                log.info("Push notification sent successfully to {}", mailUser.getEmail());
-                return Result.success(mailUser);
-            } else {
-                log.error("Push notification sent failed to {} with error code {}", mailUser.getEmail(), response.getStatusCode());
-                return Result.error(new JobError(String.format("Push notification sent failed to %s with error code %s", mailUser.getEmail(), response.getStatusCode()), JobErrors.UNKNOWN));
-            }
-        } catch (Exception e){
-            log.error("Error while sending push notification to web application {}", e.getMessage());
-            return Result.error(new JobError("Error while reach web application rest endpoint for push notification", JobErrors.UNKNOWN));
-        }
-    }
-
-    public Result<PredictionResult, APIError> getRecommendationScore(Meal meal, MailUser mailUser) throws NoSuchPaddingException, IllegalBlockSizeException, IOException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
-        APIConfiguration apiConfiguration = new APIConfiguration();
-        apiConfiguration.setBaseUrl(Config.getInstance().getProperty("mensaHub.junction.collaborative.filter.api.baseUrl"));
-        CollaborativeFilteringAPIAdapter collaborativeFilteringAPIAdapter = new CollaborativeFilteringAPIAdapter(apiConfiguration);
-
-        if (collaborativeFilteringAPIAdapter.isAPIAvailable()) {
-            PredictionRequest predictionRequest = new PredictionRequest(Math.toIntExact(mailUser.getId()), meal.getName(), Math.toIntExact(meal.getId()));
-            Result<List<Result<PredictionResult, APIError>>, APIError> predictionResults = collaborativeFilteringAPIAdapter.predict(List.of(predictionRequest));
-
-            if (predictionResults.isSuccess()) {
-                return predictionResults.getData().get(0);
-            } else {
-                log.error("Prediction failed for meal {}. Error: {}", meal.getName(), predictionResults.getError());
-            }
-        }
-
-        // api is not available
-        return Result.error(new APIError("API not reachable", APIErrors.NETWORK_ERROR));
     }
 }
