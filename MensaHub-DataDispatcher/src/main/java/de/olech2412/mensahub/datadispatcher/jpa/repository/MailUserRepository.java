@@ -32,5 +32,5 @@ public interface MailUserRepository extends ListCrudRepository<MailUser, Long> {
      *
      * @return enabled mail users that want to receive collaboration info mails
      */
-    List<MailUser> findMailUsersByEnabledIsTrueAndWantsCollaborationInfoMailIsTrue();
+    List<MailUser> findMailUsersByWantsCollaborationInfoMailIsTrue();
 }

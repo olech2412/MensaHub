@@ -599,7 +599,7 @@ public class Mailer {
                 footer;
     }
 
-    public Result<MailUser, MailError> sendCollaborationMail(MailUser emailTarget, List<PredictionResult> predictions, LocalDate servingDate) {
+    public Result<MailUser, MailError> sendCollaborationMail(MailUser emailTarget, List<PredictionResult> predictions, Mensa mensa, LocalDate servingDate) {
         try {
             Properties prop = new Properties();
             prop.put("mail.smtp.auth", Boolean.parseBoolean(Config.getInstance().getProperty("mensaHub.dataDispatcher.mail.smtpAuth")));
@@ -627,10 +627,10 @@ public class Mailer {
             message.setRecipients(
                     Message.RecipientType.TO, InternetAddress.parse(emailTarget.getEmail()));
 
-            String msg = "";
-            msg = createEmailCollabInfo(predictions, emailTarget.getFirstname(), deactivateUrl, emailTarget.getDeactivationCode().getCode(), servingDate);
+            String msg = createEmailCollabInfo(predictions, emailTarget.getFirstname(), deactivateUrl, mensa, emailTarget.getDeactivationCode().getCode(), servingDate);
             message.setSubject("Mensa Empfehlungen " +
-                    servingDate.format(DateTimeFormatter.ofPattern("dd.MM.yyyy")));
+                    servingDate.format(DateTimeFormatter.ofPattern("dd.MM.yyyy")) + " - " +
+                    mensa.getName());
 
 
             MimeBodyPart mimeBodyPart = new MimeBodyPart();
@@ -661,16 +661,14 @@ public class Mailer {
     }
 
     //     List<? extends Meal> menu, String firstName, String deactivateUrl, String userDeactivateCode
-    private String createEmailCollabInfo(List<PredictionResult> predictions, String firstName, String deactivateUrl, String userDeactivateCode, LocalDate servingDate) throws NoSuchPaddingException, IllegalBlockSizeException, IOException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
+    private String createEmailCollabInfo(List<PredictionResult> predictions, String firstName, String deactivateUrl, Mensa mensa, String userDeactivateCode, LocalDate servingDate) throws NoSuchPaddingException, IllegalBlockSizeException, IOException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
         StringBuilder menuText = new StringBuilder();
-
 
         for (PredictionResult prediction : predictions) {
             String mealString = StaticEmailText.MAIL_TEXT_COLLAB;
             Meal meal = mealsService.findMealById((long) prediction.getMealId());
-            mealString = mealString.replaceFirst("%Mensa", meal.getMensa().getName());
             mealString = mealString.replaceFirst("%Kategorie %Emoticon", meal.getCategory());
-            mealString = mealString.replaceFirst("%MealName - %MealPrices", prediction.getMealName());
+            mealString = mealString.replaceFirst("%MealName - %MealPrices", (prediction.getMealName() + " - " + meal.getPrice()));
             mealString = mealString.replaceFirst("%PredictedRating", Math.round(prediction.getPredictedRating()) + "/5");
             menuText.append(mealString);
         }
@@ -678,11 +676,12 @@ public class Mailer {
 
         String header = StaticEmailText.FOOD_PLAN_TEXT;
         header = header.replaceFirst("%s", "Mensa Empfehlungen " +
-                servingDate.format(java.time.format.DateTimeFormatter.ofPattern("dd.MM.yyyy")));
+                servingDate.format(DateTimeFormatter.ofPattern("dd.MM.yyyy")) + " - " +
+                mensa.getName());
         header = header.replaceFirst("%s", getRandomFunnyText());
         header = header.replaceFirst("%s", getRandomFunnyWelcomeText());
         header = header.replaceFirst("%s", firstName);
-        header = header.replaceFirst("%s", "nachfolgend werden dir mögliche Empfehlungen für Mensagerichte für morgen in deinen abonnierten Mensen angezeigt.");
+        header = header.replaceFirst("%s", "nachfolgend werden dir mögliche Empfehlungen für Mensagerichte für morgen in der " + mensa.getName() + " angezeigt.");
 
 
         String footer = StaticEmailText.FOOD_PLAN_FOOTER;

@@ -11,9 +11,8 @@ import de.olech2412.mensahub.models.Mensa;
 import de.olech2412.mensahub.models.addons.predictions.PredictionResult;
 import de.olech2412.mensahub.models.authentification.MailUser;
 import de.olech2412.mensahub.models.result.Result;
-import de.olech2412.mensahub.models.result.errors.Application;
-import de.olech2412.mensahub.models.result.errors.ErrorEntity;
 import de.olech2412.mensahub.models.result.errors.api.APIError;
+import de.olech2412.mensahub.models.result.errors.job.JobError;
 import de.olech2412.mensahub.models.result.errors.mail.MailError;
 import io.micrometer.core.instrument.Counter;
 import lombok.extern.log4j.Log4j2;
@@ -36,6 +35,7 @@ import java.util.List;
 import java.util.Set;
 
 import static de.olech2412.mensahub.datadispatcher.data.leipzig.leipzigDispatcher.LeipzigDataDispatcher.getRecommendationScore;
+import static de.olech2412.mensahub.datadispatcher.data.leipzig.leipzigDispatcher.LeipzigDataDispatcher.sendPushNotification;
 
 @Service
 @Log4j2
@@ -61,7 +61,7 @@ public class CollaborativeFilteringLeipzigDispatcher {
         this.errorEntityRepository = errorEntityRepository;
     }
 
-    // schedule every 10 seconds
+    // schedule every 30 seconds
     @Scheduled(cron = "0/30 * * * * *")
     public void sendEmails() throws Exception {
         Counter mailCollabCounterSuccess = monitoringConfig.customCounter("mails_collab_success", MonitoringTags.MENSAHUB_DATA_DISPATCHER_APPLICATION_TAG.getValue(),
@@ -70,8 +70,8 @@ public class CollaborativeFilteringLeipzigDispatcher {
                 "How many collab mails were sent failure");
         Mailer mailer = new Mailer(mealsService);
         LocalDate today = LocalDate.now();
-        LocalDate servingDate = today.plusDays(1);
-        List<MailUser> mailUsers = mailUserService.findMailUserEnabledAndCollabInfoMailOnly().getData();
+        LocalDate tomorrow = today.plusDays(2);
+        List<MailUser> mailUsers = mailUserService.findMailUsersByWantsCollaborationInfoMailIsTrue().getData();
         if (mailUsers == null) {
             log.error("No mail users found");
             return;
@@ -80,60 +80,92 @@ public class CollaborativeFilteringLeipzigDispatcher {
             // TODO: get the meals of the mensa where user subscribed to for next day
             Set<Mensa> subbedMensas = mailUser.getMensas();
             if (subbedMensas == null) {
-                log.error("No mensas found for user {}", mailUser.getEmail());
+                log.error("No mensas found for user {}, continuing with the next user", mailUser.getEmail());
                 continue;
             }
-            List<Meal> collaborativeFilteringMealCandidates = new ArrayList<>();
 
             for (Mensa mensa : subbedMensas) {
-                List<Meal> meals = mealsService.findAllMealsByServingDateAndMensa(servingDate, mensa);
-                if (meals == null) {
+                List<Meal> collaborativeFilteringMealCandidates = mealsService.findAllMealsByServingDateAndMensa(tomorrow, mensa);
+                if (collaborativeFilteringMealCandidates.isEmpty()) {
                     log.error("No meals found for mensa {}", mensa.getName());
-                    continue;
-                }
-                collaborativeFilteringMealCandidates.addAll(meals);
-            }
-            if (collaborativeFilteringMealCandidates.isEmpty()) {
-                log.error("No meals found for user {}, probably no meals on this date: {}", mailUser.getEmail(), servingDate.format(DateTimeFormatter.ofPattern("dd.MM.yyyy")));
-                continue;
-            }
-            // TODO: get the PredictedRating rating of the user through collaborative filtering
-            List<PredictionResult> predictionResults = getPredictionsForUserAndMeals(collaborativeFilteringMealCandidates, mailUser);
-            if (predictionResults.isEmpty()) {
-                log.error("No prediction results found for user {}", mailUser.getEmail());
-                continue;
-            }
-
-            // Flag to determine if it should send an email
-            boolean shouldSendEmail = false;
-
-            for (PredictionResult predictionResult : predictionResults) {
-                if (predictionResult.getPredictedRating() >= 3 && !predictionResult.getTrustScore().equals("niedrig")) {
-                    shouldSendEmail = true;
-                    break; // No need to check further once we find a valid rating
-                }
-            }
-
-            if (shouldSendEmail) {
-                Result<MailUser, MailError> mailResult = mailer.sendCollaborationMail(mailUser, predictionResults, servingDate);
-                if (mailResult.isSuccess()) {
-                    mailCollabCounterSuccess.increment();
-                    log.info("Collab Info mail sent to {}", mailUser.getEmail());
                 } else {
-                    mailCollabCounterFailure.increment();
-                    errorEntityRepository.save(new ErrorEntity(mailResult.getError().message(), mailResult.getError().error().getCode(), Application.DATA_DISPATCHER));
+                    List<PredictionResult> predictionResults = getPredictionsForUserAndMeals(collaborativeFilteringMealCandidates, mailUser);
+                    if (predictionResults.isEmpty()) {
+                        log.error("No prediction results found for user {}", mailUser.getEmail());
+                        continue;
+                    }
+
+                    // Flag to determine if it should send an email
+                    boolean shouldSendInfos = false;
+
+                    for (PredictionResult predictionResult : predictionResults) {
+                        if (predictionResult.getPredictedRating() >= 3 && !predictionResult.getTrustScore().equals("niedrig")) {
+                            shouldSendInfos = true;
+                            break; // No need to check further once we find a valid rating
+                        }
+                    }
+
+                    if (shouldSendInfos) {
+
+                        // wenn user enabled ist, dann bekommt er auf jedenfall eine mail, wenn nicht, dann nicht
+                        // wenn er zusätzlich noch push notifications enabled hat, dann bekommt er auch eine push notification, wenn nicht, dann gar nichts, dann nächster User
+                        // wenn push oder mailsending !success, dann error increment
+                        if (mailUser.isEnabled()) {
+                            Result<MailUser, MailError> mailUserMailResult = mailer.sendCollaborationMail(mailUser, predictionResults, mensa, tomorrow);
+                            if (mailUserMailResult.isSuccess()) {
+                                mailCollabCounterSuccess.increment();
+                                log.info("Mail sent successfully to user {}", mailUser.getEmail());
+                            } else {
+                                log.error("Mail sending failed for user {}. Error: {}", mailUser.getEmail(), mailUserMailResult.getError());
+                                mailCollabCounterFailure.increment();
+                            }
+                            if (mailUser.isPushNotificationsEnabled()) {
+                                String message = buildMealMessage(mailUser, predictionResults, mensa, tomorrow);
+                                System.out.println(message);
+                                Result<MailUser, JobError> mailUserPushResult = sendPushNotification(message, "Empfehlungen für morgen, den " + tomorrow.format(DateTimeFormatter.ofPattern("dd.MM.yyyy")), mailUser, mensa);
+                                if (mailUserPushResult.isSuccess()) {
+                                    log.info("Push notification sent successfully to user {}", mailUser.getEmail());
+                                } else {
+                                    log.error("Push notification failed for user {}. Error: {}", mailUser.getEmail(), mailUserPushResult.getError());
+                                    mailCollabCounterFailure.increment();
+                                }
+
+
+                            }
+                        } else {
+                            if (mailUser.isPushNotificationsEnabled()) {
+                                String message = buildMealMessage(mailUser, predictionResults, mensa, tomorrow);
+                                System.out.println(message);
+                                Result<MailUser, JobError> mailUserPushResult = sendPushNotification(message, "Empfehlungen für morgen, den " + tomorrow.format(DateTimeFormatter.ofPattern("dd.MM.yyyy")), mailUser, mensa);
+                                if (mailUserPushResult.isSuccess()) {
+                                    log.info("Push notification sent successfully to user {}", mailUser.getEmail());
+                                } else {
+                                    log.error("Push notification failed for user {}. Error: {}", mailUser.getEmail(), mailUserPushResult.getError());
+                                    mailCollabCounterFailure.increment();
+                                }
+                            }
+                        }
+                    }
+
                 }
-                // TODO: send push notification
-                /*
-                if (mailUser.isPushNotificationsEnabled()) {
-                    sendPushNotification(buildMealMessage(mealsService.findAllMealsByServingDateAndMensa(today, mensa), mailUser),
-                            "Speiseplan - " + LocalDate.now().format(java.time.format.DateTimeFormatter.ofPattern("dd.MM.yyyy")) + " - " + mensa.getName(),
-                            mailUser, mensa);
-                }
-                 */
             }
         }
     }
+
+    private String buildMealMessage(MailUser mailUser, List<PredictionResult> predictionResults, Mensa mensa, LocalDate tomorrow) {
+        StringBuilder message = new StringBuilder();
+        message.append("Hallo ").append(mailUser.getFirstname()).append(",\n\n");
+        message.append("hier sind deine Empfehlungen für morgen, den ").append(tomorrow).append(" in der ").append(mensa.getName()).append(":\n\n");
+        for (PredictionResult predictionResult : predictionResults) {
+            message.append("Gericht: ").append(predictionResult.getMealName()).append("\n");
+            message.append("Deine voraussichtliche Bewertung: ").append(Math.round(predictionResult.getPredictedRating())).append("\n");
+            message.append("Vertrauensscore: ").append(predictionResult.getTrustScore()).append("\n\n");
+        }
+        message.append("Guten Appetit!");
+        return message.toString();
+
+    }
+
 
     private List<PredictionResult> getPredictionsForUserAndMeals(List<Meal> collaborativeFilteringMealCandidates, MailUser mailUser) throws NoSuchPaddingException, IllegalBlockSizeException, IOException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
         List<PredictionResult> predictionResults = new ArrayList<>();
@@ -150,6 +182,8 @@ public class CollaborativeFilteringLeipzigDispatcher {
         }
         return predictionResults;
     }
+
+
 
     /* no used
     private Result<PredictionResult, APIError> getPredictionScore(Meal meal, MailUser mailUser) throws NoSuchPaddingException, IllegalBlockSizeException, IOException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {

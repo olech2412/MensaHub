@@ -317,7 +317,6 @@ public class StaticEmailText {
             "                                              </tbody>\n" +
             "                                            </table>\n" +
             "                                            <div class=\"\">\n" +
-            "                                              <p style=\"line-height: 24px; font-size: 16px; width: 100%; margin: 0;\" align=\"left\"><strong>Mensa:</strong> %Mensa</p>\n" +
             "                                              <p style=\"line-height: 24px; font-size: 16px; width: 100%; margin: 0;\" align=\"left\"><strong>Kategorie:</strong> %Kategorie %Emoticon</p>\n" +
             "                                              <p style=\"line-height: 24px; font-size: 16px; width: 100%; margin: 0;\" align=\"left\"><strong>Gericht:</strong> %MealName - %MealPrices</p>\n" +
             "                                              <p style=\"line-height: 24px; font-size: 16px; width: 100%; margin: 0;\" align=\"left\"><strong>Deine wahrscheinliche Bewertung:</strong> %PredictedRating</p>\n" +

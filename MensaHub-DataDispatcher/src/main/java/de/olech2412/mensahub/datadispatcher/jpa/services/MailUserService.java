@@ -53,9 +53,9 @@ public class MailUserService {
         return mailUserRepository.findAllByMensasAndEnabled(mensa, enabled);
     }
 
-    public Result<List<MailUser>, JPAError> findMailUserEnabledAndCollabInfoMailOnly() {
+    public Result<List<MailUser>, JPAError> findMailUsersByWantsCollaborationInfoMailIsTrue() {
         try {
-            List<MailUser> mailUsers = mailUserRepository.findMailUsersByEnabledIsTrueAndWantsCollaborationInfoMailIsTrue();
+            List<MailUser> mailUsers = mailUserRepository.findMailUsersByWantsCollaborationInfoMailIsTrue();
             return Result.success(mailUsers);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
