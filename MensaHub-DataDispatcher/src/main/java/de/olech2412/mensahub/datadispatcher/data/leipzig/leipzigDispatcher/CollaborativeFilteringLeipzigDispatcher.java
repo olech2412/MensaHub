@@ -11,7 +11,6 @@ import de.olech2412.mensahub.models.addons.predictions.PredictionResult;
 import de.olech2412.mensahub.models.authentification.MailUser;
 import de.olech2412.mensahub.models.result.Result;
 import de.olech2412.mensahub.models.result.errors.api.APIError;
-import de.olech2412.mensahub.models.result.errors.job.JobError;
 import de.olech2412.mensahub.models.result.errors.mail.MailError;
 import io.micrometer.core.instrument.Counter;
 import lombok.extern.log4j.Log4j2;
@@ -117,9 +116,9 @@ public class CollaborativeFilteringLeipzigDispatcher {
                                 log.error("Mail sending failed for user {}. Error: {}", mailUser.getEmail(), mailUserMailResult.getError());
                                 mailCollabCounterFailure.increment();
                             }
-                            sendCollabPushNotification(mailCollabCounterFailure, tomorrow, mailUser, mensa);
+                            sendCollabPushNotification(tomorrow, mailUser, mensa);
                         } else {
-                            sendCollabPushNotification(mailCollabCounterFailure, tomorrow, mailUser, mensa);
+                            sendCollabPushNotification(tomorrow, mailUser, mensa);
                         }
                     }
 
@@ -136,17 +135,10 @@ public class CollaborativeFilteringLeipzigDispatcher {
      * @param mailUser                 The user to send the push notification to
      * @param mensa                    The mensa to send the push notification for
      */
-    private void sendCollabPushNotification(Counter mailCollabCounterFailure, LocalDate tomorrow, MailUser mailUser, Mensa mensa) throws NoSuchPaddingException, IllegalBlockSizeException, IOException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
+    private void sendCollabPushNotification(LocalDate tomorrow, MailUser mailUser, Mensa mensa) throws NoSuchPaddingException, IllegalBlockSizeException, IOException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
         if (mailUser.isPushNotificationsEnabled()) {
             String message = buildMealMessage(mailUser, mensa, tomorrow);
-            System.out.println(message);
-            Result<MailUser, JobError> mailUserPushResult = sendPushNotification(message, "Empfehlungen für morgen, den " + tomorrow.format(DateTimeFormatter.ofPattern("dd.MM.yyyy")), mailUser, mensa, tomorrow);
-            if (mailUserPushResult.isSuccess()) {
-                log.info("Push notification sent successfully to user {}", mailUser.getEmail());
-            } else {
-                log.error("Push notification failed for user {}. Error: {}", mailUser.getEmail(), mailUserPushResult.getError());
-                mailCollabCounterFailure.increment();
-            }
+            sendPushNotification(message, "Empfehlungen für morgen, den " + tomorrow.format(DateTimeFormatter.ofPattern("dd.MM.yyyy")), mailUser, mensa, tomorrow);
         }
     }
 
