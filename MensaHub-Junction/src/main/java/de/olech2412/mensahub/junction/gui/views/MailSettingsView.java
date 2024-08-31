@@ -300,6 +300,7 @@ public class MailSettingsView extends Composite implements BeforeEnterObserver {
 
                 mailUserService.saveMailUser(mailUser);
                 NotificationFactory.create(NotificationType.SUCCESS, "Änderungen wurden erfolgreich gespeichert").open();
+                mailUserSetupDialog.close();
             });
             mailUserSetupDialog.open();
         });
