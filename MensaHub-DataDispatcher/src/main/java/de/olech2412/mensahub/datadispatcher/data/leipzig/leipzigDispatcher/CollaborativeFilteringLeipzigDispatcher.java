@@ -151,11 +151,11 @@ public class CollaborativeFilteringLeipzigDispatcher {
      * @return The message
      */
     private String buildMealMessage(MailUser mailUser, Mensa mensa, LocalDate tomorrow) {
-        String message = "Hallo " + mailUser.getFirstname() + ",\n" +
-                "klicke hier für deine Empfehlungen für morgen, den " + tomorrow + " in der " + mensa.getName() + "\n" +
-                "Guten Appetit!";
-        return message;
-
+        StringBuilder message = new StringBuilder();
+        message.append("Hallo ").append(mailUser.getFirstname()).append(",\n");
+        message.append("klicke hier für deine Empfehlungen für morgen, den ").append(tomorrow).append(" in der ").append(mensa.getName()).append("\n");
+        message.append("Guten Appetit!");
+        return message.toString();
     }
 
     /**
