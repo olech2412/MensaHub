@@ -48,10 +48,7 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @Log4j2
@@ -73,9 +70,9 @@ public class LeipzigDataDispatcher {
 
     @Autowired
     private ErrorEntityRepository errorEntityRepository;
+
     @Autowired
     private RatingService ratingService;
-
 
     public LeipzigDataDispatcher(
             MensasService mensasService,
@@ -155,21 +152,6 @@ public class LeipzigDataDispatcher {
         }
     }
 
-    public static String buildMealMessage(List<Meal> allMealsByServingDateAndMensa, MailUser mailUser) throws NoSuchPaddingException, IllegalBlockSizeException, IOException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
-        StringBuilder mealMessage = new StringBuilder();
-        for (Meal meal : allMealsByServingDateAndMensa) {
-            Result<PredictionResult, APIError> predictionResultAPIErrorResult = getRecommendationScore(meal, mailUser);
-
-            if (predictionResultAPIErrorResult.isSuccess()) {
-                mealMessage.append(meal.getName()).append(" / Empfehlung: ").append(Math.round(predictionResultAPIErrorResult.getData().getPredictedRating()))
-                        .append("/5").append("\n");
-            } else {
-                mealMessage.append(meal.getName()).append("\n");
-            }
-        }
-        return mealMessage.toString();
-    }
-
     @Scheduled(cron = "0 */10 * * * *")
     public void callData() throws Exception {
         HTML_Caller dataCaller = new HTML_Caller(
@@ -181,23 +163,28 @@ public class LeipzigDataDispatcher {
 
         log.info("------------------ Data call for Leipzig ------------------");
         LocalDate currentDate = LocalDate.now();
-        for (Mensa mensa : mensasService.findAll()) {
-            String url = mensa.getApiUrl();
-            int fetchDays = Integer.parseInt(Config.getInstance().getProperty("mensaHub.dataDispatcher.fetchDays"));
-            for (int i = 0; i < fetchDays; i++) {
-                LocalDate date = currentDate.plusDays(i);
+        int fetchDays = Integer.parseInt(Config.getInstance().getProperty("mensaHub.dataDispatcher.fetchDays"));
 
-                if (date.getDayOfWeek() != DayOfWeek.SUNDAY) {
-                    url = url.replace("$date", date.toString());
-                    log.info("Calling data for {} on {}", mensa.getName(), date);
-                    Result<List<Meal>, ParserError> parsingResult = dataCaller.callDataFromStudentenwerk(url, mensa);
-                    if (!parsingResult.isSuccess()) {
-                        log.error("Error while calling data for {} on {}", mensa.getName(), date);
-                        errorEntityRepository.save(new ErrorEntity(parsingResult.getError().message(), parsingResult.getError().error().getCode(), Application.DATA_DISPATCHER));
-                        return;
-                    }
-                    checkTheData(parsingResult.getData(), mensa);
-                    url = url.replace(date.toString(), "$date");
+        for (int i = 0; i < fetchDays; i++) {
+            LocalDate date = currentDate.plusDays(i);
+
+            List<Mensa> mensas = mensasService.findAll();
+
+            if (date.getDayOfWeek() != DayOfWeek.SUNDAY) {
+                String url = "https://www.studentenwerk-leipzig.de/mensen-cafeterien/speiseplan/?date=" + date + "&criteria=&meal_type=all";
+                log.info("Calling data for all mensas on {}", date);
+                Result<Map<Mensa, List<Meal>>, ParserError> parsingResult = dataCaller.callDataFromStudentenwerk(url, date, mensas);
+
+                if (!parsingResult.isSuccess()) {
+                    log.error("Error while calling data on {}", date);
+                    errorEntityRepository.save(new ErrorEntity(parsingResult.getError().message(), parsingResult.getError().error().getCode(), Application.DATA_DISPATCHER));
+                    return;
+                }
+
+                for (Map.Entry<Mensa, List<Meal>> entry : parsingResult.getData().entrySet()) {
+                    Mensa mensa = entry.getKey();
+                    List<Meal> meals = entry.getValue();
+                    checkTheData(meals, mensa);
                 }
             }
         }
@@ -242,6 +229,22 @@ public class LeipzigDataDispatcher {
         }
     }
 
+    private String buildMealMessage(List<Meal> allMealsByServingDateAndMensa, MailUser mailUser) throws NoSuchPaddingException, IllegalBlockSizeException, IOException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
+        StringBuilder mealMessage = new StringBuilder();
+        for (Meal meal : allMealsByServingDateAndMensa) {
+            Result<PredictionResult, APIError> predictionResultAPIErrorResult = getRecommendationScore(meal, mailUser);
+
+            if (predictionResultAPIErrorResult.isSuccess()) {
+                mealMessage.append(meal.getName()).append(" / Empfehlung: ").append(Math.round(predictionResultAPIErrorResult.getData().getPredictedRating()))
+                        .append("/5").append("\n");
+            } else {
+                mealMessage.append(meal.getName()).append("\n");
+            }
+        }
+        return mealMessage.toString();
+    }
+
+    @Transactional
     public void checkTheData(List<Meal> data, Mensa mensa) throws NoSuchPaddingException, IllegalBlockSizeException, IOException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
         for (Meal newMeal : data) {
             List<Meal> databaseMeals = mealsService.findAllMealsByServingDateAndMensa(newMeal.getServingDate(), mensa);
@@ -310,6 +313,7 @@ public class LeipzigDataDispatcher {
                 for (MailUser mailUser : mailUsers) {
                     if (mailUser.isEnabled() && !mailUser.isWantsCollaborationInfoMail()) {
                         if (mailUser.isWantsUpdate()) {
+                            log.info("Größe der meals für update: {}", meals.size());
                             Result<MailUser, MailError> mailResult = mailer.sendSpeiseplan(mailUser, meals, mensa, true);
                             if (mailResult.isSuccess()) {
                                 updateSentCounter.increment();
@@ -343,6 +347,7 @@ public class LeipzigDataDispatcher {
     }
 
     @Counted(value = "detected_updates", description = "How many updates were detected")
+    @Transactional
     public List<Result<MailUser, MailError>> forceSendMail(List<MailUser> mailUsers, boolean isUpdate) {
         Mailer mailer = new Mailer(mealsService);
         LocalDate today = LocalDate.now();

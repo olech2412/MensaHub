@@ -2,8 +2,8 @@ package de.olech2412.mensahub.datadispatcher;
 
 import de.olech2412.mensahub.datadispatcher.config.Config;
 import de.olech2412.mensahub.datadispatcher.data.jobs.JobManager;
+import de.olech2412.mensahub.datadispatcher.data.leipzig.leipzigDispatcher.CollaborativeFilteringLeipzigDispatcher;
 import de.olech2412.mensahub.datadispatcher.data.leipzig.leipzigDispatcher.LeipzigDataDispatcher;
-import de.olech2412.mensahub.models.Mensa;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -27,14 +27,14 @@ import java.util.Arrays;
 @EntityScan(basePackages = {"de.olech2412.mensahub.models.authentification", "de.olech2412.mensahub.models"})
 public class MensaHub_DataDispatcher {
 
-    static Mensa mensa;
-
     public static void main(String[] args) throws Exception {
         configureEnvironment();
         ConfigurableApplicationContext configurableApplicationContext = SpringApplication.run(MensaHub_DataDispatcher.class, args);
         LeipzigDataDispatcher leipzigDataDispatcher = configurableApplicationContext.getBean(LeipzigDataDispatcher.class);
+        CollaborativeFilteringLeipzigDispatcher collaborativeFilteringLeipzigDispatcher = configurableApplicationContext.getBean(CollaborativeFilteringLeipzigDispatcher.class);
         JobManager jobManager = configurableApplicationContext.getBean(JobManager.class);
 
+        collaborativeFilteringLeipzigDispatcher.sendEmails();
         jobManager.checkForJobs();
 
         if (Arrays.stream(args).toList().contains("sendMailManual")) {

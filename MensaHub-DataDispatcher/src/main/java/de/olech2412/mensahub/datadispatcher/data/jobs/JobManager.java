@@ -59,7 +59,7 @@ public class JobManager {
                     }
                     case SEND_PUSH_NOTIFICATION -> {
                         for (MailUser mailUser : job.getMailUsers()) {
-                            Result<MailUser, JobError> results = leipzigDataDispatcher.sendPushNotification(job.getTitle(), job.getMessage(), mailUser, null, LocalDate.now());
+                            Result<MailUser, JobError> results = LeipzigDataDispatcher.sendPushNotification(job.getTitle(), job.getMessage(), mailUser, null, LocalDate.now());
                             executedPushNotificationJobs.add(results);
                         }
                     }

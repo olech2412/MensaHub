@@ -74,7 +74,7 @@ public class CollaborativeFilteringLeipzigDispatcher {
             return;
         }
         for (MailUser mailUser : mailUsers) {
-            // TODO: get the meals of the mensa where user subscribed to for next day
+
             Set<Mensa> subbedMensas = mailUser.getMensas();
             if (subbedMensas == null) {
                 log.error("No mensas found for user {}, continuing with the next user", mailUser.getEmail());
@@ -156,7 +156,6 @@ public class CollaborativeFilteringLeipzigDispatcher {
         message.append("klicke hier für deine Empfehlungen für morgen, den ").append(tomorrow).append(" in der ").append(mensa.getName()).append("\n");
         message.append("Guten Appetit!");
         return message.toString();
-
     }
 
     /**
