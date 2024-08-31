@@ -75,6 +75,8 @@ public class LeipzigDataDispatcher {
     private ErrorEntityRepository errorEntityRepository;
     @Autowired
     private RatingService ratingService;
+    @Autowired
+    private Meal meal;
 
 
     public LeipzigDataDispatcher(
@@ -279,7 +281,7 @@ public class LeipzigDataDispatcher {
 
     @Counted(value = "detected_updates", description = "How many updates were detected")
     public List<Result<MailUser, MailError>> forceSendMail(List<MailUser> mailUsers, boolean isUpdate) {
-        Mailer mailer = new Mailer();
+        Mailer mailer = new Mailer(mealsService);
         LocalDate today = LocalDate.now();
         Counter updateSentCounter = monitoringConfig.customCounter("updates_sent", MonitoringTags.MENSAHUB_DATA_DISPATCHER_APPLICATION_TAG.getValue(),
                 "How many updates were sent successfully");
