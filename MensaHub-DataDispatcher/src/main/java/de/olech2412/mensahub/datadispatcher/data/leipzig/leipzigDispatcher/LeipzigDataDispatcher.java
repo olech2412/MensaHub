@@ -48,10 +48,12 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
 @Service
 @Log4j2
@@ -177,6 +179,7 @@ public class LeipzigDataDispatcher {
         return mealMessage.toString();
     }
 
+    @Transactional
     public void checkTheData(List<Meal> data, Mensa mensa) throws NoSuchPaddingException, IllegalBlockSizeException, IOException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
         for (Meal newMeal : data) {
             List<Meal> databaseMeals = mealsService.findAllMealsByServingDateAndMensa(newMeal.getServingDate(), mensa);
@@ -245,6 +248,7 @@ public class LeipzigDataDispatcher {
                 for (MailUser mailUser : mailUsers) {
                     if (mailUser.isEnabled()) {
                         if (mailUser.isWantsUpdate()) {
+                            log.info("Größe der meals für update: {}", meals.size());
                             Result<MailUser, MailError> mailResult = mailer.sendSpeiseplan(mailUser, meals, mensa, true);
                             if (mailResult.isSuccess()) {
                                 updateSentCounter.increment();
@@ -278,6 +282,7 @@ public class LeipzigDataDispatcher {
     }
 
     @Counted(value = "detected_updates", description = "How many updates were detected")
+    @Transactional
     public List<Result<MailUser, MailError>> forceSendMail(List<MailUser> mailUsers, boolean isUpdate) {
         Mailer mailer = new Mailer();
         LocalDate today = LocalDate.now();

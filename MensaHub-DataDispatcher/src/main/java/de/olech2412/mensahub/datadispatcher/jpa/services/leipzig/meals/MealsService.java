@@ -19,6 +19,7 @@ import java.util.Optional;
 @Service
 @Log4j2
 @Import({Meal.class})
+@Transactional
 public class MealsService {
 
     @Autowired
