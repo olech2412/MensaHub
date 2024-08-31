@@ -1,7 +1,6 @@
 package de.olech2412.mensahub.datadispatcher.data.leipzig.leipzigDispatcher;
 
 import de.olech2412.mensahub.datadispatcher.email.Mailer;
-import de.olech2412.mensahub.datadispatcher.jpa.repository.ErrorEntityRepository;
 import de.olech2412.mensahub.datadispatcher.jpa.services.MailUserService;
 import de.olech2412.mensahub.datadispatcher.jpa.services.leipzig.meals.MealsService;
 import de.olech2412.mensahub.datadispatcher.monitoring.MonitoringConfig;
@@ -16,7 +15,6 @@ import de.olech2412.mensahub.models.result.errors.job.JobError;
 import de.olech2412.mensahub.models.result.errors.mail.MailError;
 import io.micrometer.core.instrument.Counter;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -45,20 +43,16 @@ public class CollaborativeFilteringLeipzigDispatcher {
 
     private final MealsService mealsService;
     private final MonitoringConfig monitoringConfig;
-    private final ErrorEntityRepository errorEntityRepository;
     MailUserService mailUserService;
-    @Autowired
-    LeipzigDataDispatcher leipzigDataDispatcher;
 
 
     public CollaborativeFilteringLeipzigDispatcher(MailUserService mailUserService,
                                                    MealsService mealsService,
-                                                   MonitoringConfig monitoringConfig,
-                                                   ErrorEntityRepository errorEntityRepository) {
+                                                   MonitoringConfig monitoringConfig
+    ) {
         this.mailUserService = mailUserService;
         this.mealsService = mealsService;
         this.monitoringConfig = monitoringConfig;
-        this.errorEntityRepository = errorEntityRepository;
     }
 
     // schedule every 30 seconds
@@ -119,31 +113,9 @@ public class CollaborativeFilteringLeipzigDispatcher {
                                 log.error("Mail sending failed for user {}. Error: {}", mailUser.getEmail(), mailUserMailResult.getError());
                                 mailCollabCounterFailure.increment();
                             }
-                            if (mailUser.isPushNotificationsEnabled()) {
-                                String message = buildMealMessage(mailUser, predictionResults, mensa, tomorrow);
-                                System.out.println(message);
-                                Result<MailUser, JobError> mailUserPushResult = sendPushNotification(message, "Empfehlungen für morgen, den " + tomorrow.format(DateTimeFormatter.ofPattern("dd.MM.yyyy")), mailUser, mensa);
-                                if (mailUserPushResult.isSuccess()) {
-                                    log.info("Push notification sent successfully to user {}", mailUser.getEmail());
-                                } else {
-                                    log.error("Push notification failed for user {}. Error: {}", mailUser.getEmail(), mailUserPushResult.getError());
-                                    mailCollabCounterFailure.increment();
-                                }
-
-
-                            }
+                            sendCollabPushNotification(mailCollabCounterFailure, tomorrow, mailUser, mensa, predictionResults);
                         } else {
-                            if (mailUser.isPushNotificationsEnabled()) {
-                                String message = buildMealMessage(mailUser, predictionResults, mensa, tomorrow);
-                                System.out.println(message);
-                                Result<MailUser, JobError> mailUserPushResult = sendPushNotification(message, "Empfehlungen für morgen, den " + tomorrow.format(DateTimeFormatter.ofPattern("dd.MM.yyyy")), mailUser, mensa);
-                                if (mailUserPushResult.isSuccess()) {
-                                    log.info("Push notification sent successfully to user {}", mailUser.getEmail());
-                                } else {
-                                    log.error("Push notification failed for user {}. Error: {}", mailUser.getEmail(), mailUserPushResult.getError());
-                                    mailCollabCounterFailure.increment();
-                                }
-                            }
+                            sendCollabPushNotification(mailCollabCounterFailure, tomorrow, mailUser, mensa, predictionResults);
                         }
                     }
 
@@ -152,15 +124,24 @@ public class CollaborativeFilteringLeipzigDispatcher {
         }
     }
 
+    private void sendCollabPushNotification(Counter mailCollabCounterFailure, LocalDate tomorrow, MailUser mailUser, Mensa mensa, List<PredictionResult> predictionResults) throws NoSuchPaddingException, IllegalBlockSizeException, IOException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
+        if (mailUser.isPushNotificationsEnabled()) {
+            String message = buildMealMessage(mailUser, predictionResults, mensa, tomorrow);
+            System.out.println(message);
+            Result<MailUser, JobError> mailUserPushResult = sendPushNotification(message, "Empfehlungen für morgen, den " + tomorrow.format(DateTimeFormatter.ofPattern("dd.MM.yyyy")), mailUser, mensa, tomorrow);
+            if (mailUserPushResult.isSuccess()) {
+                log.info("Push notification sent successfully to user {}", mailUser.getEmail());
+            } else {
+                log.error("Push notification failed for user {}. Error: {}", mailUser.getEmail(), mailUserPushResult.getError());
+                mailCollabCounterFailure.increment();
+            }
+        }
+    }
+
     private String buildMealMessage(MailUser mailUser, List<PredictionResult> predictionResults, Mensa mensa, LocalDate tomorrow) {
         StringBuilder message = new StringBuilder();
-        message.append("Hallo ").append(mailUser.getFirstname()).append(",\n\n");
-        message.append("hier sind deine Empfehlungen für morgen, den ").append(tomorrow).append(" in der ").append(mensa.getName()).append(":\n\n");
-        for (PredictionResult predictionResult : predictionResults) {
-            message.append("Gericht: ").append(predictionResult.getMealName()).append("\n");
-            message.append("Deine voraussichtliche Bewertung: ").append(Math.round(predictionResult.getPredictedRating())).append("\n");
-            message.append("Vertrauensscore: ").append(predictionResult.getTrustScore()).append("\n\n");
-        }
+        message.append("Hallo ").append(mailUser.getFirstname()).append(",\n");
+        message.append("klicke hier für deine Empfehlungen für morgen, den ").append(tomorrow).append(" in der ").append(mensa.getName()).append("\n");
         message.append("Guten Appetit!");
         return message.toString();
 
@@ -182,27 +163,5 @@ public class CollaborativeFilteringLeipzigDispatcher {
         }
         return predictionResults;
     }
-
-
-
-    /* no used
-    private Result<PredictionResult, APIError> getPredictionScore(Meal meal, MailUser mailUser) throws NoSuchPaddingException, IllegalBlockSizeException, IOException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
-        APIConfiguration apiConfiguration = new APIConfiguration();
-        apiConfiguration.setBaseUrl(Config.getInstance().getProperty("mensaHub.junction.collaborative.filter.api.baseUrl"));
-        CollaborativeFilteringAPIAdapter collaborativeFilteringAPIAdapter = new CollaborativeFilteringAPIAdapter(apiConfiguration);
-
-        if (collaborativeFilteringAPIAdapter.isAPIAvailable()) {
-            PredictionRequest predictionRequest = new PredictionRequest(Math.toIntExact(mailUser.getId()), meal.getName(), Math.toIntExact(meal.getId()));
-            Result<List<Result<PredictionResult, APIError>>, APIError> predictionResults = collaborativeFilteringAPIAdapter.predict(List.of(predictionRequest));
-            if (predictionResults.isSuccess()) {
-                return predictionResults.getData().get(0);
-            } else {
-                log.error("Prediction failed for meal {}. Error: {}", meal.getName(), predictionResults.getError());
-            }
-        }
-        return Result.error(new APIError("API not reachable", APIErrors.NETWORK_ERROR));
-    }
-
-     */
 
 }

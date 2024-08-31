@@ -109,7 +109,7 @@ public class LeipzigDataDispatcher {
         return Result.error(new APIError("API not reachable", APIErrors.NETWORK_ERROR));
     }
 
-    public static Result<MailUser, JobError> sendPushNotification(String message, String title, MailUser mailUser, Mensa mensa) throws NoSuchPaddingException, IllegalBlockSizeException, IOException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
+    public static Result<MailUser, JobError> sendPushNotification(String message, String title, MailUser mailUser, Mensa mensa, LocalDate dateTargetURL) throws NoSuchPaddingException, IllegalBlockSizeException, IOException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
         // URL des Endpunkts
         String url = Config.getInstance().getProperty("mensaHub.dataDispatcher.junction.address") + "/api/webpush/send";
 
@@ -120,9 +120,10 @@ public class LeipzigDataDispatcher {
         String targetUrl;
 
         if (mensa == null) {
-            targetUrl = Config.getInstance().getProperty("mensaHub.junction.address") + "/mealPlan?date=today";
+            targetUrl = Config.getInstance().getProperty("mensaHub.junction.address") + "/mealPlan?date=" + dateTargetURL + "&userCode=" + mailUser.getDeactivationCode().getCode();
         } else {
-            targetUrl = Config.getInstance().getProperty("mensaHub.junction.address") + "/mealPlan?date=today&mensa=" + mensa.getId();
+            targetUrl = Config.getInstance().getProperty("mensaHub.junction.address") + "/mealPlan?date=" + dateTargetURL + "&mensa=" + mensa.getId() + "&userCode=" + mailUser.getDeactivationCode().getCode();
+            System.out.println(targetUrl);
         }
 
         // Parameter setzen
@@ -227,7 +228,7 @@ public class LeipzigDataDispatcher {
                     if (mailUser.isPushNotificationsEnabled()) {
                         sendPushNotification(buildMealMessage(mealsService.findAllMealsByServingDateAndMensa(today, mensa), mailUser),
                                 "Speiseplan - " + LocalDate.now().format(java.time.format.DateTimeFormatter.ofPattern("dd.MM.yyyy")) + " - " + mensa.getName(),
-                                mailUser, mensa);
+                                mailUser, mensa, LocalDate.now());
                     }
                 }
             } else { // if the user is not enabled (he doesn't want emails) but maybe the push notification
@@ -235,7 +236,7 @@ public class LeipzigDataDispatcher {
                     if (mailUser.isPushNotificationsEnabled()) {
                         sendPushNotification(buildMealMessage(mealsService.findAllMealsByServingDateAndMensa(today, mensa), mailUser),
                                 "Speiseplan - " + LocalDate.now().format(java.time.format.DateTimeFormatter.ofPattern("dd.MM.yyyy")) + " - " + mensa.getName(),
-                                mailUser, mensa);
+                                mailUser, mensa, LocalDate.now());
                     }
                 }
             }
@@ -324,7 +325,7 @@ public class LeipzigDataDispatcher {
                             if (mailUser.isPushNotificationsEnabled()) {
                                 sendPushNotification("Wir haben Änderungen am heutigen Speiseplan für die Mensa " + mensa.getName() + " erkannt.",
                                         "Es gibt Änderungen am Speiseplan für heute",
-                                        mailUser, mensa);
+                                        mailUser, mensa, LocalDate.now());
                             }
                         }
                     } else { // if the user is not enabled (he doesn't want emails) but maybe the push notification
@@ -332,7 +333,7 @@ public class LeipzigDataDispatcher {
                             if (mailUser.isPushNotificationsEnabled()) {
                                 sendPushNotification("Wir haben Änderungen am heutigen Speiseplan für die Mensa " + mensa.getName() + " erkannt.",
                                         "Es gibt Änderungen am Speiseplan für heute",
-                                        mailUser, mensa);
+                                        mailUser, mensa, LocalDate.now());
                             }
                         }
                     }
