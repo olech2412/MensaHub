@@ -64,7 +64,7 @@ public class CollaborativeFilteringLeipzigDispatcher {
                 "How many collab mails were sent failure");
         Mailer mailer = new Mailer(mealsService);
         LocalDate today = LocalDate.now();
-        LocalDate tomorrow = today.plusDays(2);
+        LocalDate tomorrow = today.plusDays(1);
         List<MailUser> mailUsers = mailUserService.findMailUsersByWantsCollaborationInfoMailIsTrue().getData();
         if (mailUsers == null) {
             log.error("No mail users found");
