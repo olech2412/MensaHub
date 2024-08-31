@@ -224,11 +224,9 @@ public class Mailer {
                 + "/mealPlan?date=today&mensa=" + mensa.getId() + "&userCode=" + deactivateCode);
 
 
-        String msg = header +
+        return header +
                 menuText +
                 footer;
-
-        return msg;
     }
 
     private String createCategoryString(List<Meal> meals, String categoryString) {

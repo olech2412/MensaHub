@@ -13,17 +13,14 @@ public interface MailUserRepository extends ListCrudRepository<MailUser, Long> {
 
     MailUser findByEmail(String email);
 
-    MailUser findByActivationCode_Code(String code);
-
-    MailUser findByDeactivationCode_Code(String code);
 
     List<MailUser> findAllByMensasAndEnabled(Mensa mensa, boolean enabled);
 
     /**
      * Finds all enabled users
      *
-     * @param enabled
-     * @return
+     * @param enabled enabled
+     * @return all enabled users
      */
     List<MailUser> findUsersByEnabled(Boolean enabled);
 

@@ -37,14 +37,6 @@ public class MailUserService {
         return mailUserRepository.findUsersByEnabled(true);
     }
 
-    public void saveMailUser(MailUser mailUser) {
-        mailUserRepository.save(mailUser);
-    }
-
-    public void deleteMailUser(MailUser mailUser) {
-        mailUserRepository.delete(mailUser);
-    }
-
     public List<MailUser> findAll() {
         return mailUserRepository.findAll();
     }
