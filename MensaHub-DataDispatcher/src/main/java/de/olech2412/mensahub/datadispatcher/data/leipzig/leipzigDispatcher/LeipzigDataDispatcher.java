@@ -49,10 +49,7 @@ import java.security.NoSuchAlgorithmException;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 @Service
@@ -75,9 +72,9 @@ public class LeipzigDataDispatcher {
 
     @Autowired
     private ErrorEntityRepository errorEntityRepository;
+
     @Autowired
     private RatingService ratingService;
-
 
     public LeipzigDataDispatcher(
             MensasService mensasService,
@@ -102,23 +99,28 @@ public class LeipzigDataDispatcher {
 
         log.info("------------------ Data call for Leipzig ------------------");
         LocalDate currentDate = LocalDate.now();
-        for (Mensa mensa : mensasService.findAll()) {
-            String url = mensa.getApiUrl();
-            int fetchDays = Integer.parseInt(Config.getInstance().getProperty("mensaHub.dataDispatcher.fetchDays"));
-            for (int i = 0; i < fetchDays; i++) {
-                LocalDate date = currentDate.plusDays(i);
+        int fetchDays = Integer.parseInt(Config.getInstance().getProperty("mensaHub.dataDispatcher.fetchDays"));
 
-                if (date.getDayOfWeek() != DayOfWeek.SUNDAY) {
-                    url = url.replace("$date", date.toString());
-                    log.info("Calling data for {} on {}", mensa.getName(), date);
-                    Result<List<Meal>, ParserError> parsingResult = dataCaller.callDataFromStudentenwerk(url, mensa);
-                    if (!parsingResult.isSuccess()) {
-                        log.error("Error while calling data for {} on {}", mensa.getName(), date);
-                        errorEntityRepository.save(new ErrorEntity(parsingResult.getError().message(), parsingResult.getError().error().getCode(), Application.DATA_DISPATCHER));
-                        return;
-                    }
-                    checkTheData(parsingResult.getData(), mensa);
-                    url = url.replace(date.toString(), "$date");
+        for (int i = 0; i < fetchDays; i++) {
+            LocalDate date = currentDate.plusDays(i);
+
+            List<Mensa> mensas = mensasService.findAll();
+
+            if (date.getDayOfWeek() != DayOfWeek.SUNDAY) {
+                String url = "https://www.studentenwerk-leipzig.de/mensen-cafeterien/speiseplan/?date=" + date + "&criteria=&meal_type=all";
+                log.info("Calling data for all mensas on {}", date);
+                Result<Map<Mensa, List<Meal>>, ParserError> parsingResult = dataCaller.callDataFromStudentenwerk(url, date, mensas);
+
+                if (!parsingResult.isSuccess()) {
+                    log.error("Error while calling data on {}", date);
+                    errorEntityRepository.save(new ErrorEntity(parsingResult.getError().message(), parsingResult.getError().error().getCode(), Application.DATA_DISPATCHER));
+                    return;
+                }
+
+                for (Map.Entry<Mensa, List<Meal>> entry : parsingResult.getData().entrySet()) {
+                    Mensa mensa = entry.getKey();
+                    List<Meal> meals = entry.getValue();
+                    checkTheData(meals, mensa);
                 }
             }
         }
