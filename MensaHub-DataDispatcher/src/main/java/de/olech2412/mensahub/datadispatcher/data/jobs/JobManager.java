@@ -20,6 +20,7 @@ import javax.crypto.NoSuchPaddingException;
 import java.io.IOException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -58,7 +59,7 @@ public class JobManager {
                     }
                     case SEND_PUSH_NOTIFICATION -> {
                         for (MailUser mailUser : job.getMailUsers()) {
-                            Result<MailUser, JobError> results = leipzigDataDispatcher.sendPushNotification(job.getTitle(), job.getMessage(), mailUser, null);
+                            Result<MailUser, JobError> results = leipzigDataDispatcher.sendPushNotification(job.getTitle(), job.getMessage(), mailUser, null, LocalDate.now());
                             executedPushNotificationJobs.add(results);
                         }
                     }

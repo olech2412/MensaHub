@@ -6,7 +6,6 @@ import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.html.H3;
 import com.vaadin.flow.component.html.Image;
-import com.vaadin.flow.component.html.Paragraph;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.notification.Notification;
@@ -74,17 +73,14 @@ public class MailSettingsView extends Composite implements BeforeEnterObserver {
     private final VerticalLayout content = new VerticalLayout();
     private final MensaRepository mensaRepository;
     private final MealsService mealsService;
+    private final SubscriptionEntityRepository subscriptionEntityRepository;
+    private final WebPushService webPushService;
     @Autowired
     API_UserRepository apiUserRepository;
     Logger logger = LoggerFactory.getLogger(MailSettingsView.class);
     private VerticalLayout layout;
     @Autowired
     private PreferencesService preferencesService;
-
-    private final SubscriptionEntityRepository subscriptionEntityRepository;
-
-    private final WebPushService webPushService;
-
     private MailUser mailUser;
 
     public MailSettingsView(DeactivationCodeRepository deactivationCodeRepository, MailUserService mailUserService,
@@ -299,10 +295,12 @@ public class MailSettingsView extends Composite implements BeforeEnterObserver {
                     return;
                 }
                 mailUser.setWantsUpdate(mailUserSetupDialog.getWantsUpdateCheckbox().getValue());
+                mailUser.setWantsCollaborationInfoMail(mailUserSetupDialog.getWantsCollabInfoMail().getValue());
                 mailUser.setMensas(mailUserSetupDialog.getMensaComboBox().getValue());
 
                 mailUserService.saveMailUser(mailUser);
                 NotificationFactory.create(NotificationType.SUCCESS, "Änderungen wurden erfolgreich gespeichert").open();
+                mailUserSetupDialog.close();
             });
             mailUserSetupDialog.open();
         });

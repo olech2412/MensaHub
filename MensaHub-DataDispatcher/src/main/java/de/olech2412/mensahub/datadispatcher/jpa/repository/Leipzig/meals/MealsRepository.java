@@ -19,4 +19,5 @@ public interface MealsRepository extends ListCrudRepository<Meal, Long> {
 
     List<Meal> findAllByNameAndMensaAndServingDateBeforeOrderByServingDateDesc(String name, Mensa mensa, LocalDate servingDate);
 
+    Meal findMealById(Long id);
 }

@@ -12,7 +12,7 @@
 
     <groupId>de.olech2412.mensahub</groupId>
     <artifactId>mensaHub-dataDispatcher</artifactId>
-    <version>2.0.2</version>
+    <version>2.1.0</version>
     <name>MensaHub-DataDispatcher</name>
     <packaging>jar</packaging>
 
