@@ -31,10 +31,8 @@ public class MensaHub_DataDispatcher {
         configureEnvironment();
         ConfigurableApplicationContext configurableApplicationContext = SpringApplication.run(MensaHub_DataDispatcher.class, args);
         LeipzigDataDispatcher leipzigDataDispatcher = configurableApplicationContext.getBean(LeipzigDataDispatcher.class);
-        CollaborativeFilteringLeipzigDispatcher collaborativeFilteringLeipzigDispatcher = configurableApplicationContext.getBean(CollaborativeFilteringLeipzigDispatcher.class);
         JobManager jobManager = configurableApplicationContext.getBean(JobManager.class);
 
-        collaborativeFilteringLeipzigDispatcher.sendEmails();
         jobManager.checkForJobs();
 
         if (Arrays.stream(args).toList().contains("sendMailManual")) {

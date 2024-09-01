@@ -1,6 +1,8 @@
 package de.olech2412.mensahub.datadispatcher.data.leipzig.html_caller;
 
 import de.olech2412.mensahub.datadispatcher.config.Config;
+import de.olech2412.mensahub.datadispatcher.monitoring.MonitoringConfig;
+import de.olech2412.mensahub.datadispatcher.monitoring.MonitoringTags;
 import de.olech2412.mensahub.models.Meal;
 import de.olech2412.mensahub.models.Mensa;
 import de.olech2412.mensahub.models.result.Result;
@@ -14,6 +16,8 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
@@ -25,20 +29,48 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.*;
 
 @Log4j2
+@Component
 public class HTML_Caller {
 
     private final String notAvailableSign = Config.getInstance().getProperty("mensaHub.dataDispatcher.notAvailable.sign");
     private final Counter callCounterSuccess;
     private final Counter callCounterFailure;
     private final Timer parsingTimer;
+    private final Timer mealParsingTimer;
+    private final Counter mealsParsedCounter;
+    private final Counter mensasParsedCounter;
+    private final Counter errorsCounter;
 
-    public HTML_Caller(Counter callCounterSuccess, Counter callCounterFails) throws IllegalBlockSizeException, NoSuchPaddingException, BadPaddingException, IOException, NoSuchAlgorithmException, InvalidKeyException {
-        this.callCounterSuccess = callCounterSuccess;
-        this.callCounterFailure = callCounterFails;
+    @Autowired
+    HashStore hashStore;
+
+    @Autowired
+    MonitoringConfig monitoringConfig;
+
+    public HTML_Caller(MonitoringConfig monitoringConfig, HashStore hashStore) throws IllegalBlockSizeException, NoSuchPaddingException, BadPaddingException, IOException, NoSuchAlgorithmException, InvalidKeyException {
+        this.hashStore = hashStore;
+        this.monitoringConfig = monitoringConfig;
+
+        this.callCounterSuccess =
+                monitoringConfig.customCounter("stuwe_call_counter_success",
+                        MonitoringTags.MENSAHUB_DATA_DISPATCHER_APPLICATION_TAG.getValue(), "How many calls were sent and parsed successfully");
+
+        this.callCounterFailure =
+                monitoringConfig.customCounter("stuwe_call_counter_failure",
+                        MonitoringTags.MENSAHUB_DATA_DISPATCHER_APPLICATION_TAG.getValue(), "How many call or parsing failure happened");
+
         this.parsingTimer = Metrics.timer("mensahub.dataDispatcher.parsing.time");
+        this.mealParsingTimer = Metrics.timer("mensahub.dataDispatcher.mealParsing.time");
+        this.mealsParsedCounter = monitoringConfig.customCounter("meals_parsed_counter",
+                MonitoringTags.MENSAHUB_DATA_DISPATCHER_APPLICATION_TAG.getValue(), "Total number of meals parsed");
+        this.mensasParsedCounter = monitoringConfig.customCounter("mensas_parsed_counter",
+                MonitoringTags.MENSAHUB_DATA_DISPATCHER_APPLICATION_TAG.getValue(), "Total number of mensas parsed");
+        this.errorsCounter = monitoringConfig.customCounter("parsing_errors_counter",
+                MonitoringTags.MENSAHUB_DATA_DISPATCHER_APPLICATION_TAG.getValue(), "Total number of errors during parsing");
     }
 
     public Result<Map<Mensa, List<Meal>>, ParserError> callDataFromStudentenwerk(String url, LocalDate servingDate, List<Mensa> mensas) {
@@ -50,6 +82,14 @@ public class HTML_Caller {
 
             try {
                 Document doc = Jsoup.connect(url).get();
+                String documentContent = doc.body().text();
+                int newHash = Objects.hash(documentContent);
+
+                // Überprüfe, ob der Hash gleich ist
+                if (hashStore.isSameHash(servingDate, newHash)) {
+                    log.info("No changes detected for date {}, returning empty result.", servingDate);
+                    return Result.success(new ConcurrentHashMap<>()); // Leere Liste zurückgeben
+                }
 
                 long startTimeParsing = System.nanoTime();
                 // Select all Mensa headers (Mensa names)
@@ -58,6 +98,9 @@ public class HTML_Caller {
 
                 for (Element mensaHeader : mensaHeaders) {
                     futures.add(executor.submit(() -> {
+                        mensasParsedCounter.increment();
+                        Timer.Sample mensaParsingSample = Timer.start();
+
                         String mensaName = mensaHeader.text().trim();
 
                         // Find the corresponding Mensa from the database
@@ -78,6 +121,9 @@ public class HTML_Caller {
                         Elements meals = mealOverview.select(".card.type--meal");
 
                         for (Element meal : meals) {
+                            Timer.Sample mealParsingSample = Timer.start();
+                            mealsParsedCounter.increment();
+
                             Meal mealObject = new Meal();
 
                             // Meal name
@@ -162,9 +208,12 @@ public class HTML_Caller {
                                 mealObject.setMensa(mensa);
                                 mealsList.add(mealObject);
                             }
+
+                            mensaMealsMap.put(mensa, mealsList);
+                            mealParsingSample.stop(mealParsingTimer);
                         }
 
-                        mensaMealsMap.put(mensa, mealsList);
+                        mensaParsingSample.stop(parsingTimer);
                     }));
                 }
 
@@ -172,7 +221,6 @@ public class HTML_Caller {
                 for (Future<?> future : futures) {
                     future.get(); // Block until the thread is finished
                 }
-
 
                 long endTimeParse = System.nanoTime();
                 long durationInMillisParse = TimeUnit.NANOSECONDS.toMillis(endTimeParse - startTimeParsing);
@@ -182,9 +230,13 @@ public class HTML_Caller {
                 long durationInMillis = TimeUnit.NANOSECONDS.toMillis(endTimeParseAndCall - startTimeParseAndCall);
                 log.info("Parser finished in {} ms and found: {} meals across {} mensas", durationInMillis, mensaMealsMap.values().stream().mapToInt(List::size).sum(), mensaMealsMap.size());
 
+                // neuen hash speichern
+                hashStore.saveHash(servingDate, newHash);
+
                 callCounterSuccess.increment();
                 return Result.success(mensaMealsMap);
             } catch (IOException | InterruptedException | ExecutionException e) {
+                errorsCounter.increment();
                 callCounterFailure.increment();
                 log.fatal("Error while parsing the HTML document: {}", e.getMessage());
                 return Result.error(new ParserError("Error while parsing the HTML document: " + e.getMessage(), ParserErrors.UNKNOWN));

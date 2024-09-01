@@ -74,6 +74,9 @@ public class LeipzigDataDispatcher {
     @Autowired
     private RatingService ratingService;
 
+    @Autowired
+    HTML_Caller dataCaller;
+
     public LeipzigDataDispatcher(
             MensasService mensasService,
             MealsService mealsService,
@@ -152,14 +155,8 @@ public class LeipzigDataDispatcher {
         }
     }
 
-    @Scheduled(cron = "0 */10 * * * *")
+    @Scheduled(cron = "*/30 * * * * *")
     public void callData() throws Exception {
-        HTML_Caller dataCaller = new HTML_Caller(
-                monitoringConfig.customCounter("stuwe_call_counter_success",
-                        MonitoringTags.MENSAHUB_DATA_DISPATCHER_APPLICATION_TAG.getValue(), "How many calls were sent and parsed successfully"),
-                monitoringConfig.customCounter("stuwe_call_counter_failure",
-                        MonitoringTags.MENSAHUB_DATA_DISPATCHER_APPLICATION_TAG.getValue(), "How many call or parsing failure happened")
-        );
 
         log.info("------------------ Data call for Leipzig ------------------");
         LocalDate currentDate = LocalDate.now();
