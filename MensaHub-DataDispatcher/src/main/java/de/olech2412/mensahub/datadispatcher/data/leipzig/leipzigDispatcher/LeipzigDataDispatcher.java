@@ -155,7 +155,7 @@ public class LeipzigDataDispatcher {
         }
     }
 
-    @Scheduled(cron = "* */10 * * * *")
+    @Scheduled(cron = "0 */10 * * * *")
     public void callData() throws Exception {
 
         log.info("------------------ Data call for Leipzig ------------------");
