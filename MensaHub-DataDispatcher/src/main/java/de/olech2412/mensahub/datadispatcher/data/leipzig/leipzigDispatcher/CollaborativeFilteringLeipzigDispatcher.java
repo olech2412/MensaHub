@@ -129,8 +129,6 @@ public class CollaborativeFilteringLeipzigDispatcher {
 
     /**
      * Sends a push notification to a user
-     *
-     * @param mailCollabCounterFailure The counter to increment if sending the push notification fails
      * @param tomorrow                 The date for the push notification
      * @param mailUser                 The user to send the push notification to
      * @param mensa                    The mensa to send the push notification for
