@@ -153,11 +153,12 @@ public class Mailer {
         header = header.replaceFirst("%s", (update ? "Update zu deinem Speiseplan " : "Speiseplan ") +
                 LocalDate.now().format(java.time.format.DateTimeFormatter.ofPattern("dd.MM.yyyy")) + " - " +
                 mensa.getName());
-        header = header.replaceFirst("%s", "Eine Änderung wurde für deine Mensa " + mensa.getName() + " gefunden.");
+        header = header.replaceFirst("%s", (update? "Eine Änderung wurde für deine Mensa " + mensa.getName() + " gefunden." : getRandomFunnyText()));
         header = header.replaceFirst("%s", getRandomFunnyWelcomeText());
         header = header.replaceFirst("%s", emailTarget.getFirstname());
-        header = header.replaceFirst("%s", "wir haben eine Änderung des Speiseplans festgestellt. Dabei kann es sich um diverse größere oder kleinere Änderungen handeln." + "\n" +
-                "Diese E-Mail wurde automatisch um " + LocalDateTime.now().format(java.time.format.DateTimeFormatter.ofPattern("HH:mm:ss")) + " Uhr erstellt.");
+        header = header.replaceFirst("%s", (update ? "wir haben eine Änderung des Speiseplans festgestellt. Dabei kann es sich um diverse größere oder kleinere Änderungen handeln." + "\n" +
+                "Diese E-Mail wurde automatisch um " + LocalDateTime.now().format(java.time.format.DateTimeFormatter.ofPattern("HH:mm:ss")) + " Uhr erstellt." : "nachfolgend findest du den Speiseplan für heute."
+        ));
 
         String footer = StaticEmailText.FOOD_PLAN_FOOTER;
         footer = footer.replaceFirst("%s", getRandomGreetingsText());
