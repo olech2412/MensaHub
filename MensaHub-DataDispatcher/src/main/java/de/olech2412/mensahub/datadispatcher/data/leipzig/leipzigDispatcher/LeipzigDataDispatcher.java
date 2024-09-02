@@ -362,7 +362,7 @@ public class LeipzigDataDispatcher {
                 Result<MailUser, MailError> mailResult = mailer.sendSpeiseplan(mailUser, mealsService.findAllMealsByServingDateAndMensa(today, mensa), mensa, isUpdate);
                 if (mailResult.isSuccess()) {
                     updateSentCounter.increment();
-                    log.info("Update sent to {} for mensa {}", mailUser.getEmail(), mensa.getName());
+                    log.info("Mail sent to {} for mensa {}, isUpdate={}", mailUser.getEmail(), mensa.getName(), isUpdate);
                     results.add(mailResult);
                 } else {
                     updateSentCounterFailure.increment();
