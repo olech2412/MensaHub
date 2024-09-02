@@ -25,10 +25,7 @@ import net.markenwerk.utils.mail.dkim.DkimSigner;
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
-import java.io.BufferedReader;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.security.InvalidKeyException;
 import java.security.KeyFactory;
 import java.security.NoSuchAlgorithmException;
@@ -101,6 +98,9 @@ public class Mailer {
             message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(emailTarget.getEmail()));
 
             String msg = createEmailContent(menu, emailTarget, deactivateUrl, mensa, update);
+
+            // HTML-Datei speichern
+            saveEmailToFile(emailTarget, msg, mensa.getName(), update);
             message.setSubject(getSubject(update, mensa.getName()));
 
             MimeBodyPart mimeBodyPart = new MimeBodyPart();
@@ -472,5 +472,33 @@ public class Mailer {
                 "/mealPlan?date=today&userCode=" + userDeactivateCode);
 
         return header + menuText + footer;
+    }
+
+    private void saveEmailToFile(MailUser emailTarget, String content, String mensaName, boolean update) throws IOException {
+        // Verzeichnispfad für das Archiv erstellen
+        String archiveDirPath = System.getProperty("user.home") + "/mensaHub/archiv";
+        File archiveDir = new File(archiveDirPath);
+
+        // Verzeichnis erstellen, falls es nicht existiert
+        if (!archiveDir.exists()) {
+            boolean createdArchiveDir = archiveDir.mkdirs();
+            if (createdArchiveDir) {
+                log.info("Archive directory created: {}", archiveDirPath);
+            } else {
+                log.error("Archive directory did not exist but cant be created: {}", archiveDirPath);
+            }
+        }
+
+        // Dateinamen generieren
+        String formattedDate = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy_MM_dd"));
+        String fileName = emailTarget.getEmail() + "_" + formattedDate + "_" + mensaName + (update ? "_update" : "_regular") + ".html";
+
+        // Pfad zur Datei
+        File file = new File(archiveDir, fileName);
+
+        // Dateiinhalt schreiben
+        try (FileWriter writer = new FileWriter(file)) {
+            writer.write(content);
+        }
     }
 }
