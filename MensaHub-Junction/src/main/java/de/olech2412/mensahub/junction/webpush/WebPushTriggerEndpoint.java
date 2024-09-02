@@ -1,6 +1,5 @@
 package de.olech2412.mensahub.junction.webpush;
 
-import com.vaadin.flow.server.webpush.WebPushMessage;
 import de.olech2412.mensahub.junction.config.Config;
 import de.olech2412.mensahub.junction.helper.SubscriptionConverter;
 import de.olech2412.mensahub.junction.jpa.services.MailUserService;
@@ -57,14 +56,19 @@ public class WebPushTriggerEndpoint {
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("No subscription found for this user");
             }
 
+
             for (SubscriptionEntity subscription : mailUser.getSubscriptions()) {
-                webPushService.getWebPush().sendNotification(SubscriptionConverter.convertToModel(subscription),
-                        new CustomWebPushMessage(title, message, targetUrl));
-                log.info("WebPush notification sent to user {} for device {} with title {} and message {} and targetUrl {}",
-                        mailAdress, subscription.getDeviceInfo(), title, message,  targetUrl);
+                try {
+                    webPushService.getWebPush().sendNotification(SubscriptionConverter.convertToModel(subscription),
+                            new CustomWebPushMessage(title, message, targetUrl));
+                    log.info("WebPush notification sent to user {} for device {} with title {} and message {} and targetUrl {}",
+                            mailAdress, subscription.getDeviceInfo(), title, message, targetUrl);
+                } catch (Exception e) {
+                    log.error("Error while sending web push notification to user {} with title {} and message {} and targetUrl {}", mailAdress, title, message, targetUrl, e);
+                }
             }
 
-            return ResponseEntity.ok("Push notification sent successfully");
+            return ResponseEntity.ok("Push notification sent");
         } catch (Exception e) {
             log.error("Error while sending web push notification", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to send push notification");
