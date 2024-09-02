@@ -39,7 +39,7 @@ public class JobManager {
     }
 
 
-    @Scheduled(cron = "0 */5 * * * *")
+    @Scheduled(cron = "0 */1 * * * *")
     @Transactional
     public void checkForJobs() throws NoSuchPaddingException, IllegalBlockSizeException, IOException, NoSuchAlgorithmException, BadPaddingException, InvalidKeyException {
         Result<List<Job>, JPAError> jobs = jobService.findAllByEnabledAndExecutedAndExecuteAtIsNullOrExecuteAtIsAfter(true, false, LocalDateTime.now());
@@ -73,7 +73,6 @@ public class JobManager {
                 if (errors == 0) {
                     job.setExecuted(true);
                     job.setJobStatus(JobStatus.SUCCESS);
-                    job.setExecuteAt(LocalDateTime.now());
                     Result<Job, JPAError> saveResult = jobService.saveJob(job);
                     if (saveResult.isSuccess()) {
                         log.info("Successful executed job {}", job.getUuid());
