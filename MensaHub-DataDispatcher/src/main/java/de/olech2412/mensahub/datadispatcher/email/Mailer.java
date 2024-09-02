@@ -98,9 +98,6 @@ public class Mailer {
             message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(emailTarget.getEmail()));
 
             String msg = createEmailContent(menu, emailTarget, deactivateUrl, mensa, update);
-
-            // HTML-Datei speichern
-            saveEmailToFile(emailTarget, msg, mensa.getName(), update);
             message.setSubject(getSubject(update, mensa.getName()));
 
             MimeBodyPart mimeBodyPart = new MimeBodyPart();
@@ -115,6 +112,8 @@ public class Mailer {
             DkimMessage dkimMessage = new DkimMessage(message, signer);
 
             Transport.send(dkimMessage);
+            // HTML-Datei speichern
+            saveEmailToFile(emailTarget, msg, mensa.getName(), update);
             return Result.success(emailTarget);
         } catch (Exception exception) {
             log.error("Error while sending email for user {}", emailTarget.getEmail(), exception);
@@ -433,6 +432,8 @@ public class Mailer {
             DkimMessage dkimMessage = new DkimMessage(message, signer);
 
             Transport.send(dkimMessage);
+            // HTML-Datei speichern
+            saveEmailToFile(emailTarget, msg, mensa.getName() + "_collaboration", false);
             return Result.success(emailTarget);
         } catch (Exception exception) {
             log.error("Error while sending email for user {}", emailTarget.getEmail(), exception);
