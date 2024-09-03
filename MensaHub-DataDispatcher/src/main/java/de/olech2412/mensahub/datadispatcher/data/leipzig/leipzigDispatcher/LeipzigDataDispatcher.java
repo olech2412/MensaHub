@@ -250,7 +250,7 @@ public class LeipzigDataDispatcher {
                 log.info("Saved new meals: {}", data.size());
                 return;
             } else {
-                if (!databaseMeals.contains(newMeal)) {
+                if (!databaseMeals.contains(newMeal) || databaseMeals.size() != data.size()) {
                     for (Meal databaseMeal : databaseMeals) {
                         if (databaseMeal.getVotes() != 0) {
                             for (Meal newMeal1 : data) {
