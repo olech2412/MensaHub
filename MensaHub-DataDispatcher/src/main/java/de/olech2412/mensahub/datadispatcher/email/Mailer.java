@@ -282,7 +282,7 @@ public class Mailer {
             PredictionRequest request = new PredictionRequest(mailUserId, meal.getName(), meal.getId().intValue());
             Result<List<Result<PredictionResult, APIError>>, APIError> predictionResults = collaborativeFilteringAPIAdapter.predict(List.of(request));
 
-            if (predictionResults.isSuccess()) {
+            if (predictionResults != null && predictionResults.isSuccess()) {
                 PredictionResult predictionResult = predictionResults.getData().get(0).getData();
                 return " - Empfehlung: " + Math.round(predictionResult.getPredictedRating()) + "/5";
             }
