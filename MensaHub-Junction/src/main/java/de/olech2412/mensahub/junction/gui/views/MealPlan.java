@@ -179,22 +179,20 @@ public class MealPlan extends VerticalLayout implements BeforeEnterObserver {
         shareButton.setTooltipText("Teilen");
         shareButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 
-        shareButton.addClickListener(event -> {
-            UI.getCurrent().getPage().executeJs(
-                    "const shareData = { " +
-                            "  title: document.title, " +
-                            "  text: 'Schau dir den Speiseplan an', " +
-                            "  url: window.location.href " +
-                            "}; " +
-                            "navigator.share(shareData)" +
-                            "  .then(() => { " +
-                            "    console.log('Seite hat Daten geteilt'); " +
-                            "  })" +
-                            "  .catch(err => { " +
-                            "    console.log('Error: ' + err); " +
-                            "  });"
-            );
-        });
+        shareButton.addClickListener(event -> UI.getCurrent().getPage().executeJs(
+                "const shareData = { " +
+                        "  title: document.title, " +
+                        "  text: 'Schau dir den Speiseplan an', " +
+                        "  url: window.location.href " +
+                        "}; " +
+                        "navigator.share(shareData)" +
+                        "  .then(() => { " +
+                        "    console.log('Seite hat Daten geteilt'); " +
+                        "  })" +
+                        "  .catch(err => { " +
+                        "    console.log('Error: ' + err); " +
+                        "  });"
+        ));
         return shareButton;
     }
 
