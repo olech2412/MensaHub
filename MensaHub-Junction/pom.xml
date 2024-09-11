@@ -14,7 +14,7 @@
     <groupId>de.olech2412.mensahub.junction</groupId>
     <artifactId>mensaHub-junction</artifactId>
     <name>MensaHub-Junction</name>
-    <version>2.1.0</version>
+    <version>2.2.0</version>
     <packaging>jar</packaging>
 
     <properties>
@@ -158,11 +158,6 @@
             <groupId>net.markenwerk</groupId>
             <artifactId>utils-mail-dkim</artifactId>
             <version>2.0.1</version>
-        </dependency>
-        <dependency>
-            <groupId>org.parttio</groupId>
-            <artifactId>line-awesome</artifactId>
-            <version>2.0.0</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.datatype/jackson-datatype-jsr310 -->
         <dependency>

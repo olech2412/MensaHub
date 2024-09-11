@@ -174,29 +174,32 @@ public class MealPlan extends VerticalLayout implements BeforeEnterObserver {
         setJustifyContentMode(JustifyContentMode.CENTER);
     }
 
+    /**
+     * Creates a share button with the share API
+     *
+     * @return the share button
+     */
     private static Button getShareButton() {
         Button shareButton = new Button(VaadinIcon.SHARE.create());
-        shareButton.setTooltipText("Teilen");
+        shareButton.setTooltipText("Teile den Speiseplan mit deinen Freunden");
+        shareButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 
-        shareButton.addClickListener(event -> {
-            UI.getCurrent().getPage().executeJs(
-                    "if (navigator.share) {" +
-                            "  navigator.share({" +
-                            "    title: document.title," +
-                            "    text: 'Schau dir den Speiseplan an'," +
-                            "    url: window.location.href" +
-                            "  }).then(() => {" +
-                            "    console.log('Successful share');" +
-                            "  }).catch((error) => {" +
-                            "    console.log('Error sharing:', error);" +
-                            "  });" +
-                            "} else {" +
-                            "  // Fallback code here" +
-                            "  alert('Sharing not supported, copying link to clipboard');" +
-                            "  navigator.clipboard.writeText(window.location.href);" +
-                            "}"
-            );
-        });
+        shareButton.addClickListener(event -> UI.getCurrent().getPage().executeJs(
+                "const url = new URL(window.location.href);" +
+                        "url.searchParams.delete('userCode');" + // Entfernt den userCode-Parameter aus der URL
+                        "const shareData = { " +
+                        "  title: document.title, " +
+                        "  text: 'Schau dir den Speiseplan auf MensaHub an!', " +
+                        "  url: url.toString() " + // Aktualisierte URL ohne userCode
+                        "}; " +
+                        "navigator.share(shareData)" +
+                        "  .then(() => { " +
+                        "    console.log('Seite hat Daten geteilt'); " +
+                        "  })" +
+                        "  .catch(err => { " +
+                        "    console.log('Error: ' + err); " +
+                        "  });"
+        ));
         return shareButton;
     }
 
