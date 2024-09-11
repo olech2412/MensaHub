@@ -174,6 +174,11 @@ public class MealPlan extends VerticalLayout implements BeforeEnterObserver {
         setJustifyContentMode(JustifyContentMode.CENTER);
     }
 
+    /**
+     * Creates a share button with the share API
+     *
+     * @return the share button
+     */
     private static Button getShareButton() {
         Button shareButton = new Button(VaadinIcon.SHARE.create());
         shareButton.setTooltipText("Teilen");
