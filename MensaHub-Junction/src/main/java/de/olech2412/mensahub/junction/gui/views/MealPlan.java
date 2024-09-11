@@ -177,28 +177,27 @@ public class MealPlan extends VerticalLayout implements BeforeEnterObserver {
     private static Button getShareButton() {
         Button shareButton = new Button(VaadinIcon.SHARE.create());
         shareButton.setTooltipText("Teilen");
+        shareButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 
         shareButton.addClickListener(event -> {
             UI.getCurrent().getPage().executeJs(
-                    "if (navigator.share) {" +
-                            "  navigator.share({" +
-                            "    title: document.title," +
-                            "    text: 'Schau dir den Speiseplan an'," +
-                            "    url: window.location.href" +
-                            "  }).then(() => {" +
-                            "    console.log('Successful share');" +
-                            "  }).catch((error) => {" +
-                            "    console.log('Error sharing:', error);" +
-                            "  });" +
-                            "} else {" +
-                            "  // Fallback code here" +
-                            "  alert('Sharing not supported, copying link to clipboard');" +
-                            "  navigator.clipboard.writeText(window.location.href);" +
-                            "}"
+                    "const shareData = { " +
+                            "  title: document.title, " +
+                            "  text: 'Schau dir den Speiseplan an', " +
+                            "  url: window.location.href " +
+                            "}; " +
+                            "navigator.share(shareData)" +
+                            "  .then(() => { " +
+                            "    console.log('Seite hat Daten geteilt'); " +
+                            "  })" +
+                            "  .catch(err => { " +
+                            "    console.log('Error: ' + err); " +
+                            "  });"
             );
         });
         return shareButton;
     }
+
 
     /**
      * Is accessed by the datepicker and mensaCombox and should build the view with the given parameters
