@@ -71,14 +71,12 @@ public class MealPlan extends VerticalLayout implements BeforeEnterObserver {
     HorizontalLayout row = new HorizontalLayout();
     @Autowired
     RatingRepository ratingRepository;
+    VerticalLayout headerComboboxDatePickerButtonsLayout = new VerticalLayout();
     @Autowired
     private MailUserService mailUserService;
     @Autowired
     private RatingService ratingService;
-
     private MailUser mailUser;
-
-    VerticalLayout headerComboboxDatePickerButtonsLayout = new VerticalLayout();
 
     public MealPlan(MealsService mealsService, MensaService mensaService, MealPlanService mealPlanService) {
         this.mealsService = mealsService;
@@ -175,6 +173,34 @@ public class MealPlan extends VerticalLayout implements BeforeEnterObserver {
         setAlignItems(Alignment.CENTER);
         setJustifyContentMode(JustifyContentMode.CENTER);
     }
+
+    /**
+     * Creates a share button with the share API
+     *
+     * @return the share button
+     */
+    private static Button getShareButton() {
+        Button shareButton = new Button(VaadinIcon.SHARE.create());
+        shareButton.setTooltipText("Teilen");
+        shareButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
+
+        shareButton.addClickListener(event -> UI.getCurrent().getPage().executeJs(
+                "const shareData = { " +
+                        "  title: document.title, " +
+                        "  text: 'Schau dir den Speiseplan an', " +
+                        "  url: window.location.href " +
+                        "}; " +
+                        "navigator.share(shareData)" +
+                        "  .then(() => { " +
+                        "    console.log('Seite hat Daten geteilt'); " +
+                        "  })" +
+                        "  .catch(err => { " +
+                        "    console.log('Error: ' + err); " +
+                        "  });"
+        ));
+        return shareButton;
+    }
+
 
     /**
      * Is accessed by the datepicker and mensaCombox and should build the view with the given parameters
@@ -356,8 +382,12 @@ public class MealPlan extends VerticalLayout implements BeforeEnterObserver {
                 }
             }
         }
+        HorizontalLayout buttonShareLayout = new HorizontalLayout();
+        buttonShareLayout.setAlignItems(Alignment.CENTER);
+        buttonShareLayout.setJustifyContentMode(JustifyContentMode.CENTER);
+        headerComboboxDatePickerButtonsLayout.add(buttonShareLayout);
 
-        if(mailUser != null){
+        if (mailUser != null) {
             Button redirectToMensaHubSettings = new Button(VaadinIcon.CHEVRON_CIRCLE_RIGHT.create());
             redirectToMensaHubSettings.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
             redirectToMensaHubSettings.setText("MensaHub-Einstellungen");
@@ -365,8 +395,10 @@ public class MealPlan extends VerticalLayout implements BeforeEnterObserver {
             redirectToMensaHubSettings.addClickListener(buttonClickEvent -> {
                 UI.getCurrent().navigate(MailSettingsView.class);
             });
-            headerComboboxDatePickerButtonsLayout.add(redirectToMensaHubSettings);
+            buttonShareLayout.add(redirectToMensaHubSettings);
         }
+        Button shareButton = getShareButton();
+        buttonShareLayout.add(shareButton);
 
         AtomicBoolean applePWAInfoNotificationShown = new AtomicBoolean(false);
         UI.getCurrent().getPage().executeJs("return !!window.localStorage.getItem('applePWAInfoNotificationShown');")
