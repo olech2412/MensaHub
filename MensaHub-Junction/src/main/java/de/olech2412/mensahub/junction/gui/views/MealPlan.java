@@ -181,7 +181,7 @@ public class MealPlan extends VerticalLayout implements BeforeEnterObserver {
      */
     private static Button getShareButton() {
         Button shareButton = new Button(VaadinIcon.SHARE.create());
-        shareButton.setTooltipText("Teilen");
+        shareButton.setTooltipText("Teile den Speiseplan mit deinen Freunden");
         shareButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 
         shareButton.addClickListener(event -> UI.getCurrent().getPage().executeJs(
@@ -189,7 +189,7 @@ public class MealPlan extends VerticalLayout implements BeforeEnterObserver {
                         "url.searchParams.delete('userCode');" + // Entfernt den userCode-Parameter aus der URL
                         "const shareData = { " +
                         "  title: document.title, " +
-                        "  text: 'Schau dir den Speiseplan an', " +
+                        "  text: 'Schau dir den Speiseplan auf MensaHub an!', " +
                         "  url: url.toString() " + // Aktualisierte URL ohne userCode
                         "}; " +
                         "navigator.share(shareData)" +
