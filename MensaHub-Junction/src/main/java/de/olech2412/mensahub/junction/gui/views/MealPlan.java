@@ -189,7 +189,7 @@ public class MealPlan extends VerticalLayout implements BeforeEnterObserver {
                         "url.searchParams.delete('userCode');" + // Entfernt den userCode-Parameter aus der URL
                         "const shareData = { " +
                         "  title: document.title, " +
-                        "  text: 'Schau dir den Speiseplan auf MensaHub an!', " +
+                        "  text: 'Schau dir den Speiseplan auf MensaHub an!\n', " +
                         "  url: url.toString() " + // Aktualisierte URL ohne userCode
                         "}; " +
                         "navigator.share(shareData)" +
