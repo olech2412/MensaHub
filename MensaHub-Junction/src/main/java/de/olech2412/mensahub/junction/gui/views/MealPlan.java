@@ -185,10 +185,12 @@ public class MealPlan extends VerticalLayout implements BeforeEnterObserver {
         shareButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
 
         shareButton.addClickListener(event -> UI.getCurrent().getPage().executeJs(
-                "const shareData = { " +
+                "const url = new URL(window.location.href);" +
+                        "url.searchParams.delete('userCode');" + // Entfernt den userCode-Parameter aus der URL
+                        "const shareData = { " +
                         "  title: document.title, " +
                         "  text: 'Schau dir den Speiseplan an', " +
-                        "  url: window.location.href " +
+                        "  url: url.toString() " + // Aktualisierte URL ohne userCode
                         "}; " +
                         "navigator.share(shareData)" +
                         "  .then(() => { " +
@@ -200,7 +202,6 @@ public class MealPlan extends VerticalLayout implements BeforeEnterObserver {
         ));
         return shareButton;
     }
-
 
     /**
      * Is accessed by the datepicker and mensaCombox and should build the view with the given parameters
