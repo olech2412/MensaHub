@@ -283,8 +283,13 @@ public class Mailer {
             Result<List<Result<PredictionResult, APIError>>, APIError> predictionResults = collaborativeFilteringAPIAdapter.predict(List.of(request));
 
             if (predictionResults != null && predictionResults.isSuccess()) {
+                try {
                 PredictionResult predictionResult = predictionResults.getData().get(0).getData();
                 return " - Empfehlung: " + Math.round(predictionResult.getPredictedRating()) + "/5";
+                } catch (NullPointerException nullPointerException){
+                    log.info("Empfehlung nicht möglich für Gericht {}", meal.getName());
+                    return "";
+                }
             }
         }
         return "";
